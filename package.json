@@ -1,0 +1,19 @@
+{
+  "name": "engine-blackjack",
+  "version": "0.0.1",
+  "description": "A simple nodeJs engine to play blackjack",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "nodejs",
+    "games",
+    "blackjack"
+  ],
+  "author": "Marco Casula <mc@clickbit.net>",
+  "license": "GPL-2.0",
+  "devDependencies": {
+    "mocha": "^3.0.2"
+  }
+}
