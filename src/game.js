@@ -52,7 +52,7 @@ class Game {
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
         const dealerValue = engine.calculate(dealerCards)
         const dealerHasBlackjack = dealerValue === 21
-        const handInfo =  engine.getHandInfoAfterDeal(playerCards, dealerCards)
+        const handInfo = engine.getHandInfoAfterDeal(playerCards, dealerCards)
         history.push(appendEpoch(action))
         this.setState({
           stage: 'player-turn-right',
@@ -61,8 +61,8 @@ class Game {
           dealerHasBlackjack: dealerHasBlackjack,
           playerHasBlackjack: handInfo.playerHasBlackjack,
           deck: this.state.deck.filter(x => dealerCards
-            .concat(playerCards)
-            .indexOf(x) === -1),
+              .concat(playerCards)
+              .indexOf(x) === -1),
           cardCount: engine.countCards(playerCards.concat(dealerCards)),
           handInfo: {
             left: [],
@@ -75,8 +75,8 @@ class Game {
       }
       case 'SPLIT': {
         const { handInfo, dealerCards, history, hits } = this.state
-        const playerCardsLeftPosition = [ handInfo.right.cards[ 0 ] ]
-        const playerCardsRightPosition = [ handInfo.right.cards[ 1 ] ]
+        const playerCardsLeftPosition = [ handInfo.right.cards[ 0 ]]
+        const playerCardsRightPosition = [ handInfo.right.cards[ 1 ]]
         history.push(appendEpoch(action))
         this.setState({
           playerHasBlackjack: false,
@@ -128,7 +128,7 @@ class Game {
           handInfo.right = engine.getHandInfoAfterStand(handInfo.right)
           if (history.some(x => x.type === 'SPLIT')) {
             stage = 'player-turn-left'
-          } else{
+          } else {
             stage = 'showdown'
           }
         }

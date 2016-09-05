@@ -150,7 +150,7 @@ const serializeCards = (value) => {
 
 const countCards = (array) => {
   const systems = {
-    'Hi-Lo':    [-1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1 ]
+    'Hi-Lo': [-1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1 ]
   }
   return array.reduce((memo, x) => {
     memo += systems['Hi-Lo'][x.value - 1]
