@@ -22,6 +22,7 @@ describe('Game flow', function () {
       print(game.dispatch(actions.restore()))
       print(game.dispatch(actions.deal()))
       print(game.dispatch(actions.stand('right')))
+
     })
     it('should restore() deal() split() hit() and stand() for both sides', function () {
       const game = new Game()

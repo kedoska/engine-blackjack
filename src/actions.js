@@ -10,9 +10,12 @@ module.exports.restore = () => {
   }
 }
 
-module.exports.deal = () => {
+module.exports.deal = (bet = 10) => {
   return {
-    type: 'DEAL'
+    type: 'DEAL',
+    payload: {
+      bet: bet
+    }
   }
 }
 
