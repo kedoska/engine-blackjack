@@ -5,10 +5,12 @@
  */
 
 const engine = require('./engine')
+const actions = require('../src/actions')
 
 const defaultState = () => {
   return {
     hits: 0,
+    stage: 'ready',
     deck: engine.shuffle(engine.newDeck()),
     handInfo: {
       left: null,
@@ -42,7 +44,7 @@ class Game {
   }
 
   dispatch (action) {
-    console.log(action)
+    console.log('---------------------------------------', action)
     switch (action.type) {
       case 'DEAL': {
         const { history, hits } = this.state
@@ -77,7 +79,6 @@ class Game {
         const playerCardsRightPosition = [ handInfo.right.cards[ 1 ] ]
         history.push(appendEpoch(action))
         this.setState({
-          stage: 'player-turn-right',
           playerHasBlackjack: false,
           handInfo: {
             left: engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards),
@@ -86,10 +87,15 @@ class Game {
           history: history,
           hits: hits + 1
         })
+        this.dispatch(actions.hit('right'))
+        this.dispatch(actions.hit('left'))
+        this.setState({
+          stage: 'player-turn-right'
+        })
         break
       }
       case 'HIT': {
-        const { deck, handInfo, dealerCards, history, hits } = this.state
+        const { deck, handInfo, dealerCards, cardCount, history, hits } = this.state
         const position = action.payload.position
         const card = deck.splice(deck.length - 1, 1)
         let playerCards = null
@@ -105,6 +111,70 @@ class Game {
           stage: `player-turn-${position}`,
           handInfo: handInfo,
           deck: deck.filter(x => playerCards.indexOf(x) === -1),
+          cardCount: cardCount + engine.countCards(card),
+          history: history,
+          hits: hits + 1
+        })
+        break
+      }
+      case 'STAND': {
+        let stage = ''
+        const { handInfo, history, hits } = this.state
+        const position = action.payload.position
+        if (position === 'left') {
+          handInfo.left = engine.getHandInfoAfterStand(handInfo.left)
+          stage = 'showdown'
+        } else {
+          handInfo.right = engine.getHandInfoAfterStand(handInfo.right)
+          if (history.some(x => x.type === 'SPLIT')) {
+            stage = 'player-turn-left'
+          } else{
+            stage = 'showdown'
+          }
+        }
+        history.push(appendEpoch(action))
+        this.setState({
+          stage: stage,
+          handInfo: handInfo,
+          history: history,
+          hits: hits + 1
+        })
+        if (stage === 'showdown') {
+          this.dispatch(actions.showdown())
+        }
+        break
+      }
+      case 'SHOWDOWN': {
+        const { history, hits } = this.state
+        history.push(appendEpoch(action))
+        this.setState({
+          stage: 'dealer-turn',
+          history: history,
+          hits: hits + 1
+        })
+        do {
+          this.dispatch(actions.dealerHit())
+        } while (this.getState().stage === 'dealer-turn')
+        break
+      }
+      case 'DEALER-HIT': {
+        const { deck, cardCount, history, hits } = this.state
+        const card = deck.splice(deck.length - 1, 1)
+        const dealerCards = this.state.dealerCards.concat(card)
+        const dealerValue = engine.calculate(dealerCards)
+        let stage = null
+        if (dealerValue < 21) {
+          stage = 'dealer-turn'
+        } else {
+          stage = 'done'
+        }
+        history.push(appendEpoch(action))
+        this.setState({
+          stage: stage,
+          dealerCards: dealerCards,
+          dealerValue: dealerValue,
+          deck: deck.filter(x => dealerCards.indexOf(x) === -1),
+          cardCount: cardCount + engine.countCards(card),
           history: history,
           hits: hits + 1
         })

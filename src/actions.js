@@ -30,3 +30,24 @@ module.exports.hit = (position = 'right') => {
     }
   }
 }
+
+module.exports.stand = (position = 'right') => {
+  return {
+    type: 'STAND',
+    payload: {
+      position: position // left or right
+    }
+  }
+}
+
+module.exports.showdown = () => {
+  return {
+    type: 'SHOWDOWN'
+  }
+}
+
+module.exports.dealerHit = () => {
+  return {
+    type: 'DEALER-HIT'
+  }
+}

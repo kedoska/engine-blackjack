@@ -121,8 +121,6 @@ const calculate = (array) => {
 
 const isBlackjack = (array) => calculate(array) === 21
 
-const isWinningHand = (player, dealer) => calculate(player) > calculate(dealer)
-
 const serializeCard = (value) => {
   const digits = value.match(/\d/g)
   let number = null
@@ -152,17 +150,12 @@ const serializeCards = (value) => {
 
 const countCards = (array) => {
   const systems = {
-    'Hi-Lo':    [-1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1 ],
-    'Hi-Opt I': [0, 0, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1 ]
+    'Hi-Lo':    [-1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1 ]
   }
   return array.reduce((memo, x) => {
-    memo['Hi-Lo'] += systems['Hi-Lo'][x.value - 1]
-    memo['Hi-Opt I'] += systems['Hi-Opt I'][x.value - 1]
+    memo += systems['Hi-Lo'][x.value - 1]
     return memo
-  }, {
-    'Hi-Lo': 0,
-    'Hi-Opt I': 0
-  })
+  }, 0)
 }
 
 const getHandInfo = (playerCards, dealerCards) => {
@@ -221,6 +214,20 @@ const getHandInfoAfterHit = (playerCards, dealerCards) => {
   return hand
 }
 
+const getHandInfoAfterStand = (handInfo) => {
+  return Object.assign(handInfo, {
+    close: true,
+    availableActions: {
+      double: false,
+      split: false,
+      insurance: false,
+      hit: false,
+      stand: false,
+      surrender: false
+    }
+  })
+}
+
 module.exports.newDeck = newDeck
 module.exports.shuffle = shuffle
 module.exports.calculate = calculate
@@ -229,6 +236,7 @@ module.exports.getHandInfo = getHandInfo
 module.exports.getHandInfoAfterDeal = getHandInfoAfterDeal
 module.exports.getHandInfoAfterSplit = getHandInfoAfterSplit
 module.exports.getHandInfoAfterHit = getHandInfoAfterHit
+module.exports.getHandInfoAfterStand = getHandInfoAfterStand
 module.exports.isBlackjack = isBlackjack
 module.exports.serializeCard = serializeCard
 module.exports.serializeCards = serializeCards
