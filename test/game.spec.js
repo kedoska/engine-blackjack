@@ -15,9 +15,15 @@ const print = (obj) => {
     , false, null))
 }
 
-describe('Game actions', function () {
-  describe('# restore()', function () {
-    it('should get return the status of the current game', function () {
+describe('Game flow', function () {
+  describe('# Basic game activity', function () {
+    it('should restore() deal() and stand()', function () {
+      const game = new Game()
+      print(game.dispatch(actions.restore()))
+      print(game.dispatch(actions.deal()))
+      print(game.dispatch(actions.stand('right')))
+    })
+    it('should restore() deal() split() hit() and stand() for both sides', function () {
       const game = new Game()
       print(game.dispatch(actions.restore()))
       print(game.dispatch(actions.deal()))
