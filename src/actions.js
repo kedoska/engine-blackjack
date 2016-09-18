@@ -4,6 +4,17 @@
  * GPL 2.0 Licensed
  */
 
+module.exports.invalid = (action, info) => {
+  return {
+    type: 'INVALID',
+    payload: {
+      type: action.type,
+      payload: action.payload,
+      info: info
+    }
+  }
+}
+
 module.exports.restore = () => {
   return {
     type: 'RESTORE'

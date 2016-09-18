@@ -13,8 +13,8 @@ const defaultState = () => {
     stage: 'ready',
     deck: engine.shuffle(engine.newDeck()),
     handInfo: {
-      left: null,
-      right: null
+      left: {},
+      right: {}
     },
     history: []
   }
@@ -44,7 +44,52 @@ class Game {
   }
 
   dispatch (action) {
-    console.log('---------------------------------------', action)
+    const { stage, handInfo, history } = this.state
+    const { type, payload = {} } = action
+    const { position = 'right' } = payload
+    const isRight = position === 'right'
+    const isLeft = position === 'left'
+    const historyHasSplit = history.some(x => x.type === 'SPLIT')
+    const hand = handInfo[position]
+
+    let isActionAllowed = engine.isActionAllowed(type, stage)
+
+    console.log(`stage is "${stage}", you want to ${type}: is it allowed? ${isActionAllowed}`)
+
+    if (!isActionAllowed) {
+      return this._dispatch(actions.invalid(action, `${type} is not allowed when stage is ${stage}`))
+    }
+
+    const whiteList = ['RESTORE', 'DEAL', 'SHOWDOWN']
+
+    if (isActionAllowed && whiteList.some(x => x === type)) {
+      // this is a safe action. We do not need to check the status of the stage
+      // so we return the result now!
+      return this._dispatch(action)
+    }
+
+    if (hand.close) {
+      // TODO: consolidate this one, probably is just enough to consider the availableActions (see more below)
+      return this._dispatch(actions.invalid(action, `${type} is not allowed because "${position}" side of the table is closed on "${stage}"`))
+    }
+
+    if (isLeft && !historyHasSplit) {
+      // You want to do something on "left" but no split found in history.
+      // default side is "right". When an action want to edit the "left" side of the table
+      // a valid split should be appear in the history. If not, "left" position is not ready to be changed
+      if (!history.some(x => x.type === 'SPLIT')) {
+        return this._dispatch(actions.invalid(action, `${type} is not allowed because there is no SPLIT in current stage "${stage}"`))
+      }
+    }
+
+    if (!hand.availableActions[type.toLowerCase()]) {
+      return this._dispatch(actions.invalid(action, `${type} is not currently allowed on position "${position}". Stage is "${stage}"`))
+    }
+
+    return this._dispatch(action)
+  }
+
+  _dispatch (action) {
     switch (action.type) {
       case 'DEAL': {
         const { history, hits } = this.state
@@ -65,7 +110,7 @@ class Game {
               .indexOf(x) === -1),
           cardCount: engine.countCards(playerCards.concat(dealerCards)),
           handInfo: {
-            left: [],
+            left: {},
             right: handInfo
           },
           history: history,
@@ -99,6 +144,7 @@ class Game {
         const position = action.payload.position
         const card = deck.splice(deck.length - 1, 1)
         let playerCards = null
+        // TODO: remove position and replace it with stage info #hit
         if (position === 'left') {
           playerCards = handInfo.left.cards.concat(card)
           handInfo.left = engine.getHandInfoAfterHit(playerCards, dealerCards)
@@ -121,6 +167,7 @@ class Game {
         let stage = ''
         const { handInfo, history, hits } = this.state
         const position = action.payload.position
+        // TODO: remove position and replace it with stage info #hit
         if (position === 'left') {
           handInfo.left = engine.getHandInfoAfterStand(handInfo.left)
           stage = 'showdown'
@@ -153,7 +200,7 @@ class Game {
           hits: hits + 1
         })
         do {
-          this.dispatch(actions.dealerHit())
+          this._dispatch(actions.dealerHit())
         } while (this.getState().stage === 'dealer-turn')
         break
       }
@@ -163,7 +210,7 @@ class Game {
         const dealerCards = this.state.dealerCards.concat(card)
         const dealerValue = engine.calculate(dealerCards)
         let stage = null
-        if (dealerValue < 21) {
+        if (dealerValue < 17) {
           stage = 'dealer-turn'
         } else {
           stage = 'done'
@@ -177,6 +224,15 @@ class Game {
           cardCount: cardCount + engine.countCards(card),
           history: history,
           hits: hits + 1
+        })
+        break
+      }
+      default: {
+        const { history, hits } = this.state
+        history.push(appendEpoch(action))
+        this.setState({
+          hits: hits + 1,
+          history: history
         })
         break
       }

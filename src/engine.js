@@ -228,6 +228,37 @@ const getHandInfoAfterStand = (handInfo) => {
   })
 }
 
+/**
+ * Verify if the action name is allowed in a specific stage.
+ * This method is used during the action dispatch before to consider
+ * the real state of the game or more complex game situations.
+ * @param actionName any action name available
+ * @param stage any stage name
+ * @returns {boolean}
+ */
+const isActionAllowed = (actionName, stage) => {
+  if (actionName === 'RESTORE') {
+    return true
+  }
+  switch (stage) {
+    case 'ready': {
+      return ['RESTORE', 'DEAL'].indexOf(actionName) > -1
+    }
+    case 'player-turn-right': {
+      return ['STAND', 'SPLIT', 'HIT'].indexOf(actionName) > -1
+    }
+    case 'showdown': {
+      return ['SHOWDOWN'].indexOf(actionName) > -1
+    }
+    case 'dealer-turn': {
+      return ['DEALER-HIT'].indexOf(actionName) > -1
+    }
+    default: {
+      return false
+    }
+  }
+}
+
 module.exports.newDeck = newDeck
 module.exports.shuffle = shuffle
 module.exports.calculate = calculate
@@ -240,3 +271,4 @@ module.exports.getHandInfoAfterStand = getHandInfoAfterStand
 module.exports.isBlackjack = isBlackjack
 module.exports.serializeCard = serializeCard
 module.exports.serializeCards = serializeCards
+module.exports.isActionAllowed = isActionAllowed
