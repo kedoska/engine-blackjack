@@ -7,3 +7,8 @@
 'use strict'
 
 module.exports = require('./src/engine')
+module.exports = {
+  engine: require('./src/engine'),
+  actions: require('./src/actions'),
+  Game: require('./src/game')
+}
