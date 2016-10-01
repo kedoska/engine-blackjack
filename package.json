@@ -6,13 +6,17 @@
   "scripts": {
     "test": "mocha"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/gengine/engine-blackjack"
+  },
   "keywords": [
     "nodejs",
     "games",
     "blackjack"
   ],
   "author": "Marco Casula <marco.casula@linux.com>",
-  "license": "MIT",
+  "license": "GPL-2.0",
   "devDependencies": {
     "express": "^4.14.0",
     "express-session": "^1.14.1",
