@@ -3,6 +3,8 @@ engine-blackjack
 
 Nodejs module to implement the blackjack game into your software.
 
+NOTE: Master branch is under development. Be sure to "ONLY" use tagged version for your production.
+
 Main motivation of this side project is understand the basics of the games and provide a very 
 simple library that can be easily integrated in more complex systems.
 
