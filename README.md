@@ -83,3 +83,21 @@ You can contributing by finding issues and open and issue or email me or by codi
  3. Commit your changes: `git commit -am 'add some feature'`
  4. Push to the branch: `git push origin my-feature`
  5. Submit a pull request (and thanks) :)
+
+# License
+
+engine-blackjack
+Copyright (C) 2016 Marco Casula
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.

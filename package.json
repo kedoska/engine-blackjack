@@ -11,8 +11,8 @@
     "games",
     "blackjack"
   ],
-  "author": "Marco Casula <mc@clickbit.net>",
-  "license": "GPL-2.0",
+  "author": "Marco Casula <marco.casula@linux.com>",
+  "license": "MIT",
   "devDependencies": {
     "express": "^4.14.0",
     "express-session": "^1.14.1",
