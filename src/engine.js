@@ -259,6 +259,9 @@ const isActionAllowed = (actionName, stage) => {
     case 'player-turn-right': {
       return ['STAND', 'SPLIT', 'HIT'].indexOf(actionName) > -1
     }
+    case 'player-turn-left': {
+      return ['STAND', 'HIT'].indexOf(actionName) > -1
+    }
     case 'showdown': {
       return ['SHOWDOWN'].indexOf(actionName) > -1
     }
