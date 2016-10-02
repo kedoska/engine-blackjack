@@ -1,12 +1,93 @@
 engine-blackjack
 ================
 
-Nodejs module to implement the blackjack game into your software.
-
-NOTE: Master branch is under development. Be sure to "ONLY" use tagged version for your production.
+Nodejs module to implement the blackjack game into your software. It is intended to be used as
+server-side component to calculate the status of a game.
 
 Main motivation of this side project is understand the basics of the games and provide a very 
 simple library that can be easily integrated in more complex systems.
+
+## Install
+
+If you are using [npm](https://www.npmjs.com/), to get the last version:
+
+`npm install engine-blackjack`
+
+I'm currently publishing the master branch into NPM until I get the first _tag_.
+Ideally, only _tagged commits_ will be uploaded as NPM after that moment.
+
+NOTE: Master branch is under development. Be sure to "ONLY" use tagged version for your production.
+
+## Quick Start
+
+Once obtained the library just _require_ `Game` and `actions`. 
+
+```
+const blackjack = require('engine-blackjack')
+const actions = blackjack.actions
+const Game = blackjack.Game
+```
+
+At this point you can initialize a _new game_ by calling the `Game constructor`.
+
+### Creating a new game
+
+```
+const game = new Game()
+```
+
+In this cases, no state is passed to the constructor: 
+
+ 1. the _default_ state is loaded into _game_
+ 2. _game_ is ready to _`dispatch` actions_ to alter the state
+
+### Getting current state
+
+At any moment we can require the current state of the _game_ by calling the `getState()`.
+
+```
+console.dir(game.getState())
+```
+
+The content of the state and its _schema_ depends on the _stage_ of the game. In this case
+we initialized the game without any precedent state, so we will receive something like this:
+
+```
+{
+  hits: 0,
+  stage: 'ready',
+  deck: [
+    { text: '9', suite: 'clubs', value: 9 },
+    { text: '7', suite: 'clubs', value: 7 },
+    ...
+    ...
+  ],
+  handInfo: { left: {}, right: {} },
+  history: []
+}
+```
+
+For the moment the only thing we should note is that the _field_ `stage` tells us "game is ready".
+
+### Dispatching actions
+
+The only way *to mutate the state of the game* is to dispatch actions. Some actions are required by the "user",
+some other actions are dispatched by the engine to "complete" the game.
+
+NOTE: In a real game, players and dealer are allowed to "do actions". The engine will "impersonate the dealer" at some point, depending on the _last action_ and the _state_.
+
+```
+// stage is "ready"
+console.log(game.getState().stage)
+
+// call an action to mutate the state
+game.dispatch(actions.deal())
+
+// stage has changed
+console.log(game.getState().stage)
+```
+
+## Project Structure
 
 ### Guidelines that I follow
 
@@ -17,9 +98,7 @@ and motivated by the desire to introduce the functional paradigm in my work day:
  2. zero-dependencies (only dev-dependencies)
  3. TDD, break every single game action to be testable
  4. Implement everything that makes sense (and described in [WikipediA](https://en.wikipedia.org/wiki/Blackjack))
-
-## Project Structure
-
+ 
 Everything you need to hack is of course inside `/src` or `/test` and 
 `npm test` does what you expect (plus a lot of console.log for the moment)
 
