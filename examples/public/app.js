@@ -1,26 +1,41 @@
 /* global $ */
-var dispatch = function (action) {
+var dispatch = function (action, position) {
   console.log('dispatching', action)
   hideError()
   $('[data-action]').attr('disabled', 'disabled')
-  $.getJSON('/blackjack/' + action, function (data) {
-    console.log(data)
-    if (data.err) {
-      return showError(data.err)
-    }
+  $.ajax({
+    url: '/blackjack/' + action,
+    type: 'POST',
+    dataType: 'json',
+    contentType: 'application/json; charset=utf-8',
+    data: JSON.stringify({
+      payload: {
+        position: position
+      }
+    }),
+    success: function (data) {
+      console.log(data)
+      if (data.err) {
+        return showError(data.err)
+      }
 
-    showCards('dealer', data.dealerCards)
-    showCards('player-left', data.handInfo.left.cards)
-    showCards('player-right', data.handInfo.right.cards)
+      showCards('dealer', data.dealerCards)
+      showCards('player-left', data.handInfo.left.cards)
+      showCards('player-right', data.handInfo.right.cards)
 
-    drawHistory(data.history)
+      showValues('dealer', data.dealerValue)
+      showValues('player-left', data.handInfo.left.playerValue)
+      showValues('player-right', data.handInfo.right.playerValue)
 
-    var leftHandInfo = data.handInfo.left.availableActions // only available after split
-    var rightHandInfo = data.handInfo.right.availableActions // default position
-    enableActions('left', leftHandInfo)
-    enableActions('right', rightHandInfo)
-    if (data.stage === 'ready' || data.stage === 'done') {
-      $('[data-action="deal"]').removeAttr('disabled', 'disabled')
+      drawHistory(data.history)
+
+      var leftHandInfo = data.handInfo.left.availableActions // only available after split
+      var rightHandInfo = data.handInfo.right.availableActions // default position
+      enableActions('left', leftHandInfo)
+      enableActions('right', rightHandInfo)
+      if (data.stage === 'ready' || data.stage === 'done') {
+        $('[data-action="deal"]').removeAttr('disabled', 'disabled')
+      }
     }
   })
 }
@@ -47,7 +62,7 @@ var drawHistory = function (data) {
     }
     var date = new Date(data[i].ts)
     var historyEl = $(historyTemplate)
-    historyEl.find('.date').text(date.getTime())
+    historyEl.find('.date').text(date.toLocaleTimeString())
     historyEl.find('.history-action').text(data[i].type)
     historyEl.appendTo(historyContainerElement)
   }
@@ -68,9 +83,14 @@ var showCards = function (sector, data) {
   }
 }
 
+var showValues = function (sector, value) {
+  $('[data-card-value="' + sector + '"]').text(value || '0')
+}
+
 var hideError = function () {
   $('.panel-danger').addClass('hide')
 }
+
 var showError = function (err) {
   console.log(err)
   $('.panel-danger').removeClass('hide')
@@ -82,7 +102,7 @@ var enableActions = function (position, data) {
     return
   }
   for (var actionName in data) {
-    var actionElement = $('[data-position="' + position + '"][data-action="' + actionName + '"]')
+    var actionElement = $('[data-position="' + position + '"][data-action="' + actionName + '"]', '[data-hand-position="' + position + '"]')
     if (data[actionName]) {
       actionElement.removeAttr('disabled')
     } else {
@@ -93,12 +113,24 @@ var enableActions = function (position, data) {
 
 var initializeUI = function () {
   $('[data-action]').click(function (e) {
-    var actionName = $(e.currentTarget).data('action')
-    dispatch(actionName)
+    var el = $(e.currentTarget)
+    var actionName = el.data('action')
+    var actionPosition = el.data('position')
+    dispatch(actionName, actionPosition)
+  })
+}
+
+var initializeKeyBind = function () {
+  $('body').keypress(function(e) {
+    if(e.keyCode === 32) {
+      e.preventDefault();
+      dispatch('deal', '')
+    }
   })
 }
 
 $(document).ready(function () {
   initializeUI()
+  initializeKeyBind()
   dispatch('restore')
 })

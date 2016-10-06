@@ -18,6 +18,17 @@ Ideally, only _tagged commits_ will be uploaded as NPM after that moment.
 
 NOTE: Master branch is under development. Be sure to "ONLY" use tagged version for your production.
 
+## Examples
+
+You can start playing around with the engine using our basic example.
+Our first example is a simple `expressjs` server able to expose all the `actions` that can be executed by the engine.
+
+```
+node examples/miniserver.js
+```
+
+Go to [localhost:3000](http://localhost:3000/)
+
 ## Quick Start
 
 Once obtained the library just _require_ `Game` and `actions`. 
