@@ -234,6 +234,10 @@ const getHandInfoAfterHit = (playerCards, dealerCards) => {
   return hand
 }
 
+const getHandInfoAfterDouble = (playerCards, dealerCards) => {
+  return getHandInfoAfterHit(playerCards, dealerCards)
+}
+
 const getHandInfoAfterStand = (handInfo) => {
   return Object.assign(handInfo, {
     close: true,
@@ -265,10 +269,10 @@ const isActionAllowed = (actionName, stage) => {
       return ['RESTORE', 'DEAL'].indexOf(actionName) > -1
     }
     case 'player-turn-right': {
-      return ['STAND', 'SPLIT', 'HIT'].indexOf(actionName) > -1
+      return ['STAND', 'SPLIT', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
     }
     case 'player-turn-left': {
-      return ['STAND', 'HIT'].indexOf(actionName) > -1
+      return ['STAND', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
     }
     case 'showdown': {
       return ['SHOWDOWN'].indexOf(actionName) > -1
@@ -290,6 +294,7 @@ module.exports.getHandInfo = getHandInfo
 module.exports.getHandInfoAfterDeal = getHandInfoAfterDeal
 module.exports.getHandInfoAfterSplit = getHandInfoAfterSplit
 module.exports.getHandInfoAfterHit = getHandInfoAfterHit
+module.exports.getHandInfoAfterDouble = getHandInfoAfterDouble
 module.exports.getHandInfoAfterStand = getHandInfoAfterStand
 module.exports.isBlackjack = isBlackjack
 module.exports.serializeCard = serializeCard

@@ -57,6 +57,15 @@ module.exports.hit = (position = 'right') => {
   }
 }
 
+module.exports.double = (position = 'right') => {
+  return {
+    type: 'DOUBLE',
+    payload: {
+      position: position // left or right
+    }
+  }
+}
+
 module.exports.stand = (position = 'right') => {
   return {
     type: 'STAND',
