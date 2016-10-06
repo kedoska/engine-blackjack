@@ -199,7 +199,15 @@ const getHandInfo = (playerCards, dealerCards) => {
 }
 
 const getHandInfoAfterDeal = (playerCards, dealerCards) => {
-  return getHandInfo(playerCards, dealerCards)
+  const hand = getHandInfo(playerCards, dealerCards)
+  // After deal, even if we got a blackjack the hand cannot be considered closed.
+  const availableActions = hand.availableActions
+  hand.availableActions = Object.assign(availableActions, {
+    stand: true,
+    hit: true,
+    surrender: true
+  })
+  return Object.assign(hand, {close: false})
 }
 
 const getHandInfoAfterSplit = (playerCards, dealerCards) => {

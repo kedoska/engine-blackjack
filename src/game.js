@@ -66,7 +66,7 @@ class Game {
 
     let isActionAllowed = engine.isActionAllowed(type, stage)
 
-    console.log(`stage is "${stage}", you want to ${type}: is it allowed? ${isActionAllowed}`)
+    console.log(`stage is "${stage}", you want to ${type} on ${position}: is it allowed? ${isActionAllowed}`)
 
     if (!isActionAllowed) {
       return this._dispatch(actions.invalid(action, `${type} is not allowed when stage is ${stage}`))
