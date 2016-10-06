@@ -1,17 +1,18 @@
 {
   "name": "engine-blackjack",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "A simple nodeJs engine to play blackjack",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "example1": "node examples/miniserver.js"
   },
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/gengine/engine-blackjack"
   },
   "bugs": {
-    "url" : "https://gitlab.com/gengine/engine-blackjack/issues"
+    "url": "https://gitlab.com/gengine/engine-blackjack/issues"
   },
   "keywords": [
     "nodejs",
@@ -23,6 +24,9 @@
   "devDependencies": {
     "express": "^4.14.0",
     "express-session": "^1.14.1",
+    "body-parser": "^1.15.2",
     "mocha": "^3.0.2"
+  },
+  "dependencies": {
   }
 }
