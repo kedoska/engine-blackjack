@@ -152,6 +152,7 @@ class Game {
         break
       }
       case 'HIT': {
+        let stage = ''
         const { deck, handInfo, dealerCards, cardCount, history, hits } = this.state
         const position = action.payload.position
         const card = deck.splice(deck.length - 1, 1)
@@ -160,19 +161,36 @@ class Game {
         if (position === 'left') {
           playerCards = handInfo.left.cards.concat(card)
           handInfo.left = engine.getHandInfoAfterHit(playerCards, dealerCards)
+          if (handInfo.left.close) {
+            stage = 'showdown'
+          } else {
+            stage = `player-turn-${position}`
+          }
         } else {
           playerCards = handInfo.right.cards.concat(card)
           handInfo.right = engine.getHandInfoAfterHit(playerCards, dealerCards)
+          if (handInfo.right.close) {
+            if (history.some(x => x.type === 'SPLIT')) {
+              stage = 'player-turn-left'
+            } else {
+              stage = 'showdown'
+            }
+          } else {
+            stage = `player-turn-${position}`
+          }
         }
         history.push(appendEpoch(action))
         this.setState({
-          stage: `player-turn-${position}`,
+          stage: stage,
           handInfo: handInfo,
           deck: deck.filter(x => playerCards.indexOf(x) === -1),
           cardCount: cardCount + engine.countCards(card),
           history: history,
           hits: hits + 1
         })
+        if (stage === 'showdown') {
+          this.dispatch(actions.showdown())
+        }
         break
       }
       case 'STAND': {
