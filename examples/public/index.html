@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>engine-blackjack - example #1</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="./style.css">
+</head>
+<body>
+<div class="container">
+    <h1>engine-blackjack <small>example #1</small></h1>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-danger hide">
+                <div class="panel-heading">Ooops, something went wrong!</div>
+                <div class="panel-body"></div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-body hand" data-card-sector="dealer"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 text-left">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="panel-body hand" data-card-sector="player-left"></div>
+                </div>
+                <div class="panel-footer text-center">
+                    <div class="btn-group" role="group">
+                        <button type="button" data-position="left" data-action="stand" disabled class="btn btn-default">Stand</button>
+                        <button type="button" data-position="left" data-action="insurance" disabled class="btn btn-default">Insurance</button>
+                        <button type="button" data-position="left" data-action="hit" disabled class="btn btn-default">Hit</button>
+                        <button type="button" data-position="left" data-action="double" disabled class="btn btn-default">Double</button>
+                        <button type="button" data-position="left" data-action="split" disabled class="btn btn-default">Split</button>
+                        <button type="button" data-position="left" data-action="surrender" disabled class="btn btn-default">Surrender</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="panel-body hand" data-card-sector="player-right"></div>
+                </div>
+                <div class="panel-footer text-center">
+                    <div class="btn-group" role="group">
+                        <button type="button" data-position="right" data-action="stand" disabled class="btn btn-default">Stand</button>
+                        <button type="button" data-position="right" data-action="insurance" disabled class="btn btn-default">Insurance</button>
+                        <button type="button" data-position="right" data-action="hit" disabled class="btn btn-default">Hit</button>
+                        <button type="button" data-position="right" data-action="double" disabled class="btn btn-default">Double</button>
+                        <button type="button" data-position="right" data-action="split" disabled class="btn btn-default">Split</button>
+                        <button type="button" data-position="right" data-action="surrender" disabled class="btn btn-default">Surrender</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <button type="button" data-action="deal" class="btn btn-default">Deal</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="timeline" id="timeline">
+            </ul>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -6,7 +6,7 @@ const actions = require('../src/actions')
 
 app.use(session({ secret: 'Secure Me Please', cookie: { maxAge: 60000 }}))
 
-app.use(express.static('public'))
+app.use(express.static(__dirname + '/public'));
 
 app.get('/blackjack/:action', (req, res) => {
   const session = req.session
@@ -20,7 +20,11 @@ app.get('/blackjack/:action', (req, res) => {
     })
   }
   const newStage = game.dispatch(fn())
-  session.stage = newStage
+  if (newStage.stage === 'done') {
+    session.stage = null // game complited!
+  } else {
+    session.stage = newStage
+  }
   res.send(Object.assign({}, newStage, {deck: null}))
 })
 
