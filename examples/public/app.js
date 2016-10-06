@@ -19,6 +19,9 @@ var dispatch = function (action, position) {
         return showError(data.err)
       }
 
+      // Here is because React is sooooo goooood
+      $('.hand').empty()
+
       showCards('dealer', data.dealerCards)
       showCards('player-left', data.handInfo.left.cards)
       showCards('player-right', data.handInfo.right.cards)
