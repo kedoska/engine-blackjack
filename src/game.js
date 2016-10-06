@@ -136,6 +136,7 @@ class Game {
         const playerCardsRightPosition = [ handInfo.right.cards[ 1 ]]
         history.push(appendEpoch(action))
         this.setState({
+          stage: 'player-turn-right',
           playerHasBlackjack: false,
           handInfo: {
             left: engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards),
@@ -143,11 +144,6 @@ class Game {
           },
           history: history,
           hits: hits + 1
-        })
-        this.dispatch(actions.hit('right'))
-        this.dispatch(actions.hit('left'))
-        this.setState({
-          stage: 'player-turn-right'
         })
         break
       }

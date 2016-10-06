@@ -214,7 +214,7 @@ const getHandInfoAfterSplit = (playerCards, dealerCards) => {
   const hand = getHandInfo(playerCards, dealerCards)
   const availableActions = hand.availableActions
   hand.availableActions = Object.assign(availableActions, {
-    double: false,
+    stand: false,
     split: false,
     insurance: false,
     surrender: false
