@@ -252,6 +252,10 @@ const getHandInfoAfterStand = (handInfo) => {
   })
 }
 
+const getHandInfoAfterSurrender = (handInfo) => {
+  return getHandInfoAfterStand(handInfo)
+}
+
 /**
  * Verify if the action name is allowed in a specific stage.
  * This method is used during the action dispatch before to consider
@@ -269,7 +273,7 @@ const isActionAllowed = (actionName, stage) => {
       return ['RESTORE', 'DEAL'].indexOf(actionName) > -1
     }
     case 'player-turn-right': {
-      return ['STAND', 'SPLIT', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
+      return ['STAND', 'SURRENDER', 'SPLIT', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
     }
     case 'player-turn-left': {
       return ['STAND', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
@@ -296,6 +300,7 @@ module.exports.getHandInfoAfterSplit = getHandInfoAfterSplit
 module.exports.getHandInfoAfterHit = getHandInfoAfterHit
 module.exports.getHandInfoAfterDouble = getHandInfoAfterDouble
 module.exports.getHandInfoAfterStand = getHandInfoAfterStand
+module.exports.getHandInfoAfterSurrender = getHandInfoAfterSurrender
 module.exports.isBlackjack = isBlackjack
 module.exports.serializeCard = serializeCard
 module.exports.serializeCards = serializeCards

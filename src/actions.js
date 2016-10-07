@@ -75,6 +75,12 @@ module.exports.stand = (position = 'right') => {
   }
 }
 
+module.exports.surrender = () => {
+  return {
+    type: 'SURRENDER'
+  }
+}
+
 module.exports.showdown = () => {
   return {
     type: 'SHOWDOWN'

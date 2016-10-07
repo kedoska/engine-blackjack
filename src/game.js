@@ -239,6 +239,18 @@ class Game {
         } while (this.getState().stage === 'dealer-turn')
         break
       }
+      case 'SURRENDER': {
+        const { handInfo, history, hits } = this.state
+        handInfo.left = engine.getHandInfoAfterSurrender(handInfo.left)
+        history.push(appendEpoch(action))
+        this.setState({
+          stage: 'done',
+          handInfo: handInfo,
+          history: history,
+          hits: hits + 1
+        })
+        break
+      }
       case 'DEALER-HIT': {
         const { deck, cardCount, history, hits } = this.state
         const card = deck.splice(deck.length - 1, 1)
