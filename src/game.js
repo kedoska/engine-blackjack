@@ -94,6 +94,11 @@ class Game {
       }
     }
 
+    if(isLeft && !handInfo.right.close) {
+      // You want to do something on "left" but "right" is still open
+      return this._dispatch(actions.invalid(action, `${type} is not allowed because you need to finish "left" hand "${stage}"`))
+    }
+
     if (!hand.availableActions[type.toLowerCase()]) {
       return this._dispatch(actions.invalid(action, `${type} is not currently allowed on position "${position}". Stage is "${stage}"`))
     }
