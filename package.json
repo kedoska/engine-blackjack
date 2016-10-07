@@ -1,11 +1,11 @@
 {
   "name": "engine-blackjack",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "description": "A simple nodeJs engine to play blackjack",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "example1": "node examples/miniserver.js"
+    "example1": "node examples/basicUI/miniserver.js"
   },
   "repository": {
     "type": "git",

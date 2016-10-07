@@ -2,8 +2,8 @@ const express = require('express')
 const app = express()
 const session = require('express-session')
 const bodyParser = require('body-parser')
-const Game = require('../src/game')
-const actions = require('../src/actions')
+const Game = require('../../src/game')
+const actions = require('../../src/actions')
 
 app.set('trust proxy', 1) // trust first proxy
 app.use(session({
