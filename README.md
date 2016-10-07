@@ -20,14 +20,19 @@ NOTE: Master branch is under development. Be sure to "ONLY" use tagged version f
 
 ## Examples
 
+ 1. clone the project from [here](https://gitlab.com/gengine/engine-blackjack)
+ 2. or download the [.tar.gz](https://gitlab.com/gengine/engine-blackjack/repository/archive.tar.gz?ref=master) or [.zip](https://gitlab.com/gengine/engine-blackjack/repository/archive.zip?ref=master)
+ 3. even if the library has no dependencies, you need to run `npm install` because the examples they do have dependencies.
+
 You can start playing around with the engine using our basic example.
 Our first example is a simple `expressjs` server able to expose all the `actions` that can be executed by the engine.
 
 ```
-node examples/miniserver.js
+cd examples/
+node basicUI/miniserver.js
 ```
 
-Go to [localhost:3000](http://localhost:3000/)
+Go to [localhost:3000](http://localhost:3000/) and play some hands.
 
 ## Quick Start
 
