@@ -232,13 +232,28 @@ class Game {
         break
       }
       case 'SHOWDOWN': {
-        const { history, hits } = this.state
+        const { handInfo, history, hits } = this.state
         history.push(appendEpoch(action))
         this.setState({
           stage: 'dealer-turn',
           history: history,
           hits: hits + 1
         })
+        const checkLeftStatus = history.some(x => x.type === 'SPLIT')
+        const check1 = handInfo.right.playerHasBusted && !checkLeftStatus
+        if (check1) {
+          this.setState({
+            stage: 'done'
+          })
+          break
+        }
+        const check2 = checkLeftStatus && handInfo.left.playerHasBusted && check1
+        if (check2) {
+          this.setState({
+            stage: 'done'
+          })
+          break
+        }
         do {
           this._dispatch(actions.dealerHit())
         } while (this.getState().stage === 'dealer-turn')
