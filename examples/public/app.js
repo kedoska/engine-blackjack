@@ -47,9 +47,10 @@ var drawHistory = function (data) {
   if (!data) {
     return
   }
+  console.log(data)
   var historyTemplate = ''
   historyTemplate += '<li class="li">'
-  historyTemplate += '  <div class="timestamp"'
+  historyTemplate += '  <div class="timestamp">'
   historyTemplate += '    <span class="author"></span>'
   historyTemplate += '    <span class="date"><span>'
   historyTemplate += '  </div>'
@@ -63,9 +64,9 @@ var drawHistory = function (data) {
     if (data[i].type === 'RESTORE') {
       continue
     }
-    var date = new Date(data[i].ts)
     var historyEl = $(historyTemplate)
-    historyEl.find('.date').text(date.toLocaleTimeString())
+    // historyEl.find('.author').text('')
+    // historyEl.find('.date').text('')
     historyEl.find('.history-action').text(data[i].type)
     historyEl.appendTo(historyContainerElement)
   }
@@ -95,7 +96,6 @@ var hideError = function () {
 }
 
 var showError = function (err) {
-  console.log(err)
   $('.panel-danger').removeClass('hide')
   $('.panel-danger .panel-body').text(err.toString())
 }
