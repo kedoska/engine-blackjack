@@ -37,6 +37,7 @@ var dispatch = function (action, position) {
       enableActions('left', leftHandInfo)
       enableActions('right', rightHandInfo)
       if (data.stage === 'ready' || data.stage === 'done') {
+        $('[data-action]').attr('disabled', 'disabled')
         $('[data-action="deal"]').removeAttr('disabled', 'disabled')
       }
     }
