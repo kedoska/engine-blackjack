@@ -59,7 +59,6 @@ class Game {
     const { stage, handInfo, history } = this.state
     const { type, payload = {} } = action
     const { position = 'right' } = payload
-    const isRight = position === 'right'
     const isLeft = position === 'left'
     const historyHasSplit = history.some(x => x.type === 'SPLIT')
     const hand = handInfo[position]
