@@ -256,6 +256,30 @@ const getHandInfoAfterSurrender = (handInfo) => {
   return getHandInfoAfterStand(handInfo)
 }
 
+const isLuckyLucky = (playerCards, dealerCards) => {
+  // Player hand and dealer's up card sum to 19, 20, or 21 ("Lucky Lucky")
+  const value = calculate(playerCards) + calculate(dealerCards)
+  return value >= 19 && value <= 21
+}
+
+const isPerfectPairs = (playerCards) => playerCards[0].value === playerCards[1].value
+
+const getSideBetsInfo = (availableBets, sideBets, playerCards, dealerCards) => {
+  const sideBetsInfo = {
+    luckyLucky: 0,
+    perfectPairs: 0
+  }
+  if (availableBets.luckyLucky && sideBets.luckyLucky && isLuckyLucky(playerCards, dealerCards)) {
+    sideBetsInfo.luckyLucky = sideBets.luckyLucky * 2
+  }
+  if (availableBets.perfectPairs && sideBets.perfectPairs && isPerfectPairs(playerCards)) {
+    // TODO: impl colored pairs
+    // TODO: impl mixed pairs
+    sideBetsInfo.perfectPairs = sideBets.perfectPairs * 5
+  }
+  return sideBetsInfo
+}
+
 /**
  * Verify if the action name is allowed in a specific stage.
  * This method is used during the action dispatch before to consider
@@ -301,6 +325,7 @@ module.exports.getHandInfoAfterHit = getHandInfoAfterHit
 module.exports.getHandInfoAfterDouble = getHandInfoAfterDouble
 module.exports.getHandInfoAfterStand = getHandInfoAfterStand
 module.exports.getHandInfoAfterSurrender = getHandInfoAfterSurrender
+module.exports.getSideBetsInfo = getSideBetsInfo
 module.exports.isBlackjack = isBlackjack
 module.exports.serializeCard = serializeCard
 module.exports.serializeCards = serializeCards

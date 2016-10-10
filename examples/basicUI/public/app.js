@@ -14,7 +14,7 @@ var dispatch = function (action, position) {
       }
     }),
     success: function (data) {
-      console.log(data)
+      console.log(data.availableBets)
       if (data.err) {
         return showError(data.err)
       }
@@ -48,7 +48,6 @@ var drawHistory = function (data) {
   if (!data) {
     return
   }
-  console.log(data)
   var historyTemplate = ''
   historyTemplate += '<li class="li">'
   historyTemplate += '  <div class="timestamp">'

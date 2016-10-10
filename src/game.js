@@ -19,6 +19,17 @@
 const engine = require('./engine')
 const actions = require('../src/actions')
 
+const getDefaultSideBets = (active = false) => {
+  return {
+    luckyLucky: active,
+    perfectPairs: active,
+    royalMatch: active,
+    luckyLadies: active,
+    inBet: active,
+    MatchTheDealer: active
+  }
+}
+
 const defaultState = () => {
   return {
     hits: 0,
@@ -29,7 +40,9 @@ const defaultState = () => {
       left: {},
       right: {}
     },
-    history: []
+    history: [],
+    availableBets: getDefaultSideBets(true),
+    sideBetsInfo: null
   }
 }
 
@@ -111,13 +124,14 @@ class Game {
   _dispatch (action) {
     switch (action.type) {
       case 'DEAL': {
-        const { bet } = action.payload
-        const { history, hits } = this.state
+        const { bet, sideBets } = action.payload
+        const { availableBets, history, hits } = this.state
         const playerCards = this.state.deck.splice(this.state.deck.length - 2, 2)
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
         const dealerValue = engine.calculate(dealerCards)
         const dealerHasBlackjack = dealerValue === 21
         const handInfo = engine.getHandInfoAfterDeal(playerCards, dealerCards)
+        const sideBetsInfo = engine.getSideBetsInfo(availableBets, sideBets, playerCards, dealerCards)
         history.push(appendEpoch(action))
         this.setState({
           initialBet: bet,
@@ -134,6 +148,8 @@ class Game {
             left: {},
             right: handInfo
           },
+          sideBetsInfo: sideBetsInfo,
+          availableBets: getDefaultSideBets(false),
           history: history,
           hits: hits + 1
         })

@@ -37,7 +37,8 @@ module.exports.deal = (bet = 10) => {
   return {
     type: 'DEAL',
     payload: {
-      bet: bet
+      bet: bet,
+      sideBets: {} // will be matched with availableBets
     }
   }
 }
