@@ -208,7 +208,7 @@ class Game {
         // TODO: remove position and replace it with stage info #hit
         if (position === 'left') {
           playerCards = handInfo.left.cards.concat(card)
-          handInfo.left = engine.getHandInfoAfterHit(playerCards, dealerCards)
+          handInfo.left = engine.getHandInfoAfterDouble(playerCards, dealerCards)
           if (handInfo.left.close) {
             stage = 'showdown'
           } else {
@@ -216,7 +216,7 @@ class Game {
           }
         } else {
           playerCards = handInfo.right.cards.concat(card)
-          handInfo.right = engine.getHandInfoAfterHit(playerCards, dealerCards)
+          handInfo.right = engine.getHandInfoAfterDouble(playerCards, dealerCards)
           if (handInfo.right.close) {
             if (history.some(x => x.type === 'SPLIT')) {
               stage = 'player-turn-left'
@@ -236,10 +236,7 @@ class Game {
           history: history,
           hits: hits + 1
         })
-        if (!this.state.handInfo[position].close) {
-          // After double if hand is still open, we need to close it.
-          this.dispatch(actions.stand(position))
-        }
+        this.dispatch(actions.stand(position))
         break
       }
       case 'STAND': {
