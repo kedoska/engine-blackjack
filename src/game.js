@@ -199,8 +199,43 @@ class Game {
         break
       }
       case 'DOUBLE': {
+        let stage = ''
+        const { initialBet, deck, handInfo, dealerCards, cardCount, history, hits } = this.state
+        const bet = initialBet * 2
         const position = action.payload.position
-        this.dispatch(actions.hit(position))
+        const card = deck.splice(deck.length - 1, 1)
+        let playerCards = null
+        // TODO: remove position and replace it with stage info #hit
+        if (position === 'left') {
+          playerCards = handInfo.left.cards.concat(card)
+          handInfo.left = engine.getHandInfoAfterHit(playerCards, dealerCards)
+          if (handInfo.left.close) {
+            stage = 'showdown'
+          } else {
+            stage = `player-turn-${position}`
+          }
+        } else {
+          playerCards = handInfo.right.cards.concat(card)
+          handInfo.right = engine.getHandInfoAfterHit(playerCards, dealerCards)
+          if (handInfo.right.close) {
+            if (history.some(x => x.type === 'SPLIT')) {
+              stage = 'player-turn-left'
+            } else {
+              stage = 'showdown'
+            }
+          } else {
+            stage = `player-turn-${position}`
+          }
+        }
+        history.push(appendEpoch(Object.assign(action, { payload: {bet: bet } })))
+        this.setState({
+          stage: stage,
+          handInfo: handInfo,
+          deck: deck.filter(x => playerCards.indexOf(x) === -1),
+          cardCount: cardCount + engine.countCards(card),
+          history: history,
+          hits: hits + 1
+        })
         if (!this.state.handInfo[position].close) {
           // After double if hand is still open, we need to close it.
           this.dispatch(actions.stand(position))
