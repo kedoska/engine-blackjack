@@ -22,6 +22,7 @@ const actions = require('../src/actions')
 const defaultState = () => {
   return {
     hits: 0,
+    initialBet: 0,
     stage: 'ready',
     deck: engine.shuffle(engine.newDeck()),
     handInfo: {
@@ -33,10 +34,12 @@ const defaultState = () => {
 }
 
 const appendEpoch = (obj) => {
+  const { payload = {bet: 0} } = obj
   return Object.assign(
     {},
     obj,
     {
+      value: payload.bet,
       ts: new Date().getTime()
     }
   )
@@ -93,7 +96,7 @@ class Game {
       }
     }
 
-    if(isLeft && !handInfo.right.close) {
+    if (isLeft && !handInfo.right.close) {
       // You want to do something on "left" but "right" is still open
       return this._dispatch(actions.invalid(action, `${type} is not allowed because you need to finish "left" hand "${stage}"`))
     }
@@ -108,6 +111,7 @@ class Game {
   _dispatch (action) {
     switch (action.type) {
       case 'DEAL': {
+        const { bet } = action.payload
         const { history, hits } = this.state
         const playerCards = this.state.deck.splice(this.state.deck.length - 2, 2)
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
@@ -116,6 +120,7 @@ class Game {
         const handInfo = engine.getHandInfoAfterDeal(playerCards, dealerCards)
         history.push(appendEpoch(action))
         this.setState({
+          initialBet: bet,
           stage: 'player-turn-right',
           dealerCards: dealerCards,
           dealerValue: dealerValue,
