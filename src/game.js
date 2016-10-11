@@ -253,7 +253,7 @@ class Game {
           history: history,
           hits: hits + 1
         })
-        this.dispatch(actions.stand(position))
+        this._dispatch(actions.stand(position))
         break
       }
       case 'STAND': {
@@ -280,7 +280,7 @@ class Game {
           hits: hits + 1
         })
         if (stage === 'showdown') {
-          this.dispatch(actions.showdown())
+          this._dispatch(actions.showdown())
         }
         break
       }
