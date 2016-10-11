@@ -93,6 +93,9 @@ class Game {
     if (isActionAllowed && whiteList.some(x => x === type)) {
       // this is a safe action. We do not need to check the status of the stage
       // so we return the result now!
+      if (type === 'DEAL' && typeof payload.bet !== "number") {
+        return this._dispatch(actions.invalid(action, `${type} without bet value on stage ${stage}`))
+      }
       return this._dispatch(action)
     }
 
