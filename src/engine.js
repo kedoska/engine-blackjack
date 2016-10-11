@@ -303,7 +303,7 @@ const isActionAllowed = (actionName, stage) => {
       return ['STAND', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
     }
     case 'showdown': {
-      return ['SHOWDOWN'].indexOf(actionName) > -1
+      return ['SHOWDOWN', 'STAND'].indexOf(actionName) > -1
     }
     case 'dealer-turn': {
       return ['DEALER-HIT'].indexOf(actionName) > -1
