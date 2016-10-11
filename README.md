@@ -127,6 +127,7 @@ The following list represent the _actions_ that can be _dispatched_ by from the 
 
  * restore
  * deal
+ * double
  * split
  * hit
  * stand
@@ -150,6 +151,7 @@ Current available stages are:
  * player-turn-right (optional)
  * showdown
  * dealer-turn
+ * done
 
 ### logic
 
@@ -169,6 +171,11 @@ Thinking in LTS, this is the list of blackjack variants to be included:
 Ideally as per my other side projects, the engine should be configured so that _actions_ and _dispatchers_ can works according the desired configuration.
 
 NOTE: The effort to do this, at least for me (and considering the time I can spend doing this) is quite big.
+
+## Side Bets
+
+Side bets are part of the "multi-game strategy". They are returned to the client as "available bets" and they can be sets in the `deal()` _payload_.
+Engine will calculate the side bet result during the `deal()`
 
 ## Contributing
 
