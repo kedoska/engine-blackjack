@@ -221,7 +221,6 @@ class Game {
       case 'DOUBLE': {
         let stage = ''
         const { initialBet, deck, handInfo, dealerCards, cardCount, history, hits } = this.state
-        const bet = initialBet * 2
         const position = action.payload.position
         const card = deck.splice(deck.length - 1, 1)
         let playerCards = null
@@ -247,7 +246,7 @@ class Game {
             stage = `player-turn-${position}`
           }
         }
-        history.push(appendEpoch(Object.assign(action, { payload: {bet: bet } })))
+        history.push(appendEpoch(Object.assign(action, { payload: {bet: initialBet } })))
         this.setState({
           stage: stage,
           handInfo: handInfo,
