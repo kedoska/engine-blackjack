@@ -235,7 +235,8 @@ const getHandInfoAfterHit = (playerCards, dealerCards) => {
 }
 
 const getHandInfoAfterDouble = (playerCards, dealerCards) => {
-  return getHandInfoAfterHit(playerCards, dealerCards)
+  const hand = getHandInfoAfterHit(playerCards, dealerCards)
+  return Object.assign(hand, {close: true})
 }
 
 const getHandInfoAfterStand = (handInfo) => {
