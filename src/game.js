@@ -61,6 +61,7 @@ const appendEpoch = (obj) => {
 class Game {
   constructor (initialState) {
     this.state = initialState || defaultState()
+    this.dispatch = this.dispatch.bind(this)
   }
 
   getState () {
