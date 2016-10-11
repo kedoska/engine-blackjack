@@ -128,7 +128,7 @@ var initializeKeyBind = function () {
   $('body').keypress(function(e) {
     if(e.keyCode === 32) {
       e.preventDefault();
-      dispatch('deal', '')
+      dispatch('deal')
     }
   })
 }
