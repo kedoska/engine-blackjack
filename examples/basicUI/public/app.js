@@ -14,7 +14,6 @@ var dispatch = function (action, position) {
       }
     }),
     success: function (data) {
-      console.log(data.availableBets)
       if (data.err) {
         return showError(data.err)
       }
@@ -61,12 +60,14 @@ var drawHistory = function (data) {
   var historyContainerElement = $('.timeline')
   historyContainerElement.empty()
   for (var i = 0; i < data.length; i++) {
-    if (data[i].type === 'RESTORE') {
+    var historyType = data[i].type
+    if (historyType=== 'RESTORE' || historyType === 'SHOWDOWN') {
       continue
     }
+    var historyPayload = data[i].payload || {}
     var historyEl = $(historyTemplate)
     // historyEl.find('.author').text('')
-    // historyEl.find('.date').text('')
+    historyEl.find('.date').text(historyPayload.bet || 0)
     historyEl.find('.history-action').text(data[i].type)
     historyEl.appendTo(historyContainerElement)
   }
