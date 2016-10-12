@@ -71,13 +71,29 @@ const suiteName = (suite) => {
   }
 }
 
+const suiteColor = (suite) => {
+  switch (suite) {
+    case 'hearts':
+      return 'R'
+    case 'diamonds':
+      return 'R'
+    case 'clubs':
+      return 'B'
+    case 'spades':
+      return 'B'
+    default:
+      return null
+  }
+}
+
 const cardValue = (number) => number < 10 ? number : 10
 
 const makeCard = (number, suite) => {
   return {
     text: cardName(number),
     suite: suiteName(suite),
-    value: cardValue(number)
+    value: cardValue(number),
+    color: suiteColor(suite)
   }
 }
 
