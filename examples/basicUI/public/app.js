@@ -26,8 +26,8 @@ var dispatch = function (action, position) {
       showCards('player-right', data.handInfo.right.cards)
 
       showValues('dealer', data.dealerValue)
-      showValues('player-left', data.handInfo.left.playerValue)
-      showValues('player-right', data.handInfo.right.playerValue)
+      showValues('player-left', data.handInfo.left.playerValue, data.wonOnLeft)
+      showValues('player-right', data.handInfo.right.playerValue, data.wonOnRight)
 
       drawHistory(data.history)
 
@@ -88,8 +88,10 @@ var showCards = function (sector, data) {
   }
 }
 
-var showValues = function (sector, value) {
+var showValues = function (sector, value, won) {
   $('[data-card-value="' + sector + '"]').text(value || '0')
+  $('[data-card-won="' + sector + '"]').text(won || '0')
+
 }
 
 var hideError = function () {
