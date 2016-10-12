@@ -34,6 +34,10 @@ const defaultState = () => {
   return {
     hits: 0,
     initialBet: 0,
+    finalBet: 0,
+    finalWin: 0,
+    wonOnRight: 0,
+    wonOnLeft: 0,
     stage: 'ready',
     deck: engine.shuffle(engine.newDeck()),
     handInfo: {
@@ -52,7 +56,7 @@ const appendEpoch = (obj) => {
     {},
     obj,
     {
-      value: payload.bet,
+      value: payload.bet || 0,
       ts: new Date().getTime()
     }
   )
@@ -122,7 +126,17 @@ class Game {
       return this._dispatch(actions.invalid(action, `${type} is not currently allowed on position "${position}". Stage is "${stage}"`))
     }
 
-    return this._dispatch(action)
+    const current = this._dispatch(action)
+    if (type !== 'RESTORE' && current.stage === 'done') {
+      current.finalBet = current.history.reduce((memo, x) => {
+        memo += x.value
+        return memo
+      }, 0)
+      const dealerValue = current.dealerValue
+      current.wonOnRight = engine.getPrize(current.handInfo.right, dealerValue)
+      current.wonOnLeft = engine.getPrize(current.handInfo.left, dealerValue)
+    }
+    return current
   }
 
   _dispatch (action) {
@@ -134,7 +148,7 @@ class Game {
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
         const dealerValue = engine.calculate(dealerCards)
         const dealerHasBlackjack = dealerValue === 21
-        const handInfo = engine.getHandInfoAfterDeal(playerCards, dealerCards)
+        const handInfo = engine.getHandInfoAfterDeal(playerCards, dealerCards, bet)
         const sideBetsInfo = engine.getSideBetsInfo(availableBets, sideBets, playerCards, dealerCards)
         history.push(appendEpoch(action))
         this.setState({
@@ -160,7 +174,7 @@ class Game {
         break
       }
       case 'SPLIT': {
-        const { handInfo, dealerCards, history, hits } = this.state
+        const { initialBet, handInfo, dealerCards, history, hits } = this.state
         const playerCardsLeftPosition = [ handInfo.right.cards[ 0 ]]
         const playerCardsRightPosition = [ handInfo.right.cards[ 1 ]]
         history.push(appendEpoch(action))
@@ -168,8 +182,8 @@ class Game {
           stage: 'player-turn-right',
           playerHasBlackjack: false,
           handInfo: {
-            left: engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards),
-            right: engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards)
+            left: engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet),
+            right: engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet)
           },
           history: history,
           hits: hits + 1
@@ -227,7 +241,7 @@ class Game {
         // TODO: remove position and replace it with stage info #hit
         if (position === 'left') {
           playerCards = handInfo.left.cards.concat(card)
-          handInfo.left = engine.getHandInfoAfterDouble(playerCards, dealerCards)
+          handInfo.left = engine.getHandInfoAfterDouble(playerCards, dealerCards, initialBet)
           if (handInfo.left.close) {
             stage = 'showdown'
           } else {
@@ -235,7 +249,7 @@ class Game {
           }
         } else {
           playerCards = handInfo.right.cards.concat(card)
-          handInfo.right = engine.getHandInfoAfterDouble(playerCards, dealerCards)
+          handInfo.right = engine.getHandInfoAfterDouble(playerCards, dealerCards, initialBet)
           if (handInfo.right.close) {
             if (history.some(x => x.type === 'SPLIT')) {
               stage = 'player-turn-left'
@@ -316,7 +330,7 @@ class Game {
       }
       case 'SURRENDER': {
         const { handInfo, history, hits } = this.state
-        handInfo.left = engine.getHandInfoAfterSurrender(handInfo.left)
+        handInfo.right = engine.getHandInfoAfterSurrender(handInfo.right)
         history.push(appendEpoch(action))
         this.setState({
           stage: 'done',

@@ -186,6 +186,7 @@ const getHandInfo = (playerCards, dealerCards) => {
     playerValue: handValue,
     playerHasBlackjack: hasBlackjack,
     playerHasBusted: handValue > 21,
+    playerHasSurrendered: false,
     close: isClosed,
     availableActions: {
       double: canDoubleDown,
@@ -198,8 +199,9 @@ const getHandInfo = (playerCards, dealerCards) => {
   }
 }
 
-const getHandInfoAfterDeal = (playerCards, dealerCards) => {
+const getHandInfoAfterDeal = (playerCards, dealerCards, initialBet) => {
   const hand = getHandInfo(playerCards, dealerCards)
+  hand.bet = initialBet
   // After deal, even if we got a blackjack the hand cannot be considered closed.
   const availableActions = hand.availableActions
   hand.availableActions = Object.assign(availableActions, {
@@ -210,7 +212,7 @@ const getHandInfoAfterDeal = (playerCards, dealerCards) => {
   return Object.assign(hand, {close: false})
 }
 
-const getHandInfoAfterSplit = (playerCards, dealerCards) => {
+const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
   const hand = getHandInfo(playerCards, dealerCards)
   const availableActions = hand.availableActions
   hand.availableActions = Object.assign(availableActions, {
@@ -219,6 +221,7 @@ const getHandInfoAfterSplit = (playerCards, dealerCards) => {
     insurance: false,
     surrender: false
   })
+  hand.bet = initialBet / 2
   return hand
 }
 
@@ -234,8 +237,9 @@ const getHandInfoAfterHit = (playerCards, dealerCards) => {
   return hand
 }
 
-const getHandInfoAfterDouble = (playerCards, dealerCards) => {
+const getHandInfoAfterDouble = (playerCards, dealerCards, initialBet) => {
   const hand = getHandInfoAfterHit(playerCards, dealerCards)
+  hand.bet = initialBet * 2
   return Object.assign(hand, {close: true})
 }
 
@@ -254,7 +258,11 @@ const getHandInfoAfterStand = (handInfo) => {
 }
 
 const getHandInfoAfterSurrender = (handInfo) => {
-  return getHandInfoAfterStand(handInfo)
+  const hand = getHandInfoAfterStand(handInfo)
+  return Object.assign(hand, {
+    playerHasSurrendered: true,
+    close: true
+  })
 }
 
 const isLuckyLucky = (playerCards, dealerCards) => {
@@ -315,6 +323,28 @@ const isActionAllowed = (actionName, stage) => {
   }
 }
 
+const getPrize = (playerHand, dealerValue) => {
+  const { close = false, playerHasSurrendered = true, playerHasBlackjack = false, playerHasBusted = true, playerValue = 0, bet = 0 } = playerHand
+  if (close && !playerHasBusted) {
+    if (playerHasSurrendered) {
+      return bet / 2
+    }
+    if (playerHasBlackjack) {
+      return bet + (bet * 1.5)
+    }
+    const dealerHasBusted = dealerValue > 21
+    if (dealerHasBusted) {
+      return (bet + bet)
+    }
+    if (playerValue > dealerValue) {
+      return (bet + bet)
+    } else if (playerValue === dealerValue) {
+      return bet
+    }
+  }
+  return 0
+}
+
 module.exports.newDeck = newDeck
 module.exports.shuffle = shuffle
 module.exports.calculate = calculate
@@ -331,3 +361,4 @@ module.exports.isBlackjack = isBlackjack
 module.exports.serializeCard = serializeCard
 module.exports.serializeCards = serializeCards
 module.exports.isActionAllowed = isActionAllowed
+module.exports.getPrize = getPrize
