@@ -177,7 +177,7 @@ class Game {
         const { initialBet, handInfo, dealerCards, history, hits } = this.state
         const playerCardsLeftPosition = [ handInfo.right.cards[ 0 ]]
         const playerCardsRightPosition = [ handInfo.right.cards[ 1 ]]
-        history.push(appendEpoch(action))
+        history.push(appendEpoch(Object.assign(action, { payload: {bet: initialBet } })))
         this.setState({
           stage: 'player-turn-right',
           playerHasBlackjack: false,
