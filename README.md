@@ -180,7 +180,7 @@ Engine will calculate the side bet result during the `deal()`
 ## Contributing
 
 All kinds of contributions are welcome.
-You can contributing by finding issues and open and issue or email me or by coding something:
+You can contributing by finding issues and open an issue or email me or by coding something:
 
  1. Fork it!
  2. Create your featured branch: `git checkout -b my-feature`
