@@ -237,7 +237,6 @@ const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
     insurance: false,
     surrender: false
   })
-  hand.bet = initialBet / 2
   return hand
 }
 

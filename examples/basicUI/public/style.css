@@ -1,5 +1,5 @@
 body {
-    background-color: darkgray;
+  background-color: darkgray;
 }
 
 .card {
@@ -19,24 +19,30 @@ body {
   font: 50px/110px Georgia, Times New Roman, serif;
 }
 
+.suitdiamonds,
+.suithearts {
+  color: #ff0000;
+}
+
+.suitclubs,
+.suitspades {
+  color: #000;
+}
+
 .suitdiamonds:before, .suitdiamonds:after {
   content: "♦";
-  color: #ff0000;
 }
 
 .suithearts:before, .suithearts:after {
   content: "♥";
-  color: #ff0000;
 }
 
 .suitclubs:before, .suitclubs:after {
   content: "♣";
-  color: #000;
 }
 
 .suitspades:before, .suitspades:after {
   content: "♠";
-  color: #000;
 }
 
 div[class*='suit']:before {
@@ -61,17 +67,17 @@ div[class*='suit']:after {
 /* For modern browsers */
 .hand:before,
 .hand:after {
-    content:"";
-    display:table;
+  content:"";
+  display:table;
 }
- 
+
 .hand:after {
-    clear:both;
+  clear:both;
 }
- 
+
 /* For IE 6/7 (trigger hasLayout) */
 .hand {
-    zoom:1;
+  zoom:1;
 }
 
 .card:hover {
