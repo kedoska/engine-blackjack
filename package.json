@@ -22,11 +22,12 @@
   "author": "Marco Casula <marco.casula@linux.com>",
   "license": "GPL-2.0",
   "devDependencies": {
+    "babel-core": "^6.17.0",
+    "babel-preset-es2015": "^6.16.0",
+    "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "express-session": "^1.14.1",
-    "body-parser": "^1.15.2",
     "mocha": "^3.0.2"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
