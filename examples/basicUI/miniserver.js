@@ -29,7 +29,7 @@ app.post('/blackjack/:action', (req, res) => {
       err: `${action} is not a valid action`
     })
   }
-  const newStage = game.dispatch(fn(payload.position))
+  const newStage = game.dispatch(fn(payload))
   if (newStage.stage === 'done') {
     session.stage = null // game complited!
   } else {
