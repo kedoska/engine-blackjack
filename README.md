@@ -127,6 +127,7 @@ The following list represent the _actions_ that can be _dispatched_ by from the 
 
  * restore
  * deal
+ * insurance
  * double
  * split
  * hit
