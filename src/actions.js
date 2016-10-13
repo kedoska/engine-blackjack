@@ -33,12 +33,21 @@ module.exports.restore = () => {
   }
 }
 
-module.exports.deal = (bet = 10) => {
+module.exports.deal = ({bet = 10}) => {
   return {
     type: 'DEAL',
     payload: {
       bet: bet,
       sideBets: {} // will be matched with availableBets
+    }
+  }
+}
+
+module.exports.insurance = ({bet = 1}) => {
+  return {
+    type: 'INSURANCE',
+    payload: {
+      bet: bet
     }
   }
 }
@@ -49,7 +58,7 @@ module.exports.split = () => {
   }
 }
 
-module.exports.hit = (position = 'right') => {
+module.exports.hit = ({position = 'right'}) => {
   return {
     type: 'HIT',
     payload: {
@@ -58,7 +67,7 @@ module.exports.hit = (position = 'right') => {
   }
 }
 
-module.exports.double = (position = 'right') => {
+module.exports.double = ({position = 'right'}) => {
   return {
     type: 'DOUBLE',
     payload: {
@@ -67,7 +76,7 @@ module.exports.double = (position = 'right') => {
   }
 }
 
-module.exports.stand = (position = 'right') => {
+module.exports.stand = ({position = 'right'}) => {
   return {
     type: 'STAND',
     payload: {
