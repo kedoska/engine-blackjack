@@ -1,5 +1,5 @@
 /* global $ */
-var dispatch = function (action, position) {
+var dispatch = function (action, position, value) {
   console.log('dispatching', action)
   hideError()
   $('[data-action]').attr('disabled', 'disabled')
@@ -10,6 +10,7 @@ var dispatch = function (action, position) {
     contentType: 'application/json; charset=utf-8',
     data: JSON.stringify({
       payload: {
+        bet: parseInt(value || 0),
         position: position
       }
     }),
@@ -91,7 +92,6 @@ var showCards = function (sector, data) {
 var showValues = function (sector, value, won) {
   $('[data-card-value="' + sector + '"]').text(value || '0')
   $('[data-card-won="' + sector + '"]').text(won || '0')
-
 }
 
 var hideError = function () {
@@ -122,7 +122,8 @@ var initializeUI = function () {
     var el = $(e.currentTarget)
     var actionName = el.data('action')
     var actionPosition = el.data('position')
-    dispatch(actionName, actionPosition)
+    var actionValue = el.data('value')
+    dispatch(actionName, actionPosition, actionValue)
   })
 }
 
@@ -130,7 +131,7 @@ var initializeKeyBind = function () {
   $('body').keypress(function(e) {
     if(e.keyCode === 32) {
       e.preventDefault();
-      dispatch('deal')
+      dispatch('deal', null, 10)
     }
   })
 }
