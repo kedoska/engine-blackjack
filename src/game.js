@@ -132,9 +132,9 @@ class Game {
         memo += x.value
         return memo
       }, 0)
-      const dealerValue = current.dealerValue
-      current.wonOnRight = engine.getPrize(current.handInfo.right, dealerValue)
-      current.wonOnLeft = engine.getPrize(current.handInfo.left, dealerValue)
+      const dealerCards = current.dealerCards
+      current.wonOnRight = engine.getPrize(current.handInfo.right, dealerCards)
+      current.wonOnLeft = engine.getPrize(current.handInfo.left, dealerCards)
     }
     return current
   }
@@ -168,6 +168,18 @@ class Game {
           },
           sideBetsInfo: sideBetsInfo,
           availableBets: getDefaultSideBets(false),
+          history: history,
+          hits: hits + 1
+        })
+        break
+      }
+      case 'INSURANCE': {
+        const { bet } = action.payload
+        const { handInfo, history, hits } = this.state
+        handInfo.right = engine.getHandInfoAfterInsurance(handInfo.right, bet)
+        history.push(appendEpoch(Object.assign(action, { payload: {bet: bet } })))
+        this.setState({
+          handInfo: handInfo,
           history: history,
           hits: hits + 1
         })

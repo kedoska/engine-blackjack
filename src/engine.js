@@ -203,6 +203,7 @@ const getHandInfo = (playerCards, dealerCards) => {
     playerHasBlackjack: hasBlackjack,
     playerHasBusted: handValue > 21,
     playerHasSurrendered: false,
+    playerInsuranceValue: 0,
     close: isClosed,
     availableActions: {
       double: canDoubleDown,
@@ -282,6 +283,12 @@ const getHandInfoAfterSurrender = (handInfo) => {
   })
 }
 
+const getHandInfoAfterInsurance = (handInfo, bet) => {
+  const availableActions = handInfo.availableActions
+  availableActions.insurance = false
+  return Object.assign(handInfo, { playerInsuranceValue: bet, availableActions: availableActions })
+}
+
 const isLuckyLucky = (playerCards, dealerCards) => {
   // Player hand and dealer's up card sum to 19, 20, or 21 ("Lucky Lucky")
   const value = calculate(playerCards) + calculate(dealerCards)
@@ -323,7 +330,7 @@ const isActionAllowed = (actionName, stage) => {
       return ['RESTORE', 'DEAL'].indexOf(actionName) > -1
     }
     case 'player-turn-right': {
-      return ['STAND', 'SURRENDER', 'SPLIT', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
+      return ['STAND', 'INSURANCE', 'SURRENDER', 'SPLIT', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
     }
     case 'player-turn-left': {
       return ['STAND', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
@@ -340,27 +347,41 @@ const isActionAllowed = (actionName, stage) => {
   }
 }
 
-const getPrize = (playerHand, dealerValue) => {
-  const { close = false, playerHasSurrendered = true, playerHasBlackjack = false, playerHasBusted = true, playerValue = 0, bet = 0 } = playerHand
-  if (!close || playerHasBusted) {
+const getPrize = (playerHand, dealerCards) => {
+  const {
+    close = false,
+    playerInsuranceValue = 0,
+    playerHasSurrendered = true,
+    playerHasBlackjack = false,
+    playerHasBusted = true,
+    playerValue = 0,
+    bet = 0
+  } = playerHand
+  const dealerValue = calculate(dealerCards)
+  const dealerHasBlackjack = isBlackjack(dealerCards)
+  const insurancePrize = dealerHasBlackjack && playerInsuranceValue > 0 ? playerInsuranceValue * 2 : 0
+  if (!close) {
     return 0
   }
+  if (playerHasBusted) {
+    return insurancePrize
+  }
   if (playerHasSurrendered) {
-    return bet / 2
+    return bet / 2 + insurancePrize
   }
   if (playerHasBlackjack) {
-    return bet + (bet * 1.5)
+    return bet + (bet * 1.5) + insurancePrize
   }
   const dealerHasBusted = dealerValue > 21
   if (dealerHasBusted) {
-    return (bet + bet)
+    return (bet + bet) + insurancePrize
   }
   if (playerValue > dealerValue) {
-    return (bet + bet)
+    return (bet + bet) + insurancePrize
   } else if (playerValue === dealerValue) {
-    return bet
+    return bet + insurancePrize
   }
-  return 0
+  return insurancePrize
 }
 
 module.exports.newDeck = newDeck
@@ -374,6 +395,7 @@ module.exports.getHandInfoAfterHit = getHandInfoAfterHit
 module.exports.getHandInfoAfterDouble = getHandInfoAfterDouble
 module.exports.getHandInfoAfterStand = getHandInfoAfterStand
 module.exports.getHandInfoAfterSurrender = getHandInfoAfterSurrender
+module.exports.getHandInfoAfterInsurance = getHandInfoAfterInsurance
 module.exports.getSideBetsInfo = getSideBetsInfo
 module.exports.isBlackjack = isBlackjack
 module.exports.serializeCard = serializeCard
