@@ -192,14 +192,14 @@ class Game {
       }
       case 'HIT': {
         let stage = ''
-        const { deck, handInfo, dealerCards, cardCount, history, hits } = this.state
+        const { initialBet, deck, handInfo, dealerCards, cardCount, history, hits } = this.state
         const position = action.payload.position
         const card = deck.splice(deck.length - 1, 1)
         let playerCards = null
         // TODO: remove position and replace it with stage info #hit
         if (position === 'left') {
           playerCards = handInfo.left.cards.concat(card)
-          handInfo.left = engine.getHandInfoAfterHit(playerCards, dealerCards)
+          handInfo.left = engine.getHandInfoAfterHit(playerCards, dealerCards, initialBet)
           if (handInfo.left.close) {
             stage = 'showdown'
           } else {
@@ -207,7 +207,7 @@ class Game {
           }
         } else {
           playerCards = handInfo.right.cards.concat(card)
-          handInfo.right = engine.getHandInfoAfterHit(playerCards, dealerCards)
+          handInfo.right = engine.getHandInfoAfterHit(playerCards, dealerCards, initialBet)
           if (handInfo.right.close) {
             if (history.some(x => x.type === 'SPLIT')) {
               stage = 'player-turn-left'

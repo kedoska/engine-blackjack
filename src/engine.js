@@ -237,10 +237,11 @@ const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
     insurance: false,
     surrender: false
   })
+  hand.bet = initialBet
   return hand
 }
 
-const getHandInfoAfterHit = (playerCards, dealerCards) => {
+const getHandInfoAfterHit = (playerCards, dealerCards, initialBet) => {
   const hand = getHandInfo(playerCards, dealerCards)
   const availableActions = hand.availableActions
   hand.availableActions = Object.assign(availableActions, {
@@ -249,6 +250,7 @@ const getHandInfoAfterHit = (playerCards, dealerCards) => {
     insurance: false,
     surrender: false
   })
+  hand.bet = initialBet
   return hand
 }
 
@@ -340,22 +342,23 @@ const isActionAllowed = (actionName, stage) => {
 
 const getPrize = (playerHand, dealerValue) => {
   const { close = false, playerHasSurrendered = true, playerHasBlackjack = false, playerHasBusted = true, playerValue = 0, bet = 0 } = playerHand
-  if (close && !playerHasBusted) {
-    if (playerHasSurrendered) {
-      return bet / 2
-    }
-    if (playerHasBlackjack) {
-      return bet + (bet * 1.5)
-    }
-    const dealerHasBusted = dealerValue > 21
-    if (dealerHasBusted) {
-      return (bet + bet)
-    }
-    if (playerValue > dealerValue) {
-      return (bet + bet)
-    } else if (playerValue === dealerValue) {
-      return bet
-    }
+  if (!close || playerHasBusted) {
+    return 0
+  }
+  if (playerHasSurrendered) {
+    return bet / 2
+  }
+  if (playerHasBlackjack) {
+    return bet + (bet * 1.5)
+  }
+  const dealerHasBusted = dealerValue > 21
+  if (dealerHasBusted) {
+    return (bet + bet)
+  }
+  if (playerValue > dealerValue) {
+    return (bet + bet)
+  } else if (playerValue === dealerValue) {
+    return bet
   }
   return 0
 }
