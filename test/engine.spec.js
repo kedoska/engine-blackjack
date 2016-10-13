@@ -94,3 +94,22 @@ describe('deck methods: newDeck(), shuffle() and calculate()', function () {
       })
   })
 })
+
+describe('prize calculation', function () {
+  it('should pay according the standard game rule (no BJ)', function () {
+    const cards = lib.serializeCards('♠J ♣9')
+    const playerValue = lib.calculate(cards)
+    const initialBet = 1
+    const playerHand = {
+      close: true,
+      playerHasSurrendered: false,
+      playerHasBlackjack: false,
+      playerHasBusted: false,
+      playerValue: playerValue,
+      bet: initialBet
+    }
+    assert.equal(lib.getPrize(playerHand, 18), initialBet * 2, 'player Won twice')
+    assert.equal(lib.getPrize(playerHand, 19), initialBet, 'player Push (bet value is returned')
+    assert.equal(lib.getPrize(playerHand, 20), 0, 'player lose')
+  })
+})
