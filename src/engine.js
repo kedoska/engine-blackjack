@@ -147,7 +147,7 @@ const calculate = (array) => {
   }, value)
 }
 
-const isBlackjack = (array) => calculate(array) === 21
+const isBlackjack = (array) => calculate(array) === 21 && array.length === 2
 
 const serializeCard = (value) => {
   const digits = value.match(/\d/g)

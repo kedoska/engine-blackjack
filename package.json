@@ -1,6 +1,6 @@
 {
   "name": "engine-blackjack",
-  "version": "0.0.5",
+  "version": "0.0.53",
   "description": "A simple nodeJs engine to play blackjack",
   "main": "index.js",
   "scripts": {
