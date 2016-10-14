@@ -126,7 +126,10 @@ const calculate = (array) => {
       return null
     }
     const value = array[0].value
-    return value === 1 ? 11 : value
+    return {
+      hi: value === 1 ? 11 : value,
+      lo: value === 1 ? 1 : value
+    }
   }
   const aces = []
   const value = array.reduce((memo, x) => {
@@ -138,16 +141,21 @@ const calculate = (array) => {
     return memo
   }, 0)
   return aces.reduce((memo, x) => {
-    if ((memo + 11) <= 21) {
-      memo += 11
+    if ((memo.hi + 11) <= 21) {
+      memo.hi += 11
+      memo.lo += 1
     } else {
-      memo += 1
+      memo.hi += 1
+      memo.lo += 1
     }
     return memo
-  }, value)
+  }, {
+    hi: value,
+    lo: value
+  })
 }
 
-const isBlackjack = (array) => calculate(array) === 21 && array.length === 2
+const isBlackjack = (array) => array.length === 2 && calculate(array).hi === 21
 
 const serializeCard = (value) => {
   const digits = value.match(/\d/g)
@@ -192,9 +200,9 @@ const getHandInfo = (playerCards, dealerCards) => {
     return null
   }
   const hasBlackjack = isBlackjack(playerCards)
-  const hasBusted = handValue > 21
+  const hasBusted = handValue.hi > 21
   const isClosed = hasBusted || hasBlackjack
-  const canDoubleDown = handValue >= 9 && handValue <= 15 && !isClosed
+  const canDoubleDown = handValue.hi >= 9 && handValue.hi <= 15 && !isClosed
   const canSplit = playerCards.length > 1 && playerCards[ 0 ].value === playerCards[ 1 ].value && !isClosed
   const canEnsure = dealerCards[ 0 ].value === 1 && !isClosed
   return {
@@ -296,7 +304,7 @@ const getHandInfoAfterInsurance = (handInfo, bet) => {
 
 const isLuckyLucky = (playerCards, dealerCards) => {
   // Player hand and dealer's up card sum to 19, 20, or 21 ("Lucky Lucky")
-  const value = calculate(playerCards) + calculate(dealerCards)
+  const value = calculate(playerCards).hi + calculate(dealerCards).hi
   return value >= 19 && value <= 21
 }
 
@@ -359,10 +367,10 @@ const getPrize = (playerHand, dealerCards) => {
     playerHasSurrendered = true,
     playerHasBlackjack = false,
     playerHasBusted = true,
-    playerValue = 0,
+    playerValue = {},
     bet = 0
   } = playerHand
-  const dealerValue = calculate(dealerCards)
+  const dealerValue = calculate(dealerCards).hi
   const dealerHasBlackjack = isBlackjack(dealerCards)
   const insurancePrize = dealerHasBlackjack && playerInsuranceValue > 0 ? playerInsuranceValue * 2 : 0
   if (!close) {
@@ -381,9 +389,9 @@ const getPrize = (playerHand, dealerCards) => {
   if (dealerHasBusted) {
     return (bet + bet) + insurancePrize
   }
-  if (playerValue > dealerValue) {
+  if (playerValue.hi > dealerValue) {
     return (bet + bet) + insurancePrize
-  } else if (playerValue === dealerValue) {
+  } else if (playerValue.hi === dealerValue) {
     return bet + insurancePrize
   }
   return insurancePrize

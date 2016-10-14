@@ -153,7 +153,7 @@ class Game {
         const playerCards = this.state.deck.splice(this.state.deck.length - 2, 2)
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
         const dealerValue = engine.calculate(dealerCards)
-        const dealerHasBlackjack = dealerValue === 21
+        const dealerHasBlackjack = dealerValue.hi === 21
         const handInfo = engine.getHandInfoAfterDeal(playerCards, dealerCards, bet)
         const sideBetsInfo = engine.getSideBetsInfo(availableBets, sideBets, playerCards, dealerCards)
         history.push(appendEpoch(action))
@@ -369,11 +369,11 @@ class Game {
         const card = deck.splice(deck.length - 1, 1)
         const dealerCards = this.state.dealerCards.concat(card)
         const dealerValue = engine.calculate(dealerCards)
-        const playerRightValue = handInfo.right.playerValue
-        const playerLeftValue = handInfo.left.playerValue || 0
+        const playerRightValue = handInfo.right.playerValue.hi
+        const playerLeftValue = (handInfo.left.playerValue) ? handInfo.left.playerValue.hi : 0
         const stopPoint = playerRightValue > playerLeftValue ? playerRightValue : playerLeftValue
         let stage = null
-        if (dealerValue < stopPoint && dealerValue < 17) {
+        if (dealerValue.hi < stopPoint && dealerValue.hi < 17) {
           stage = 'dealer-turn'
         } else {
           stage = 'done'

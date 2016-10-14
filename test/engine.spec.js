@@ -72,6 +72,20 @@ describe('deck methods: newDeck(), shuffle() and calculate()', function () {
     assert.equal(lib.newDeck().length, 52)
   })
 
+  it('should return hi/lo value when cards contains "Ace"', function () {
+    const cards = lib.serializeCards('♠1 ♥5')
+    const values = lib.calculate(cards)
+    assert.equal(values.hi, 16, 'hi')
+    assert.equal(values.lo, 6, 'lo')
+  })
+
+  it('should return hi/lo value when cards contains 2 "Aces"', function () {
+    const cards = lib.serializeCards('♠1 ♣5 ♣1')
+    const values = lib.calculate(cards)
+    assert.equal(values.hi, 17, 'hi')
+    assert.equal(values.lo, 7, 'lo')
+  })
+
   it('should return a cloned and shuffled array of card objects', function () {
     const a = lib.newDeck()
     const b = lib.shuffle(a)
@@ -88,7 +102,7 @@ describe('deck methods: newDeck(), shuffle() and calculate()', function () {
       .forEach(function (value) {
         it(`${value}`, function () {
           const cards = lib.serializeCards(value)
-          const result = lib.calculate(cards)
+          const result = lib.calculate(cards).hi
           assert.equal(result, 21)
         })
       })
@@ -98,7 +112,7 @@ describe('deck methods: newDeck(), shuffle() and calculate()', function () {
 describe('prize calculation', function () {
   it('should pay according the standard game rule (no BJ)', function () {
     const cards = lib.serializeCards('♠J ♣9')
-    const playerValue = lib.calculate(cards)
+    const playerValue = lib.calculate(cards).hi
     const initialBet = 1
     const playerHand = {
       close: true,
