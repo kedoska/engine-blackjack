@@ -418,11 +418,18 @@ class Game {
         const playerLeftValue = (handInfo.left.playerValue) ? handInfo.left.playerValue.hi : 0
         const stopPoint = playerRightValue > playerLeftValue ? playerRightValue : playerLeftValue
         let stage = null
-        const stopAt = rules.standOnSoft17 ? 17 : 20
-        if (dealerValue.hi < stopPoint && dealerValue.hi < stopAt) {
+        if (dealerValue.hi < 17) {
           stage = 'dealer-turn'
         } else {
-          stage = 'done'
+          if (rules.standOnSoft17) {
+            stage = 'done'
+          } else {
+            if (dealerValue.hi >= stopPoint) {
+              stage = 'done'
+            } else {
+              stage = 'dealer-turn'
+            }
+          }
         }
         history.push(appendEpoch(action))
         this.setState({
