@@ -30,6 +30,26 @@ const getDefaultSideBets = (active = false) => {
   }
 }
 
+const getRules = ({
+  decks = 1,
+  standOnSoft17 = true,
+  double = true,
+  split= true,
+  doubleAfterSplit = true,
+  surrender = true,
+  insurance = true
+}) => {
+  return {
+    decks: decks || 1,
+    standOnSoft17: standOnSoft17,
+    double: double,
+    split: split,
+    doubleAfterSplit: doubleAfterSplit,
+    surrender: surrender,
+    insurance: insurance
+  }
+}
+
 const defaultState = () => {
   return {
     hits: 0,
@@ -46,7 +66,8 @@ const defaultState = () => {
     },
     history: [],
     availableBets: getDefaultSideBets(true),
-    sideBetsInfo: null
+    sideBetsInfo: null,
+    rules: getRules({})
   }
 }
 
@@ -68,7 +89,31 @@ class Game {
     this.dispatch = this.dispatch.bind(this)
     this.getState = this.getState.bind(this)
     this.setState = this.setState.bind(this)
+    this.enforceRules = this.enforceRules.bind(this)
     this._dispatch = this._dispatch.bind(this)
+  }
+
+  enforceRules (handInfo) {
+    const { availableActions } = handInfo
+    const { rules, history } = this.state
+    if (!rules.double) {
+      availableActions.double = false
+    }
+    if (!rules.split) {
+      availableActions.split = false
+    }
+    if (!rules.surrender) {
+      availableActions.surrender = false
+    }
+    if (!rules.doubleAfterSplit) {
+      if (history.some(x => x.type === 'SPLIT')) {
+        availableActions.double = false
+      }
+    }
+    if (!rules.insurance){
+      availableActions.insurance = false
+    }
+    return handInfo
   }
 
   getState () {
@@ -154,7 +199,7 @@ class Game {
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
         const dealerValue = engine.calculate(dealerCards)
         const dealerHasBlackjack = dealerValue.hi === 21
-        const handInfo = engine.getHandInfoAfterDeal(playerCards, dealerCards, bet)
+        const handInfo = this.enforceRules(engine.getHandInfoAfterDeal(playerCards, dealerCards, bet))
         const sideBetsInfo = engine.getSideBetsInfo(availableBets, sideBets, playerCards, dealerCards)
         history.push(appendEpoch(action))
         this.setState({
@@ -203,8 +248,8 @@ class Game {
           stage: 'player-turn-right',
           playerHasBlackjack: false,
           handInfo: {
-            left: engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet),
-            right: engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet)
+            left: this.enforceRules(engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet)),
+            right: this.enforceRules(engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet))
           },
           history: history,
           hits: hits + 1
