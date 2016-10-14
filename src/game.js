@@ -50,7 +50,7 @@ const getRules = ({
   }
 }
 
-const defaultState = () => {
+const defaultState = (rules) => {
   return {
     hits: 0,
     initialBet: 0,
@@ -67,7 +67,7 @@ const defaultState = () => {
     history: [],
     availableBets: getDefaultSideBets(true),
     sideBetsInfo: null,
-    rules: getRules({})
+    rules: rules
   }
 }
 
@@ -84,8 +84,8 @@ const appendEpoch = (obj) => {
 }
 
 class Game {
-  constructor (initialState) {
-    this.state = initialState || defaultState()
+  constructor (initialState, rules = getRules({})) {
+    this.state = initialState || defaultState(rules)
     this.dispatch = this.dispatch.bind(this)
     this.getState = this.getState.bind(this)
     this.setState = this.setState.bind(this)
