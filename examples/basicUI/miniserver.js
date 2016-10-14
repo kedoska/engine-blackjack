@@ -21,7 +21,6 @@ app.post('/blackjack/:action', (req, res) => {
   const currentStage = session.stage
   const game = new Game(currentStage)
   const { payload = {} } = req.body
-  console.log(req.body)
   const { action } = req.params
   const fn = actions[ action ]
   if (!fn) {

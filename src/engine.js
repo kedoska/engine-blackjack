@@ -201,7 +201,7 @@ const getHandInfo = (playerCards, dealerCards) => {
     cards: playerCards,
     playerValue: handValue,
     playerHasBlackjack: hasBlackjack,
-    playerHasBusted: handValue > 21,
+    playerHasBusted: hasBusted,
     playerHasSurrendered: false,
     playerInsuranceValue: 0,
     close: isClosed,
@@ -226,7 +226,7 @@ const getHandInfoAfterDeal = (playerCards, dealerCards, initialBet) => {
     hit: true,
     surrender: true
   })
-  return Object.assign(hand, {close: false})
+  return Object.assign(hand, {close: hand.playerHasBlackjack ? true : false})
 }
 
 const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
@@ -257,6 +257,11 @@ const getHandInfoAfterHit = (playerCards, dealerCards, initialBet) => {
 
 const getHandInfoAfterDouble = (playerCards, dealerCards, initialBet) => {
   const hand = getHandInfoAfterHit(playerCards, dealerCards)
+  const availableActions = hand.availableActions
+  hand.availableActions = Object.assign(availableActions, {
+    hit: false,
+    stand: false
+  })
   hand.bet = initialBet * 2
   return Object.assign(hand, {close: true})
 }

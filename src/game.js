@@ -66,6 +66,9 @@ class Game {
   constructor (initialState) {
     this.state = initialState || defaultState()
     this.dispatch = this.dispatch.bind(this)
+    this.getState = this.getState.bind(this)
+    this.setState = this.setState.bind(this)
+    this._dispatch = this._dispatch.bind(this)
   }
 
   getState () {
@@ -74,6 +77,21 @@ class Game {
 
   setState (state) {
     this.state = Object.assign(this.state, state)
+  }
+
+  getPrizes () {
+    const finalBet = this.state.history.reduce((memo, x) => {
+      memo += x.value
+      return memo
+    }, 0)
+    const dealerCards = this.state.dealerCards
+    const wonOnRight = engine.getPrize(this.state.handInfo.right, dealerCards)
+    const wonOnLeft = engine.getPrize(this.state.handInfo.left, dealerCards)
+    return {
+      finalBet: finalBet,
+      wonOnRight: wonOnRight,
+      wonOnLeft: wonOnLeft
+    }
   }
 
   dispatch (action) {
@@ -86,8 +104,6 @@ class Game {
 
     let isActionAllowed = engine.isActionAllowed(type, stage)
 
-    console.log(`stage is "${stage}", you want to ${type} on ${position}: is it allowed? ${isActionAllowed}`)
-
     if (!isActionAllowed) {
       return this._dispatch(actions.invalid(action, `${type} is not allowed when stage is ${stage}`))
     }
@@ -97,7 +113,7 @@ class Game {
     if (isActionAllowed && whiteList.some(x => x === type)) {
       // this is a safe action. We do not need to check the status of the stage
       // so we return the result now!
-      if (type === 'DEAL' && typeof payload.bet !== "number") {
+      if (type === 'DEAL' && typeof payload.bet !== 'number') {
         return this._dispatch(actions.invalid(action, `${type} without bet value on stage ${stage}`))
       }
       return this._dispatch(action)
@@ -126,17 +142,7 @@ class Game {
       return this._dispatch(actions.invalid(action, `${type} is not currently allowed on position "${position}". Stage is "${stage}"`))
     }
 
-    const current = this._dispatch(action)
-    if (type !== 'RESTORE' && current.stage === 'done') {
-      current.finalBet = current.history.reduce((memo, x) => {
-        memo += x.value
-        return memo
-      }, 0)
-      const dealerCards = current.dealerCards
-      current.wonOnRight = engine.getPrize(current.handInfo.right, dealerCards)
-      current.wonOnLeft = engine.getPrize(current.handInfo.left, dealerCards)
-    }
-    return current
+    return this._dispatch(action)
   }
 
   _dispatch (action) {
@@ -171,6 +177,9 @@ class Game {
           history: history,
           hits: hits + 1
         })
+        if (handInfo.playerHasBlackjack) {
+          this._dispatch(actions.showdown())
+        }
         break
       }
       case 'INSURANCE': {
@@ -240,7 +249,7 @@ class Game {
           hits: hits + 1
         })
         if (stage === 'showdown') {
-          this.dispatch(actions.showdown())
+          this._dispatch(actions.showdown())
         }
         break
       }
@@ -285,7 +294,7 @@ class Game {
         break
       }
       case 'STAND': {
-        let stage = ''
+        let stage = this.state.stage
         const { handInfo, history, hits } = this.state
         const position = action.payload.position
         // TODO: remove position and replace it with stage info #hit
@@ -295,7 +304,7 @@ class Game {
         } else {
           handInfo.right = engine.getHandInfoAfterStand(handInfo.right)
           if (history.some(x => x.type === 'SPLIT')) {
-            stage = 'player-turn-left'
+            stage = stage !== 'showdown' ? 'player-turn-left' : 'showdown'
           } else {
             stage = 'showdown'
           }
@@ -320,24 +329,26 @@ class Game {
           history: history,
           hits: hits + 1
         })
+        this._dispatch(actions.dealerHit())
         const checkLeftStatus = history.some(x => x.type === 'SPLIT')
-        const check1 = handInfo.right.playerHasBusted && !checkLeftStatus
+        const check1 = (handInfo.right.playerHasBusted || handInfo.right.playerHasBlackjack) && !checkLeftStatus
         if (check1) {
-          this.setState({
+          this.setState(Object.assign({
             stage: 'done'
-          })
+          }, this.getPrizes()))
           break
         }
-        const check2 = checkLeftStatus && handInfo.left.playerHasBusted && check1
+        const check2 = checkLeftStatus && (handInfo.left.playerHasBusted || handInfo.left.playerHasBlackjack) && check1
         if (check2) {
-          this.setState({
+          this.setState(Object.assign({
             stage: 'done'
-          })
+          }, this.getPrizes()))
           break
         }
         do {
           this._dispatch(actions.dealerHit())
         } while (this.getState().stage === 'dealer-turn')
+        this.setState(this.getPrizes())
         break
       }
       case 'SURRENDER': {
@@ -350,6 +361,7 @@ class Game {
           history: history,
           hits: hits + 1
         })
+        this.setState(this.getPrizes())
         break
       }
       case 'DEALER-HIT': {
