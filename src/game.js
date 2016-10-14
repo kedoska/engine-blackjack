@@ -59,7 +59,7 @@ const defaultState = (rules) => {
     wonOnRight: 0,
     wonOnLeft: 0,
     stage: 'ready',
-    deck: engine.shuffle(engine.newDeck()),
+    deck: engine.shuffle(engine.newDecks(rules.decks)),
     handInfo: {
       left: {},
       right: {}

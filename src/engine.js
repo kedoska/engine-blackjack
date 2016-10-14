@@ -97,6 +97,14 @@ const makeCard = (number, suite) => {
   }
 }
 
+const newDecks = (n) => {
+  let cards = []
+  for(let i = 0; i < n; i++){
+    cards = newDeck().concat(cards)
+  }
+  return cards
+}
+
 const newDeck = () => {
   return [].concat.apply([],
     [ 'hearts', 'diamonds', 'clubs', 'spades' ]
@@ -398,6 +406,7 @@ const getPrize = (playerHand, dealerCards) => {
 }
 
 module.exports.newDeck = newDeck
+module.exports.newDecks = newDecks
 module.exports.shuffle = shuffle
 module.exports.calculate = calculate
 module.exports.countCards = countCards
