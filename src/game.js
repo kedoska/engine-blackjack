@@ -345,9 +345,9 @@ class Game {
           }, this.getPrizes()))
           break
         }
-        do {
+        while(this.getState().stage === 'dealer-turn'){
           this._dispatch(actions.dealerHit())
-        } while (this.getState().stage === 'dealer-turn')
+        }
         this.setState(this.getPrizes())
         break
       }
@@ -365,12 +365,15 @@ class Game {
         break
       }
       case 'DEALER-HIT': {
-        const { deck, cardCount, history, hits } = this.state
+        const { deck, handInfo, cardCount, history, hits } = this.state
         const card = deck.splice(deck.length - 1, 1)
         const dealerCards = this.state.dealerCards.concat(card)
         const dealerValue = engine.calculate(dealerCards)
+        const playerRightValue = handInfo.right.playerValue
+        const playerLeftValue = handInfo.left.playerValue || 0
+        const stopPoint = playerRightValue > playerLeftValue ? playerRightValue : playerLeftValue
         let stage = null
-        if (dealerValue < 17) {
+        if (dealerValue < stopPoint && dealerValue < 17) {
           stage = 'dealer-turn'
         } else {
           stage = 'done'
