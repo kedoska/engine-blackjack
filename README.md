@@ -7,6 +7,19 @@ server-side component to calculate the status of a game.
 Main motivation of this side project is understand the basics of the games and provide a very 
 simple library that can be easily integrated in more complex systems.
 
+## Available game parameters
+
+There are many possible configuration you can turn on/off so that you can easily create "engines"
+according with your skill/needs. The following list illustrates all the available configurations
+
+ * `decks`, you can set-up, default is `1`.
+ * `standOnSoft17`, turn On/Off the "Soft 17" rule, default `true`.
+ * `double` down, on/off the possibility to double after deal, default `true`
+ * `split`, On/Off the possibility to split after deal, default `true`
+ * `doubleAfterSplit`, On/Off the possibility to double after split (_split_ and _double_ must be "on"), default `true`
+ * `surrender`, on/off the ability to surrender after deal, default `true`
+ * `insurance`, on/off the ability of ensuring a hand, default `true`
+
 ## Install
 
 If you are using [npm](https://www.npmjs.com/), to get the last version:
