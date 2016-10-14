@@ -67,7 +67,9 @@ const defaultState = (rules) => {
     history: [],
     availableBets: getDefaultSideBets(true),
     sideBetsInfo: null,
-    rules: rules
+    rules: rules,
+    dealerHasBlackjack: false,
+    dealerHasBusted: false
   }
 }
 
@@ -208,7 +210,6 @@ class Game {
           dealerCards: dealerCards,
           dealerValue: dealerValue,
           dealerHasBlackjack: dealerHasBlackjack,
-          playerHasBlackjack: handInfo.playerHasBlackjack,
           deck: this.state.deck.filter(x => dealerCards
               .concat(playerCards)
               .indexOf(x) === -1),
@@ -246,7 +247,6 @@ class Game {
         history.push(appendEpoch(Object.assign(action, { payload: {bet: initialBet } })))
         this.setState({
           stage: 'player-turn-right',
-          playerHasBlackjack: false,
           handInfo: {
             left: this.enforceRules(engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet)),
             right: this.enforceRules(engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet))
@@ -414,6 +414,8 @@ class Game {
         const card = deck.splice(deck.length - 1, 1)
         const dealerCards = this.state.dealerCards.concat(card)
         const dealerValue = engine.calculate(dealerCards)
+        const dealerHasBlackjack = dealerValue.hi === 21
+        const dealerHasBusted = dealerValue.hi > 21
         const playerRightValue = handInfo.right.playerValue.hi
         const playerLeftValue = (handInfo.left.playerValue) ? handInfo.left.playerValue.hi : 0
         const stopPoint = playerRightValue > playerLeftValue ? playerRightValue : playerLeftValue
@@ -421,14 +423,25 @@ class Game {
         if (dealerValue.hi < 17) {
           stage = 'dealer-turn'
         } else {
-          if (rules.standOnSoft17) {
-            stage = 'done'
-          } else {
+          if (!rules.standOnSoft17) {
             if (dealerValue.hi >= stopPoint) {
               stage = 'done'
             } else {
               stage = 'dealer-turn'
             }
+          } else {
+            if (dealerValue.hi === 17 && dealerValue.hi >= stopPoint && dealerCards.some(x => x.value === 1)) {
+              stage = 'done'
+            } else {
+              if (dealerValue.hi >= stopPoint) {
+                stage = 'done'
+              } else {
+                stage = 'dealer-turn'
+              }
+            }
+          }
+          if (dealerHasBlackjack || dealerHasBusted) {
+            stage = 'done'
           }
         }
         history.push(appendEpoch(action))
@@ -436,6 +449,8 @@ class Game {
           stage: stage,
           dealerCards: dealerCards,
           dealerValue: dealerValue,
+          dealerHasBlackjack: dealerHasBlackjack,
+          dealerHasBusted: dealerHasBusted,
           deck: deck.filter(x => dealerCards.indexOf(x) === -1),
           cardCount: cardCount + engine.countCards(card),
           history: history,
