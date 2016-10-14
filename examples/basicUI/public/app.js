@@ -90,7 +90,14 @@ var showCards = function (sector, data) {
 }
 
 var showValues = function (sector, value, won) {
-  $('[data-card-value="' + sector + '"]').text(value || '0')
+  value = value || {}
+  var valueHi = value.hi || 0
+  var valueLo = value.lo || 0
+  var valueStr = valueHi.toString()
+  if (valueHi !== valueLo) {
+    valueStr = valueLo + ' / ' + valueHi
+  }
+  $('[data-card-value="' + sector + '"]').text(valueStr)
   $('[data-card-won="' + sector + '"]').text(won || '0')
 }
 
