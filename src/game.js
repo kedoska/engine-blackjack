@@ -410,7 +410,7 @@ class Game {
         break
       }
       case 'DEALER-HIT': {
-        const { deck, handInfo, cardCount, history, hits } = this.state
+        const { rules, deck, handInfo, cardCount, history, hits } = this.state
         const card = deck.splice(deck.length - 1, 1)
         const dealerCards = this.state.dealerCards.concat(card)
         const dealerValue = engine.calculate(dealerCards)
@@ -418,7 +418,8 @@ class Game {
         const playerLeftValue = (handInfo.left.playerValue) ? handInfo.left.playerValue.hi : 0
         const stopPoint = playerRightValue > playerLeftValue ? playerRightValue : playerLeftValue
         let stage = null
-        if (dealerValue.hi < stopPoint && dealerValue.hi < 17) {
+        const stopAt = rules.standOnSoft17 ? 17 : 20
+        if (dealerValue.hi < stopPoint && dealerValue.hi < stopAt) {
           stage = 'dealer-turn'
         } else {
           stage = 'done'
