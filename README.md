@@ -1,6 +1,10 @@
 engine-blackjack
 ================
 
+<a href="https://david-dm.org/kedoska/engine-blackjack/"><img src="https://david-dm.org/kedoska/engine-blackjack/status.svg" alt="Dependency Status"></a>
+<a href="https://david-dm.org/kedoska/engine-blackjack/?type=dev"><img src="https://david-dm.org/kedoska/engine-blackjack/dev-status.svg" alt="devDependency Status"></a>
+___
+
 Nodejs module to implement the blackjack game into your software. It is intended to be used as
 server-side component to calculate the status of a game.
 
