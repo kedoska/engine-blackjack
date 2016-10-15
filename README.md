@@ -1,6 +1,7 @@
 engine-blackjack
 ================
 
+<a href="https://travis-ci.org/kedoska/engine-blackjack"><img src="https://travis-ci.org/kedoska/engine-blackjack.svg" alt="build:"></a>
 <a href="https://david-dm.org/kedoska/engine-blackjack/"><img src="https://david-dm.org/kedoska/engine-blackjack/status.svg" alt="Dependency Status"></a>
 <a href="https://david-dm.org/kedoska/engine-blackjack/?type=dev"><img src="https://david-dm.org/kedoska/engine-blackjack/dev-status.svg" alt="devDependency Status"></a>
 ___
