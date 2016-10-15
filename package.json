@@ -1,6 +1,6 @@
 {
   "name": "engine-blackjack",
-  "version": "0.0.63",
+  "version": "0.0.64",
   "description": "A simple nodeJs engine to play blackjack",
   "main": "index.js",
   "scripts": {
@@ -9,10 +9,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/gengine/engine-blackjack"
+    "url": "https://github.com/kedoska/engine-blackjack"
   },
   "bugs": {
-    "url": "https://gitlab.com/gengine/engine-blackjack/issues"
+    "url": "https://github.com/kedoska/engine-blackjack/issues"
   },
   "keywords": [
     "nodejs",
