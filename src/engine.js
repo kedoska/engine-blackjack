@@ -89,11 +89,12 @@ const suiteColor = (suite) => {
 const cardValue = (number) => number < 10 ? number : 10
 
 const makeCard = (number, suite) => {
+  const _suite = suiteName(suite)
   return {
     text: cardName(number),
-    suite: suiteName(suite),
+    suite: _suite,
     value: cardValue(number),
-    color: suiteColor(suite)
+    color: suiteColor(_suite)
   }
 }
 
