@@ -19,6 +19,7 @@
     "games",
     "blackjack"
   ],
+  "engine": "node >= 4.6.0",
   "author": "Marco Casula <marco.casula@linux.com>",
   "license": "GPL-2.0",
   "devDependencies": {
