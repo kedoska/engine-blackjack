@@ -27,7 +27,7 @@ so that you can easily _combine flags_ to create games according with your skill
 There are many variations of this game and I really do not know them all, but if you ask me I will add them. 
 Here a list of direct (and maybe exotic) requests:
 
- * `showdownAfterAceSplit`, after the _deal_ and if player receives 2 aces, a card is dealt on each side and _showdown phase_ is initialized (the game ends) default `true` but it depends on `split`.
+ * `showdownAfterAceSplit`, after the _deal_ and if player receives 2 aces and a _split_ is called, a card is dealt on each side and _showdown phase_ is initialized (the game ends) default `true` but it depends on `split`.
 
 ## Install
 
