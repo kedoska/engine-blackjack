@@ -30,7 +30,7 @@ app.post('/blackjack/:action', (req, res) => {
   }
   const newStage = game.dispatch(fn(payload))
   if (newStage.stage === 'done') {
-    session.stage = null // game complited!
+    session.stage = null // game completed!
   } else {
     session.stage = newStage
   }

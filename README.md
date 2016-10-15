@@ -9,16 +9,25 @@ simple library that can be easily integrated in more complex systems.
 
 ## Available game parameters
 
-There are many possible configuration you can turn on/off so that you can easily create "engines"
-according with your skill/needs. The following list illustrates all the available configurations
+There are many possible configuration. We are implementing _Standard_ and _Custom_ options 
+so that you can easily _combine flags_ to create games according with your skill/needs.
 
- * `decks`, you can set-up, default is `1`.
- * `standOnSoft17`, turn On/Off the "Soft 17" rule, default `true`.
+### Standard variations
+
+ * number of `decks`, default is `1`
+ * `standOnSoft17`, turn On/Off the "Soft 17" rule, default `true`
  * `double` down, on/off the possibility to double after deal, default `true`
  * `split`, On/Off the possibility to split after deal, default `true`
  * `doubleAfterSplit`, On/Off the possibility to double after split (_split_ and _double_ must be "on"), default `true`
  * `surrender`, on/off the ability to surrender after deal, default `true`
  * `insurance`, on/off the ability of ensuring a hand, default `true`
+
+### Custom variations
+
+There are many variations of this game and I really do not know them all, but if you ask me I will add them. 
+Here a list of direct (and maybe exotic) requests:
+
+ * `showdownAfterAceSplit`, after the _deal_ and if player receives 2 aces, a card is dealt on each side and _showdown phase_ is initialized (the game ends) default `true` but it depends on `split`.
 
 ## Install
 

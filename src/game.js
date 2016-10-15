@@ -37,7 +37,8 @@ const getRules = ({
   split= true,
   doubleAfterSplit = true,
   surrender = true,
-  insurance = true
+  insurance = true,
+  showdownAfterAceSplit = true
 }) => {
   return {
     decks: decks || 1,
@@ -46,7 +47,8 @@ const getRules = ({
     split: split,
     doubleAfterSplit: doubleAfterSplit,
     surrender: surrender,
-    insurance: insurance
+    insurance: insurance,
+    showdownAfterAceSplit: showdownAfterAceSplit
   }
 }
 
@@ -241,19 +243,33 @@ class Game {
         break
       }
       case 'SPLIT': {
-        const { initialBet, handInfo, dealerCards, history, hits } = this.state
+        const { rules, initialBet, handInfo, dealerCards, history, hits } = this.state
+        let deck = this.state.deck
+        let stage = 'player-turn-right'
         const playerCardsLeftPosition = [ handInfo.right.cards[ 0 ]]
         const playerCardsRightPosition = [ handInfo.right.cards[ 1 ]]
         history.push(appendEpoch(Object.assign(action, { payload: {bet: initialBet } })))
+        if (rules.showdownAfterAceSplit && playerCardsRightPosition[ 0 ].value === 1) {
+          const cardLeft = deck.splice(deck.length - 1, 1)
+          const cardRight = deck.splice(deck.length - 2, 1)
+          deck = deck.filter(x => [ cardLeft, cardRight ].indexOf(x) === -1)
+          playerCardsLeftPosition.push(cardLeft[ 0 ])
+          playerCardsRightPosition.push(cardRight[ 0 ])
+          stage = 'showdown'
+        }
         this.setState({
-          stage: 'player-turn-right',
+          stage: stage,
           handInfo: {
             left: this.enforceRules(engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet)),
             right: this.enforceRules(engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet))
           },
+          deck: deck,
           history: history,
           hits: hits + 1
         })
+        if (stage === 'showdown'){
+          this._dispatch(actions.showdown())
+        }
         break
       }
       case 'HIT': {
