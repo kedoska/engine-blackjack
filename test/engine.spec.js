@@ -25,27 +25,32 @@ describe('utils', function () {
       assert.deepStrictEqual(lib.serializeCard('1-h'), {
         text: 'A',
         suite: 'hearts',
-        value: 1
+        value: 1,
+        color: 'R'
       }, 'serialize 1-h')
       assert.deepStrictEqual(lib.serializeCard('h2'), {
         text: '2',
         suite: 'hearts',
-        value: 2
+        value: 2,
+        color: 'R'
       }, 'serialize h2')
       assert.deepStrictEqual(lib.serializeCard('♣1'), {
         text: 'A',
         suite: 'clubs',
-        value: 1
+        value: 1,
+        color: 'B'
       }, 'serialize ♣1')
       assert.deepStrictEqual(lib.serializeCard('12spades'), {
         text: 'Q',
         suite: 'spades',
-        value: 10
+        value: 10,
+        color: 'B'
       }, 'serialize 12spades')
       assert.deepStrictEqual(lib.serializeCard('♦K'), {
         text: 'K',
         suite: 'diamonds',
-        value: 10
+        value: 10,
+        color: 'R'
       }, 'serialize ♦K')
     })
   })
@@ -55,12 +60,14 @@ describe('utils', function () {
         {
           text: 'A',
           suite: 'hearts',
-          value: 1
+          value: 1,
+          color: 'R'
         },
         {
           text: 'A',
           suite: 'spades',
-          value: 1
+          value: 1,
+          color: 'B'
         }
       ], 'serialize h1 s1')
     })
@@ -111,19 +118,21 @@ describe('deck methods: newDeck(), shuffle() and calculate()', function () {
 
 describe('prize calculation', function () {
   it('should pay according the standard game rule (no BJ)', function () {
-    const cards = lib.serializeCards('♠J ♣9')
-    const playerValue = lib.calculate(cards).hi
+    const playerCards = lib.serializeCards('♠J ♣9')
+    const playerValue = lib.calculate(playerCards)
+    const dealerCards = lib.serializeCards('♣J ♣8')
     const initialBet = 1
     const playerHand = {
       close: true,
+      playerInsuranceValue: 0,
       playerHasSurrendered: false,
       playerHasBlackjack: false,
       playerHasBusted: false,
       playerValue: playerValue,
       bet: initialBet
     }
-    assert.equal(lib.getPrize(playerHand, 18), initialBet * 2, 'player Won twice')
-    assert.equal(lib.getPrize(playerHand, 19), initialBet, 'player Push (bet value is returned')
-    assert.equal(lib.getPrize(playerHand, 20), 0, 'player lose')
+    assert.equal(lib.getPrize(playerHand, dealerCards), initialBet * 2, 'player Won twice')
+    assert.equal(lib.getPrize(playerHand, dealerCards.concat(lib.serializeCards('♥1'))), initialBet, 'player Push (bet value is returned')
+    assert.equal(lib.getPrize(playerHand, dealerCards.concat(lib.serializeCards('♥2'))), 0, 'player lose')
   })
 })

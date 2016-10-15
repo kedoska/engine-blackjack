@@ -22,6 +22,7 @@ const actions = require('../src/actions')
 const util = require('util')
 
 const print = (obj) => {
+  return 0
   console.log(util.inspect(
     Object.assign(obj, { deck: null })
     , false, null))
@@ -32,19 +33,19 @@ describe('Game flow', function () {
     it('should restore() deal() and stand()', function () {
       const game = new Game()
       print(game.dispatch(actions.restore()))
-      print(game.dispatch(actions.deal()))
-      print(game.dispatch(actions.stand('right')))
+      print(game.dispatch(actions.deal({})))
+      print(game.dispatch(actions.stand({ position: 'right' })))
 
     })
     it('should restore() deal() split() hit() and stand() for both sides', function () {
       const game = new Game()
       print(game.dispatch(actions.restore()))
-      print(game.dispatch(actions.deal()))
+      print(game.dispatch(actions.deal({})))
       print(game.dispatch(actions.split()))
-      print(game.dispatch(actions.hit('right')))
-      print(game.dispatch(actions.stand('right')))
-      print(game.dispatch(actions.hit('left')))
-      print(game.dispatch(actions.stand('left')))
+      print(game.dispatch(actions.hit({ position: 'right' })))
+      print(game.dispatch(actions.stand({ position: 'right' })))
+      print(game.dispatch(actions.hit({ position: 'left' })))
+      print(game.dispatch(actions.stand({ position: 'left' })))
     })
   })
 })
