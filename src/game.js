@@ -33,9 +33,9 @@ const getDefaultSideBets = (active = false) => {
 const getRules = ({
   decks = 1,
   standOnSoft17 = true,
-  double = true,
+  double = "any",       // none, any, 9or10, 9or10or11, or 9thru15
   split= true,
-  doubleAfterSplit = true,
+  doubleAfterSplit = true,  // What you can double on follows double rule
   surrender = true,
   insurance = true,
   showdownAfterAceSplit = true
@@ -97,10 +97,19 @@ class Game {
     this._dispatch = this._dispatch.bind(this)
   }
 
+  canDouble (double, playerValue) {
+    if (double == "none") return false
+    else if (double == "9or10") return ((playerValue.hi == 9) || (playerValue.hi == 10))
+    else if (double == "9or10or11") return ((playerValue.hi >= 9) && (playerValue.hi <= 11))
+    else if (double == "9thru15") return ((playerValue.hi >= 9) && (playerValue.hi <= 15))
+    else return true;
+  }
+
   enforceRules (handInfo) {
     const { availableActions } = handInfo
+    const { playerValue } = handInfo
     const { rules, history } = this.state
-    if (!rules.double) {
+    if (!this.canDouble(rules.double, playerValue)) {
       availableActions.double = false
     }
     if (!rules.split) {
