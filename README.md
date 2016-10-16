@@ -21,7 +21,12 @@ so that you can easily _combine flags_ to create games according with your skill
 
  * number of `decks`, default is `1`
  * `standOnSoft17`, turn On/Off the "Soft 17" rule, default `true`
- * `double` down, on/off the possibility to double after deal, default `true`
+ * `double`, ability to double after deal, default `any`
+    * `none` not allowed
+    * `any` any allowed
+    * `9or10`
+    * `9or10or11`
+    * `9thru15`
  * `split`, On/Off the possibility to split after deal, default `true`
  * `doubleAfterSplit`, On/Off the possibility to double after split (_split_ and _double_ must be "on"), default `true`
  * `surrender`, on/off the ability to surrender after deal, default `true`
