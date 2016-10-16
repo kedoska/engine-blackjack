@@ -392,7 +392,7 @@ const getPrize = (playerHand, dealerCards) => {
   if (playerHasSurrendered) {
     return bet / 2 + insurancePrize
   }
-  if (playerHasBlackjack) {
+  if (playerHasBlackjack && !dealerHasBlackjack) {
     return bet + (bet * 1.5) + insurancePrize
   }
   const dealerHasBusted = dealerValue > 21

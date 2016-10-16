@@ -237,7 +237,7 @@ class Game {
           history: history,
           hits: hits + 1
         })
-        if (handInfo.playerHasBlackjack) {
+        if (handInfo.playerHasBlackjack || dealerHasBlackjack) {
           this._dispatch(actions.showdown())
         }
         break
