@@ -70,6 +70,7 @@ const defaultState = (rules) => {
     availableBets: getDefaultSideBets(true),
     sideBetsInfo: null,
     rules: rules,
+    dealerHoleCard: null,
     dealerHasBlackjack: false,
     dealerHasBusted: false
   }
@@ -210,8 +211,9 @@ class Game {
         const { availableBets, history, hits } = this.state
         const playerCards = this.state.deck.splice(this.state.deck.length - 2, 2)
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
+        const dealerHoleCard = this.state.deck.splice(this.state.deck.length - 1, 1)[ 0 ]
         const dealerValue = engine.calculate(dealerCards)
-        const dealerHasBlackjack = dealerValue.hi === 21
+        const dealerHasBlackjack = (dealerValue.hi + dealerHoleCard.value) === 21
         const handInfo = this.enforceRules(engine.getHandInfoAfterDeal(playerCards, dealerCards, bet))
         const sideBetsInfo = engine.getSideBetsInfo(availableBets, sideBets, playerCards, dealerCards)
         history.push(appendEpoch(action))
@@ -219,6 +221,7 @@ class Game {
           initialBet: bet,
           stage: 'player-turn-right',
           dealerCards: dealerCards,
+          dealerHoleCard: dealerHoleCard,
           dealerValue: dealerValue,
           dealerHasBlackjack: dealerHasBlackjack,
           deck: this.state.deck.filter(x => dealerCards
@@ -392,14 +395,15 @@ class Game {
         break
       }
       case 'SHOWDOWN': {
-        const { handInfo, history, hits } = this.state
+        const { dealerHoleCard, handInfo, history, hits } = this.state
         history.push(appendEpoch(action))
         this.setState({
           stage: 'dealer-turn',
           history: history,
           hits: hits + 1
         })
-        this._dispatch(actions.dealerHit())
+        // we want to include in the calculation the dealerHoleCard obtained in initial deal()
+        this._dispatch(actions.dealerHit({dealerHoleCard: dealerHoleCard}))
         const checkLeftStatus = history.some(x => x.type === 'SPLIT')
         const check1 = (handInfo.right.playerHasBusted || handInfo.right.playerHasBlackjack) && !checkLeftStatus
         if (check1) {
@@ -436,8 +440,11 @@ class Game {
       }
       case 'DEALER-HIT': {
         const { rules, deck, handInfo, cardCount, history, hits } = this.state
-        const card = deck.splice(deck.length - 1, 1)
-        const dealerCards = this.state.dealerCards.concat(card)
+        // the new card for dealer can be the "dealerHoleCard" or a new card
+        // dealerHoleCard was set at the deal()
+        const { dealerHoleCard } = action.payload
+        const card = dealerHoleCard || deck.splice(deck.length - 1, 1)[ 0 ]
+        const dealerCards = this.state.dealerCards.concat([card])
         const dealerValue = engine.calculate(dealerCards)
         const dealerHasBlackjack = dealerValue.hi === 21
         const dealerHasBusted = dealerValue.hi > 21
@@ -477,7 +484,7 @@ class Game {
           dealerHasBlackjack: dealerHasBlackjack,
           dealerHasBusted: dealerHasBusted,
           deck: deck.filter(x => dealerCards.indexOf(x) === -1),
-          cardCount: cardCount + engine.countCards(card),
+          cardCount: cardCount + engine.countCards([card]),
           history: history,
           hits: hits + 1
         })

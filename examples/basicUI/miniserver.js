@@ -34,7 +34,10 @@ app.post('/blackjack/:action', (req, res) => {
   } else {
     session.stage = newStage
   }
-  res.send(Object.assign({}, newStage, {deck: null}))
+  res.send(Object.assign({}, newStage, {
+    deck: null,
+    dealerHoleCard: null
+  }))
 })
 
 app.listen(3000, () => {

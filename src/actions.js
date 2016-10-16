@@ -97,8 +97,11 @@ module.exports.showdown = () => {
   }
 }
 
-module.exports.dealerHit = () => {
+module.exports.dealerHit = ({dealerHoleCard: dealerHoleCard} = {}) => {
   return {
-    type: 'DEALER-HIT'
+    type: 'DEALER-HIT',
+    payload: {
+      dealerHoleCard: dealerHoleCard
+    }
   }
 }
