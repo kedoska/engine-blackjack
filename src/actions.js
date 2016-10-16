@@ -52,6 +52,12 @@ module.exports.insurance = ({bet = 1}) => {
   }
 }
 
+module.exports.noinsurance = () => {
+  return {
+    type: 'NOINSURANCE'
+  }
+}
+
 module.exports.split = () => {
   return {
     type: 'SPLIT'

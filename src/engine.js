@@ -213,7 +213,7 @@ const getHandInfo = (playerCards, dealerCards) => {
   const isClosed = hasBusted || hasBlackjack
   const canDoubleDown = !isClosed
   const canSplit = playerCards.length > 1 && playerCards[ 0 ].value === playerCards[ 1 ].value && !isClosed
-  const canEnsure = dealerCards[ 0 ].value === 1 && !isClosed
+  const canEnsure = dealerCards[ 0 ].value === 1
   return {
     cards: playerCards,
     playerValue: handValue,
@@ -226,6 +226,7 @@ const getHandInfo = (playerCards, dealerCards) => {
       double: canDoubleDown,
       split: canSplit,
       insurance: canEnsure,
+      noinsurance: canEnsure,
       hit: !isClosed,
       stand: !isClosed,
       surrender: !isClosed
@@ -243,7 +244,7 @@ const getHandInfoAfterDeal = (playerCards, dealerCards, initialBet) => {
     hit: true,
     surrender: true
   })
-  return Object.assign(hand, {close: hand.playerHasBlackjack ? true : false})
+  return Object.assign(hand, {close: (hand.playerHasBlackjack && (dealerCards[0].value != 1)) ? true : false})
 }
 
 const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
@@ -254,6 +255,7 @@ const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
     split: false,
     double: false,
     insurance: false,
+    noinsurance: false,
     surrender: false
   })
   hand.bet = initialBet
@@ -267,6 +269,7 @@ const getHandInfoAfterHit = (playerCards, dealerCards, initialBet) => {
     double: (playerCards.length == 2),
     split: false,
     insurance: false,
+    noinsurance: false,
     surrender: false
   })
   hand.bet = initialBet
@@ -291,6 +294,7 @@ const getHandInfoAfterStand = (handInfo) => {
       double: false,
       split: false,
       insurance: false,
+      noinsurance: false,
       hit: false,
       stand: false,
       surrender: false
@@ -306,10 +310,12 @@ const getHandInfoAfterSurrender = (handInfo) => {
   })
 }
 
-const getHandInfoAfterInsurance = (handInfo, bet) => {
-  const availableActions = handInfo.availableActions
+const getHandInfoAfterInsurance = (playerCards, dealerCards, bet) => {
+  const hand = getHandInfo(playerCards, dealerCards)
+  const availableActions = hand.availableActions
   availableActions.insurance = false
-  return Object.assign(handInfo, { playerInsuranceValue: bet, availableActions: availableActions })
+  availableActions.noinsurance = false
+  return Object.assign(hand, { playerInsuranceValue: bet, availableActions: availableActions })
 }
 
 const isLuckyLucky = (playerCards, dealerCards) => {
@@ -353,7 +359,7 @@ const isActionAllowed = (actionName, stage) => {
       return ['RESTORE', 'DEAL'].indexOf(actionName) > -1
     }
     case 'player-turn-right': {
-      return ['STAND', 'INSURANCE', 'SURRENDER', 'SPLIT', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
+      return ['STAND', 'INSURANCE', 'NOINSURANCE', 'SURRENDER', 'SPLIT', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
     }
     case 'player-turn-left': {
       return ['STAND', 'HIT', 'DOUBLE'].indexOf(actionName) > -1

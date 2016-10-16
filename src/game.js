@@ -109,23 +109,35 @@ class Game {
     const { availableActions } = handInfo
     const { playerValue } = handInfo
     const { rules, history } = this.state
-    if (!this.canDouble(rules.double, playerValue)) {
-      availableActions.double = false
-    }
-    if (!rules.split) {
-      availableActions.split = false
-    }
-    if (!rules.surrender) {
-      availableActions.surrender = false
-    }
-    if (!rules.doubleAfterSplit) {
-      if (history.some(x => x.type === 'SPLIT')) {
+
+    // If insurance is offered and is still in available actions, you have to do that first
+    if (rules.insurance && availableActions.insurance) {
         availableActions.double = false
-      }
+        availableActions.split = false
+        availableActions.surrender = false
+        availableActions.hit = false
+        availableActions.stand = false
+    } else {
+        if (!this.canDouble(rules.double, playerValue)) {
+          availableActions.double = false
+        }
+        if (!rules.split) {
+          availableActions.split = false
+        }
+        if (!rules.surrender) {
+          availableActions.surrender = false
+        }
+        if (!rules.doubleAfterSplit) {
+          if (history.some(x => x.type === 'SPLIT')) {
+            availableActions.double = false
+          }
+        }
+        if (!rules.insurance){
+          availableActions.insurance = false
+          availableActions.noinsurance = false
+        }
     }
-    if (!rules.insurance){
-      availableActions.insurance = false
-    }
+
     return handInfo
   }
 
@@ -159,7 +171,7 @@ class Game {
     const isLeft = position === 'left'
     const historyHasSplit = history.some(x => x.type === 'SPLIT')
     const hand = handInfo[position]
-
+    
     let isActionAllowed = engine.isActionAllowed(type, stage)
 
     if (!isActionAllowed) {
@@ -210,6 +222,7 @@ class Game {
         const { availableBets, history, hits } = this.state
         const playerCards = this.state.deck.splice(this.state.deck.length - 2, 2)
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
+        const dealerHoleCard = this.state.deck.splice(this.state.deck.length - 1, 1)
         const dealerValue = engine.calculate(dealerCards)
         const dealerHasBlackjack = dealerValue.hi === 21
         const handInfo = this.enforceRules(engine.getHandInfoAfterDeal(playerCards, dealerCards, bet))
@@ -219,6 +232,7 @@ class Game {
           initialBet: bet,
           stage: 'player-turn-right',
           dealerCards: dealerCards,
+          dealerHoleCard: dealerHoleCard,
           dealerValue: dealerValue,
           dealerHasBlackjack: dealerHasBlackjack,
           deck: this.state.deck.filter(x => dealerCards
@@ -234,21 +248,30 @@ class Game {
           history: history,
           hits: hits + 1
         })
-        if (handInfo.playerHasBlackjack) {
+        if (handInfo.playerHasBlackjack && !(handInfo.availableActions.insurance)) {
           this._dispatch(actions.showdown())
         }
         break
       }
-      case 'INSURANCE': {
-        const { bet } = action.payload
+      case 'INSURANCE':
+      case 'NOINSURANCE': {
+        const { bet } = (action.type === 'INSURANCE') ? action.payload : 0
         const { handInfo, history, hits } = this.state
-        handInfo.right = engine.getHandInfoAfterInsurance(handInfo.right, bet)
+        handInfo.right = engine.getHandInfoAfterInsurance(handInfo.right.cards, this.state.dealerCards, bet)
         history.push(appendEpoch(Object.assign(action, { payload: {bet: bet } })))
         this.setState({
           handInfo: handInfo,
           history: history,
           hits: hits + 1
         })
+
+        // Check the hole card for blackjack - if we have it (or if the player had it), then we go into showdown
+        if ((this.state.dealerHoleCard[0].value == 10) || handInfo.playerHasBlackjack) {
+            this._dispatch(actions.showdown())
+        } else {
+            // OK, continue the game
+            this.enforceRules(handInfo.right)    
+        }
         break
       }
       case 'SPLIT': {
@@ -436,7 +459,7 @@ class Game {
       }
       case 'DEALER-HIT': {
         const { rules, deck, handInfo, cardCount, history, hits } = this.state
-        const card = deck.splice(deck.length - 1, 1)
+        const card = (this.state.dealerHoleCard.length) ? this.state.dealerHoleCard.splice(0, 1) : deck.splice(deck.length - 1, 1)
         const dealerCards = this.state.dealerCards.concat(card)
         const dealerValue = engine.calculate(dealerCards)
         const dealerHasBlackjack = dealerValue.hi === 21
