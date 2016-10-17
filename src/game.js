@@ -261,8 +261,8 @@ class Game {
         const playerCardsRightPosition = [ handInfo.right.cards[ 1 ]]
         history.push(appendEpoch(Object.assign(action, { payload: {bet: initialBet } })))
         const forceShowdown = rules.showdownAfterAceSplit && playerCardsRightPosition[ 0 ].value === 1
-        let cardLeft = deck.splice(deck.length - 1, 1)
         let cardRight = deck.splice(deck.length - 2, 1)
+        let cardLeft = deck.splice(deck.length - 1, 1)
         deck = deck.filter(x => [ cardLeft, cardRight ].indexOf(x) === -1)
         playerCardsLeftPosition.push(cardLeft[ 0 ])
         playerCardsRightPosition.push(cardRight[ 0 ])
