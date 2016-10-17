@@ -91,9 +91,12 @@ module.exports.surrender = () => {
   }
 }
 
-module.exports.showdown = () => {
+module.exports.showdown = ({dealerHoleCardOnly = false} = {}) => {
   return {
-    type: 'SHOWDOWN'
+    type: 'SHOWDOWN',
+    payload: {
+      dealerHoleCardOnly: dealerHoleCardOnly
+    }
   }
 }
 

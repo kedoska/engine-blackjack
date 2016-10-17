@@ -408,6 +408,7 @@ class Game {
       }
       case 'SHOWDOWN': {
         const { dealerHoleCard, handInfo, history, hits } = this.state
+        const { dealerHoleCardOnly } = action.payload
         history.push(appendEpoch(action))
         this.setState({
           stage: 'dealer-turn',
@@ -416,6 +417,12 @@ class Game {
         })
         // we want to include in the calculation the dealerHoleCard obtained in initial deal()
         this._dispatch(actions.dealerHit({dealerHoleCard: dealerHoleCard}))
+        if (dealerHoleCardOnly) {
+          this.setState(Object.assign({
+            stage: 'done'
+          }, this.getPrizes()))
+          break
+        }
         const checkLeftStatus = history.some(x => x.type === 'SPLIT')
         const check1 = (handInfo.right.playerHasBusted || handInfo.right.playerHasBlackjack) && !checkLeftStatus
         if (check1) {
@@ -442,12 +449,12 @@ class Game {
         handInfo.right = engine.getHandInfoAfterSurrender(handInfo.right)
         history.push(appendEpoch(action))
         this.setState({
-          stage: 'done',
+          stage: 'showdown',
           handInfo: handInfo,
           history: history,
           hits: hits + 1
         })
-        this.setState(this.getPrizes())
+        this._dispatch(actions.showdown({ dealerHoleCardOnly: true }))
         break
       }
       case 'DEALER-HIT': {
