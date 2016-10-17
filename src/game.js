@@ -393,6 +393,9 @@ class Game {
           } else {
             stage = 'showdown'
           }
+          if (handInfo.right.close) {
+            stage = 'showdown'
+          }
         }
         history.push(appendEpoch(action))
         this.setState({
