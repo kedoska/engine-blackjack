@@ -33,9 +33,9 @@ const getDefaultSideBets = (active = false) => {
 const getRules = ({
   decks = 1,
   standOnSoft17 = true,
-  double = "any",       // none, any, 9or10, 9or10or11, or 9thru15
+  double = 'any', // none, any, 9or10, 9or10or11, or 9thru15
   split= true,
-  doubleAfterSplit = true,  // What you can double on follows double rule
+  doubleAfterSplit = true, // What you can double on follows double rule
   surrender = true,
   insurance = true,
   showdownAfterAceSplit = true
@@ -257,23 +257,28 @@ class Game {
       case 'SPLIT': {
         const { rules, initialBet, handInfo, dealerCards, history, hits } = this.state
         let deck = this.state.deck
-        let stage = 'player-turn-right'
         const playerCardsLeftPosition = [ handInfo.right.cards[ 0 ]]
         const playerCardsRightPosition = [ handInfo.right.cards[ 1 ]]
         history.push(appendEpoch(Object.assign(action, { payload: {bet: initialBet } })))
-        if (rules.showdownAfterAceSplit && playerCardsRightPosition[ 0 ].value === 1) {
-          const cardLeft = deck.splice(deck.length - 1, 1)
-          const cardRight = deck.splice(deck.length - 2, 1)
-          deck = deck.filter(x => [ cardLeft, cardRight ].indexOf(x) === -1)
-          playerCardsLeftPosition.push(cardLeft[ 0 ])
-          playerCardsRightPosition.push(cardRight[ 0 ])
+        const forceShowdown = rules.showdownAfterAceSplit && playerCardsRightPosition[ 0 ].value === 1
+        let cardLeft = deck.splice(deck.length - 1, 1)
+        let cardRight = deck.splice(deck.length - 2, 1)
+        deck = deck.filter(x => [ cardLeft, cardRight ].indexOf(x) === -1)
+        playerCardsLeftPosition.push(cardLeft[ 0 ])
+        playerCardsRightPosition.push(cardRight[ 0 ])
+        let handInfoLeft = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet))
+        let handInfoRight = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet))
+        let stage  = ''
+        if (forceShowdown) {
           stage = 'showdown'
+        } else {
+          stage = 'player-turn-right'
         }
         this.setState({
           stage: stage,
           handInfo: {
-            left: this.enforceRules(engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet)),
-            right: this.enforceRules(engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet))
+            left: handInfoLeft,
+            right: handInfoRight
           },
           deck: deck,
           history: history,
