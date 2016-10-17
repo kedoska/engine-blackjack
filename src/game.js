@@ -213,7 +213,7 @@ class Game {
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
         const dealerHoleCard = this.state.deck.splice(this.state.deck.length - 1, 1)[ 0 ]
         const dealerValue = engine.calculate(dealerCards)
-        const dealerHasBlackjack = (dealerValue.hi + dealerHoleCard.value) === 21
+        const dealerHasBlackjack = engine.calculate(dealerCards.concat([dealerHoleCard])).hi === 21
         const handInfo = this.enforceRules(engine.getHandInfoAfterDeal(playerCards, dealerCards, bet))
         const sideBetsInfo = engine.getSideBetsInfo(availableBets, sideBets, playerCards, dealerCards)
         history.push(appendEpoch(action))
