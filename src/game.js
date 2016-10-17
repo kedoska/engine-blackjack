@@ -323,6 +323,9 @@ class Game {
           } else {
             stage = `player-turn-${position}`
           }
+          if (handInfo.right.close) {
+            stage = 'showdown'
+          }
         }
         history.push(appendEpoch(action))
         this.setState({
