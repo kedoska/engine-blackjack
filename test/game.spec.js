@@ -19,33 +19,58 @@
 const assert = require('assert')
 const Game = require('../src/game')
 const actions = require('../src/actions')
+const engine = require('../src/engine')
 const util = require('util')
 
-const print = (obj) => {
-  return 0
-  console.log(util.inspect(
-    Object.assign(obj, { deck: null })
-    , false, null))
+const executeFlow = (cards, activity) => {
+  const game = new Game()
+  game.state.deck.concat(engine.serializeCards(cards))
+  activity.forEach(fn => {
+    game.dispatch(fn())
+  })
+  return game.getState()
+}
+
+const functions = {
+  'restore': () => actions.restore(),
+  'deal': () => actions.deal({bet: 10}),
+  'split': () => actions.split(),
+  'hitR': () => actions.hit({position: 'right'}),
+  'standR': () => actions.stand({position: 'right'}),
+  'standL': () => actions.stand({position: 'left'}),
 }
 
 describe('Game flow', function () {
-  describe('# Basic game activity', function () {
-    it('should restore() deal() and stand()', function () {
-      const game = new Game()
-      print(game.dispatch(actions.restore()))
-      print(game.dispatch(actions.deal({})))
-      print(game.dispatch(actions.stand({ position: 'right' })))
-
-    })
-    it('should restore() deal() split() hit() and stand() for both sides', function () {
-      const game = new Game()
-      print(game.dispatch(actions.restore()))
-      print(game.dispatch(actions.deal({})))
-      print(game.dispatch(actions.split()))
-      print(game.dispatch(actions.hit({ position: 'right' })))
-      print(game.dispatch(actions.stand({ position: 'right' })))
-      print(game.dispatch(actions.hit({ position: 'left' })))
-      print(game.dispatch(actions.stand({ position: 'left' })))
+  describe('# Finish the game', function () {
+    [
+      {
+        cards: '♠10 ♦1 ♥5 ♣6 ♠11 ♦10',
+        actions: ['restore', 'deal', 'split', 'standR'],
+        stage: 'done',
+        finalWin: 0
+      },
+      {
+        cards: '♠2 ♦1 ♥5 ♣6 ♠11 ♦10',
+        actions: ['restore', 'deal', 'split', 'hitR', 'hitR', 'hitR'],
+        stage: 'done',
+        finalWin: 0
+      },
+      {
+        cards: '♥3 ♣3 ♠2 ♦2',
+        actions: ['restore', 'deal', 'split', 'standR', 'standL'],
+        stage: 'player-turn-right',
+        finalWin: 0
+      }
+    ].forEach(test => {
+      it(`should deal ${test.cards} execute ${test.actions.join('-')} and finish`, function () {
+        const state = executeFlow(test.cards, test.actions.map(x => functions[x]))
+        if (test.stage){
+          assert.equal(state.stage, test.stage, test.cards)
+        }
+        if (test.finalWin){
+          assert.equal(state.finalWin, test.finalWin)
+        }
+      })
     })
   })
 })
