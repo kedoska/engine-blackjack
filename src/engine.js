@@ -211,7 +211,7 @@ const getHandInfo = (playerCards, dealerCards) => {
   const hasBlackjack = isBlackjack(playerCards)
   const hasBusted = handValue.hi > 21
   const isClosed = hasBusted || hasBlackjack
-  const canDoubleDown = true
+  const canDoubleDown = !isClosed && true
   const canSplit = playerCards.length > 1 && playerCards[ 0 ].value === playerCards[ 1 ].value && !isClosed
   const canEnsure = dealerCards[ 0 ].value === 1 && !isClosed
   return {
@@ -251,7 +251,7 @@ const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
   const availableActions = hand.availableActions
   hand.availableActions = Object.assign(availableActions, {
     split: false,
-    double: (playerCards.length === 2),
+    double: !hand.close && (playerCards.length === 2),
     insurance: false,
     surrender: false
   })

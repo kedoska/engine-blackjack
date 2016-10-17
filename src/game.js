@@ -272,7 +272,14 @@ class Game {
         if (forceShowdown) {
           stage = 'showdown'
         } else {
-          stage = 'player-turn-right'
+          if (handInfoRight.close) {
+            stage = 'player-turn-left'
+          } else {
+            stage = 'player-turn-right'
+          }
+        }
+        if (handInfoRight.close && handInfoLeft.close) {
+          stage = 'showdown'
         }
         this.setState({
           stage: stage,
