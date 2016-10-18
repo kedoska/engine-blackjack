@@ -24,11 +24,14 @@ const util = require('util')
 
 const executeFlow = (cards, activity) => {
   const game = new Game()
-  game.state.deck.concat(engine.serializeCards(cards))
+  let status = game.getState()
+  status.deck = status.deck.concat(engine.serializeCards(cards))
   activity.forEach(fn => {
-    game.dispatch(fn())
+    // this is simulating the re-initialization done by an hypothetical server
+    const instance = new Game(status)
+    status = instance.dispatch(fn())
   })
-  return game.getState()
+  return status
 }
 
 const functions = {
@@ -57,8 +60,8 @@ describe('Game flow', function () {
       },
       {
         cards: '♥3 ♣3 ♠2 ♦2',
-        actions: ['restore', 'deal', 'split', 'standR', 'standL'],
-        stage: 'player-turn-right',
+        actions: ['restore', 'deal', 'split', 'standR'],
+        stage: 'player-turn-left',
         finalWin: 0
       }
     ].forEach(test => {
