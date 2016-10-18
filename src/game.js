@@ -323,7 +323,7 @@ class Game {
           } else {
             stage = `player-turn-${position}`
           }
-          if (handInfo.right.close) {
+          if (handInfo.right.close && handInfo.left.close) {
             stage = 'showdown'
           }
         }
@@ -391,13 +391,17 @@ class Game {
           stage = 'showdown'
         } else {
           handInfo.right = engine.getHandInfoAfterStand(handInfo.right)
-          if (history.some(x => x.type === 'SPLIT')) {
+          const hasSplit = history.some(x => x.type === 'SPLIT')
+          if (hasSplit) {
             stage = stage !== 'showdown' ? 'player-turn-left' : 'showdown'
           } else {
             stage = 'showdown'
           }
           if (handInfo.right.close) {
             stage = 'showdown'
+          }
+          if (hasSplit && !handInfo.left.close){
+            stage = 'player-turn-left'
           }
         }
         history.push(appendEpoch(action))
