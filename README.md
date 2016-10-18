@@ -193,6 +193,30 @@ There is a specific design limitation currently in the code. Currently it suppor
 
 NOTE: If you are interested in the random components, check out the `shuffle()` function.
 
+## Test
+
+Run tests by calling `npm test` or `mocha --compilers js:babel-core/registe`
+
+You can also write specific test cases using this syntax. For more details have a look at [game.spec.js](https://github.com/kedoska/engine-blackjack/blob/master/test/game.spec.js) 
+
+```
+{
+  cards: '♠10 ♦1 ♥5 ♣6 ♠11 ♦10',
+  actions: ['restore', 'deal', 'split', 'standR'],
+  stage: 'done',
+  finalWin: 0
+}
+```
+
+[mocha](https://mochajs.org/) will care about the following tasks:
+ - create a new game
+ - initialize it by injecting `♠10 ♦1 ♥5 ♣6 ♠11 ♦10` at the and of the _deck_
+ - run the desired `restore`, `deal`, `split` and finally `standR` (stand on right) 
+ - return the current state
+ - compare if `stage` is 'done' at the end
+
+If you specify the `finalWin` the test will compare the final winning.
+
 ## Side Bets
 
 Side bets are part of the "multi-game strategy". They are returned to the client as "available bets" and they can be sets in the `deal()` _payload_.
