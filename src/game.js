@@ -18,63 +18,7 @@
 
 const engine = require('./engine')
 const actions = require('../src/actions')
-
-const getDefaultSideBets = (active = false) => {
-  return {
-    luckyLucky: active,
-    perfectPairs: active,
-    royalMatch: active,
-    luckyLadies: active,
-    inBet: active,
-    MatchTheDealer: active
-  }
-}
-
-const getRules = ({
-  decks = 1,
-  standOnSoft17 = true,
-  double = 'any', // none, any, 9or10, 9or10or11, or 9thru15
-  split= true,
-  doubleAfterSplit = true, // What you can double on follows double rule
-  surrender = true,
-  insurance = true,
-  showdownAfterAceSplit = true
-}) => {
-  return {
-    decks: decks || 1,
-    standOnSoft17: standOnSoft17,
-    double: double,
-    split: split,
-    doubleAfterSplit: doubleAfterSplit,
-    surrender: surrender,
-    insurance: insurance,
-    showdownAfterAceSplit: showdownAfterAceSplit
-  }
-}
-
-const defaultState = (rules) => {
-  return {
-    hits: 0,
-    initialBet: 0,
-    finalBet: 0,
-    finalWin: 0,
-    wonOnRight: 0,
-    wonOnLeft: 0,
-    stage: 'ready',
-    deck: engine.shuffle(engine.newDecks(rules.decks)),
-    handInfo: {
-      left: {},
-      right: {}
-    },
-    history: [],
-    availableBets: getDefaultSideBets(true),
-    sideBetsInfo: null,
-    rules: rules,
-    dealerHoleCard: null,
-    dealerHasBlackjack: false,
-    dealerHasBusted: false
-  }
-}
+const presets = require('./presets')
 
 const appendEpoch = (obj) => {
   const { payload = {bet: 0} } = obj
@@ -89,8 +33,8 @@ const appendEpoch = (obj) => {
 }
 
 class Game {
-  constructor (initialState, rules = getRules({})) {
-    this.state = initialState || defaultState(rules)
+  constructor (initialState, rules = presets.getRules({})) {
+    this.state = initialState || presets.defaultState(rules)
     this.dispatch = this.dispatch.bind(this)
     this.getState = this.getState.bind(this)
     this.setState = this.setState.bind(this)
@@ -99,11 +43,11 @@ class Game {
   }
 
   canDouble (double, playerValue) {
-    if (double == "none") return false
-    else if (double == "9or10") return ((playerValue.hi == 9) || (playerValue.hi == 10))
-    else if (double == "9or10or11") return ((playerValue.hi >= 9) && (playerValue.hi <= 11))
-    else if (double == "9thru15") return ((playerValue.hi >= 9) && (playerValue.hi <= 15))
-    else return true;
+    if (double == 'none') return false
+    else if (double == '9or10') return ((playerValue.hi == 9) || (playerValue.hi == 10))
+    else if (double == '9or10or11') return ((playerValue.hi >= 9) && (playerValue.hi <= 11))
+    else if (double == '9thru15') return ((playerValue.hi >= 9) && (playerValue.hi <= 15))
+    else return true
   }
 
   enforceRules (handInfo) {
@@ -124,7 +68,7 @@ class Game {
         availableActions.double = false
       }
     }
-    if (!rules.insurance){
+    if (!rules.insurance) {
       availableActions.insurance = false
     }
     return handInfo
@@ -233,7 +177,7 @@ class Game {
             right: handInfo
           },
           sideBetsInfo: sideBetsInfo,
-          availableBets: getDefaultSideBets(false),
+          availableBets: presets.getDefaultSideBets(false),
           history: history,
           hits: hits + 1
         })
@@ -268,7 +212,7 @@ class Game {
         playerCardsRightPosition.push(cardRight[ 0 ])
         let handInfoLeft = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet))
         let handInfoRight = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet))
-        let stage  = ''
+        let stage = ''
         if (forceShowdown) {
           stage = 'showdown'
         } else {
@@ -291,7 +235,7 @@ class Game {
           history: history,
           hits: hits + 1
         })
-        if (stage === 'showdown'){
+        if (stage === 'showdown') {
           this._dispatch(actions.showdown())
         }
         break
@@ -400,7 +344,7 @@ class Game {
           if (handInfo.right.close) {
             stage = 'showdown'
           }
-          if (hasSplit && !handInfo.left.close){
+          if (hasSplit && !handInfo.left.close) {
             stage = 'player-turn-left'
           }
         }
