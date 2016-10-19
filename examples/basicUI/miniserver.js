@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const Game = require('../../src/game')
 const actions = require('../../src/actions')
 
+app.set('port', (process.env.PORT || 3000));
 app.set('trust proxy', 1) // trust first proxy
 app.use(session({
   secret: 'keyboard cat',
@@ -40,7 +41,7 @@ app.post('/blackjack/:action', (req, res) => {
   }))
 })
 
-app.listen(3000, () => {
-  console.log(`Server running on port 3000!`)
+app.listen(app.get('port'), () => {
+  console.log(`Server running on port ${app.get('port')}!`)
   console.log(`Got to http://localhost:3000/ and play...`)
 })
