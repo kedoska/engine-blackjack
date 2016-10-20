@@ -1,16 +1,22 @@
-engine-blackjack
-================
-
+<p align="center">
+  <a href="https://yarnpkg.com/">
+    <img src="https://cloud.githubusercontent.com/assets/11739105/19541876/a0cb4532-962f-11e6-8d7b-a3ebdf447ab1.png" alt="engine-blackjack" style="max-width:100%;">
+  </a>
+</p>
+<p align="center">
+  engine-blackjack - implement blackjack game into your software.
+</p>
+<p align="center">
+<img src="https://app.codeship.com/projects/5f4efc00-3c80-0134-f067-0e7310eecd24/status?branch=master">
 <a href="https://travis-ci.org/kedoska/engine-blackjack"><img src="https://travis-ci.org/kedoska/engine-blackjack.svg" alt="build:"></a>
 <a href="https://david-dm.org/kedoska/engine-blackjack/"><img src="https://david-dm.org/kedoska/engine-blackjack/status.svg" alt="Dependency Status"></a>
 <a href="https://david-dm.org/kedoska/engine-blackjack/?type=dev"><img src="https://david-dm.org/kedoska/engine-blackjack/dev-status.svg" alt="devDependency Status"></a>
+</p>
 ___
 
-Nodejs module to implement blackjack game into your software. It is intended to be used as
-server-side component to calculate the status of a game.
+## Play some demo games
 
-Main motivation of this side project is understand the basics of the games and provide a very 
-simple library that can be easily integrated in more complex systems.
+We deploy the [example](https://github.com/kedoska/engine-blackjack/tree/master/examples/basicUI) contained in this project [here](https://engine-blackjack.herokuapp.com/)
 
 ## Available game parameters
 
