@@ -1,7 +1,5 @@
 <p align="center">
-  <a href="https://yarnpkg.com/">
-    <img src="https://cloud.githubusercontent.com/assets/11739105/19541876/a0cb4532-962f-11e6-8d7b-a3ebdf447ab1.png" alt="engine-blackjack" style="max-width:100%;">
-  </a>
+    <img src="https://cloud.githubusercontent.com/assets/11739105/19564224/62fd8836-96a8-11e6-97ea-6d31464eb316.png" alt="engine-blackjack" style="max-width:100%;">
 </p>
 <p align="center">
   engine-blackjack - implement blackjack game into your software.
@@ -245,3 +243,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# Credits
+
+Thanks @webpty for logos
