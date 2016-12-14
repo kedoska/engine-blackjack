@@ -1,6 +1,6 @@
 {
   "name": "engine-blackjack",
-  "version": "0.1.9",
+  "version": "0.1.95",
   "description": "A simple nodeJs engine to play blackjack",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "blackjack"
   ],
   "engines": {
-    "node": "^6.9.1"
+    "node": ">=6.9.1"
   },
   "author": "Marco Casula <marco.casula@linux.com>",
   "license": "GPL-2.0",

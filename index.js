@@ -9,6 +9,7 @@
 module.exports = require('./src/engine')
 module.exports = {
   engine: require('./src/engine'),
+  presets: require('./src/presets'),
   actions: require('./src/actions'),
   Game: require('./src/game')
 }
