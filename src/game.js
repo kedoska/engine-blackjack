@@ -160,7 +160,10 @@ class Game {
         const dealerHasBlackjack = engine.calculate(dealerCards.concat([dealerHoleCard])).hi === 21
         const handInfo = this.enforceRules(engine.getHandInfoAfterDeal(playerCards, dealerCards, bet))
         const sideBetsInfo = engine.getSideBetsInfo(availableBets, sideBets, playerCards, dealerCards)
-        history.push(appendEpoch(action))
+        history.push(appendEpoch(Object.assign(action, {
+          right: playerCards,
+          dealerCards
+        })))
         this.setState({
           initialBet: bet,
           stage: 'player-turn-right',
@@ -203,13 +206,17 @@ class Game {
         let deck = this.state.deck
         const playerCardsLeftPosition = [ handInfo.right.cards[ 0 ]]
         const playerCardsRightPosition = [ handInfo.right.cards[ 1 ]]
-        history.push(appendEpoch(Object.assign(action, { payload: {bet: initialBet } })))
         const forceShowdown = rules.showdownAfterAceSplit && playerCardsRightPosition[ 0 ].value === 1
         let cardRight = deck.splice(deck.length - 2, 1)
         let cardLeft = deck.splice(deck.length - 1, 1)
         deck = deck.filter(x => [ cardLeft, cardRight ].indexOf(x) === -1)
         playerCardsLeftPosition.push(cardLeft[ 0 ])
         playerCardsRightPosition.push(cardRight[ 0 ])
+        history.push(appendEpoch(Object.assign(action, {
+          payload: {bet: initialBet },
+          left: playerCardsLeftPosition,
+          right: playerCardsRightPosition,
+        })))
         let handInfoLeft = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet))
         let handInfoRight = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet))
         let stage = ''
@@ -271,7 +278,9 @@ class Game {
             stage = 'showdown'
           }
         }
-        history.push(appendEpoch(action))
+        const objCards = {}
+        objCards[position] = playerCards
+        history.push(appendEpoch(Object.assign(action, objCards)))
         this.setState({
           stage: stage,
           handInfo: handInfo,
@@ -313,7 +322,9 @@ class Game {
             stage = `player-turn-${position}`
           }
         }
-        history.push(appendEpoch(Object.assign(action, { payload: {bet: initialBet } })))
+        const objCards = {}
+        objCards[position] = playerCards
+        history.push(appendEpoch(Object.assign(action, { payload: {bet: initialBet } }, objCards)))
         this.setState({
           stage: stage,
           handInfo: handInfo,
@@ -449,7 +460,7 @@ class Game {
             stage = 'done'
           }
         }
-        history.push(appendEpoch(action))
+        history.push(appendEpoch(Object.assign(action, {dealerCards: dealerCards})))
         this.setState({
           stage: stage,
           dealerCards: dealerCards,
