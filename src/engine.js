@@ -213,7 +213,7 @@ const getHandInfo = (playerCards, dealerCards) => {
   const isClosed = hasBusted || hasBlackjack
   const canDoubleDown = !isClosed && true
   const canSplit = playerCards.length > 1 && playerCards[ 0 ].value === playerCards[ 1 ].value && !isClosed
-  const canEnsure = dealerCards[ 0 ].value === 1 && !isClosed
+  const canInsure = dealerCards[ 0 ].value === 1 && !isClosed
   return {
     cards: playerCards,
     playerValue: handValue,
@@ -225,7 +225,7 @@ const getHandInfo = (playerCards, dealerCards) => {
     availableActions: {
       double: canDoubleDown,
       split: canSplit,
-      insurance: canEnsure,
+      insurance: canInsure,
       hit: !isClosed,
       stand: !isClosed,
       surrender: !isClosed

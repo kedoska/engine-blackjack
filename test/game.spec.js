@@ -41,7 +41,10 @@ const functions = {
   'split': () => actions.split(),
   'hitR': () => actions.hit({position: 'right'}),
   'standR': () => actions.stand({position: 'right'}),
-  'standL': () => actions.stand({position: 'left'})
+  'standL': () => actions.stand({position: 'left'}),
+  'insuranceInjectAmount': () => actions.insurance({bet: 100}),
+  'insuranceYes': () => actions.insurance({bet: 1}),
+  'insuranceNo': () => actions.insurance({bet: 0})
 }
 
 describe('Game flow', function () {
@@ -97,6 +100,105 @@ describe('Game flow', function () {
           assert.equal(state.finalWin, test.finalWin)
         }
       })
+    })
+  })
+  describe('# insurance dealer BJ', function() {
+    const test = {
+      cards: '♦10 ♥1 ♦3 ♦3',
+    }
+    it(`INSURANCE ON: should deal ${test.cards} and wait for "insurance" YES or NO`, function () {
+      const actions = ['restore', 'deal']
+      const rules = {insurance: true}
+      const state = executeFlow(rules, test.cards, actions.map(x => functions[x]))
+      const { handInfo: { right: { availableActions } } } = state
+      assert.equal(state.stage, 'player-turn-right', 'blackjack but insurance is ON and first card is ♥1')
+      assert.equal(availableActions.insurance, true, 'can insure')
+      assert.equal(availableActions.double, false, 'double should not be allowed')
+      assert.equal(availableActions.split, false, 'split should not be allowed')
+      assert.equal(availableActions.hit, false, 'hit should not be allowed')
+      assert.equal(availableActions.surrender, false, 'surrender should not be allowed')
+      assert.equal(availableActions.stand, false, 'stand should not be allowed')
+    })
+    it(`INSURANCE ON: should deal ${test.cards}, insure YES, and finish`, function () {
+      const actions = ['restore', 'deal', 'insuranceYes']
+      const rules = {insurance: true}
+      const state = executeFlow(rules, test.cards, actions.map(x => functions[x]))
+      const { finalBet, wonOnRight, handInfo: { right } } = state
+      assert.equal(state.stage, 'done', 'blackjack but insurance is ON and first card is ♥1')
+      assert.equal(right.playerInsuranceValue, 1, 'insurance risk should be 1')
+      assert.equal(finalBet, 11, 'bet 10 and insurance 1')
+      assert.equal(right.close, true, 'right hand should be close')
+      assert.equal(wonOnRight, 2, 'insurance pays 2 to 1 when dealer has bj')
+    })
+    it(`INSURANCE ON: prevent amount injection`, function () {
+      const actions = ['restore', 'deal', 'insuranceInjectAmount']
+      const rules = {insurance: true}
+      const state = executeFlow(rules, test.cards, actions.map(x => functions[x]))
+      const bet = 10
+      const maxInsuranceAmount = bet / 2
+      const { finalBet, wonOnRight, handInfo: { right } } = state
+      assert.equal(state.stage, 'done', 'blackjack but insurance is ON and first card is ♥1')
+      assert.equal(right.playerInsuranceValue, maxInsuranceAmount, 'insurance risk should be 1')
+      assert.equal(finalBet, bet + (maxInsuranceAmount), `bet ${bet} and max insurance ${maxInsuranceAmount}`)
+      assert.equal(right.close, true, 'right hand should be close')
+      assert.equal(wonOnRight, 5 * 2, 'insurance pays 2 to 1 when dealer has bj')
+    })
+    it(`INSURANCE OFF: should deal ${test.cards} and finish`, function () {
+      const actions = ['restore', 'deal']
+      const rules = {insurance: false}
+      const state = executeFlow(rules, test.cards, actions.map(x => functions[x]))
+      assert.equal(state.stage, 'done', test.cards)
+    })
+  })
+  describe('# insurance dealer no BJ', function() {
+    let test = {}
+    beforeEach(function() {
+      test = {
+        cards: '♦5 ♥1 ♦3 ♦3',
+      }
+    })
+    it(`INSURANCE ON: should deal ${test.cards} and wait for "insurance" YES or NO`, function () {
+      const actions = ['restore', 'deal']
+      const rules = {insurance: true}
+      const state = executeFlow(rules, test.cards, actions.map(x => functions[x]))
+      const { handInfo: { right: { availableActions } } } = state
+      assert.equal(state.stage, 'player-turn-right', 'blackjack but insurance is ON and first card is ♥1')
+      assert.equal(availableActions.insurance, true, 'can insure')
+      assert.equal(availableActions.double, false, 'double should not be allowed')
+      assert.equal(availableActions.split, false, 'split should not be allowed')
+      assert.equal(availableActions.hit, false, 'hit should not be allowed')
+      assert.equal(availableActions.surrender, false, 'surrender should not be allowed')
+      assert.equal(availableActions.stand, false, 'stand should not be allowed')
+    })
+    it(`INSURANCE ON: should deal ${test.cards}, insurance YES, and stand`, function () {
+      const actions = ['restore', 'deal', 'insuranceYes', 'standR']
+      const rules = {insurance: true}
+      const state = executeFlow(rules, test.cards, actions.map(x => functions[x]))
+      const { finalBet, wonOnRight, handInfo: { right } } = state
+      assert.equal(state.stage, 'done', 'no blackjack, first card is ♥1, should go on')
+      assert.equal(right.playerInsuranceValue, 1, 'insurance risk should be 1')
+      assert.equal(finalBet, 11, 'bet 10 and insurance 1')
+      assert.equal(right.close, true, 'right hand should be close')
+      assert.equal(wonOnRight, 0, 'insurance pays 0 when dealer has no bj')
+    })
+    it(`INSURANCE ON: prevent amount injection`, function () {
+      const actions = ['restore', 'deal', 'insuranceInjectAmount', 'standR']
+      const rules = {insurance: true}
+      const state = executeFlow(rules, test.cards, actions.map(x => functions[x]))
+      const bet = 10
+      const maxInsuranceAmount = bet / 2
+      const { finalBet, wonOnRight, handInfo: { right } } = state
+      assert.equal(state.stage, 'done', 'blackjack but insurance is ON and first card is ♥1')
+      assert.equal(right.playerInsuranceValue, maxInsuranceAmount, 'insurance risk should be 1')
+      assert.equal(finalBet, bet + (maxInsuranceAmount), `bet ${bet} and max insurance ${maxInsuranceAmount}`)
+      assert.equal(right.close, true, 'right hand should be close')
+      assert.equal(wonOnRight, 0, 'insurance pays 0 when dealer has no bj')
+    })
+    it(`INSURANCE OFF: should deal ${test.cards} and finish`, function () {
+      const actions = ['restore', 'deal']
+      const rules = {insurance: false}
+      const state = executeFlow(rules, test.cards, actions.map(x => functions[x]))
+      assert.equal(state.stage, 'player-turn-right', test.cards)
     })
   })
 })

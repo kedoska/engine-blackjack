@@ -152,13 +152,22 @@ class Game {
     switch (action.type) {
       case 'DEAL': {
         const { bet, sideBets } = action.payload
-        const { availableBets, history, hits } = this.state
+        const { rules : { insurance }, availableBets, history, hits } = this.state
         const playerCards = this.state.deck.splice(this.state.deck.length - 2, 2)
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
         const dealerHoleCard = this.state.deck.splice(this.state.deck.length - 1, 1)[ 0 ]
         const dealerValue = engine.calculate(dealerCards)
         const dealerHasBlackjack = engine.calculate(dealerCards.concat([dealerHoleCard])).hi === 21
         const handInfo = this.enforceRules(engine.getHandInfoAfterDeal(playerCards, dealerCards, bet))
+        if (insurance && dealerValue.lo === 1) {
+          handInfo.availableActions = Object.assign(handInfo.availableActions, {
+            stand: false,
+            double: false,
+            hit: false,
+            split: false,
+            surrender: false
+          })
+        }
         const sideBetsInfo = engine.getSideBetsInfo(availableBets, sideBets, playerCards, dealerCards)
         history.push(appendEpoch(Object.assign(action, {
           right: playerCards,
@@ -184,21 +193,44 @@ class Game {
           history: history,
           hits: hits + 1
         })
-        if (handInfo.playerHasBlackjack || dealerHasBlackjack) {
+
+        if (handInfo.playerHasBlackjack) {
+          // purpose of the game archived !!!
           this._dispatch(actions.showdown())
+          break
+        }
+        if (dealerHasBlackjack) {
+          if (!handInfo.availableActions.insurance) {
+            // nothing left, let's go and tell the customer he loses this game
+            this._dispatch(actions.showdown())
+          }
+          // else
+          // in this case, the game must continue in "player-turn-right"
+          // waiting for the insurance action
         }
         break
       }
       case 'INSURANCE': {
-        const { bet } = action.payload
-        const { handInfo, history, hits } = this.state
-        handInfo.right = engine.getHandInfoAfterInsurance(handInfo.right, bet)
-        history.push(appendEpoch(Object.assign(action, { payload: {bet: bet } })))
+        const { bet = 0 } = action.payload
+        const { handInfo, dealerCards, dealerHoleCard, initialBet, history, hits } = this.state
+        const dealerHasBlackjack = engine.calculate(dealerCards.concat([dealerHoleCard])).hi === 21
+        handInfo.right = this.enforceRules(engine.getHandInfoAfterDeal(handInfo.right.cards, dealerCards, bet))
+        handInfo.right.availableActions = Object.assign(handInfo.right.availableActions, {
+          insurance: false
+        })
+        handInfo.right.close = dealerHasBlackjack
+        if (bet > 0) {
+          handInfo.right.playerInsuranceValue = bet <= 0 || bet > initialBet / 2 ? initialBet / 2 : bet
+        }
+        history.push(appendEpoch(Object.assign(action, { payload: { bet: handInfo.right.playerInsuranceValue || 0 } })))
         this.setState({
           handInfo: handInfo,
           history: history,
           hits: hits + 1
         })
+        if (dealerHasBlackjack) {
+          this._dispatch(actions.showdown())
+        }
         break
       }
       case 'SPLIT': {
