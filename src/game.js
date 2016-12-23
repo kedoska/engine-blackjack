@@ -157,9 +157,10 @@ class Game {
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
         const dealerHoleCard = this.state.deck.splice(this.state.deck.length - 1, 1)[ 0 ]
         const dealerValue = engine.calculate(dealerCards)
-        const dealerHasBlackjack = engine.calculate(dealerCards.concat([dealerHoleCard])).hi === 21
+        let dealerHasBlackjack = engine.calculate(dealerCards.concat([dealerHoleCard])).hi === 21
         const handInfo = this.enforceRules(engine.getHandInfoAfterDeal(playerCards, dealerCards, bet))
         if (insurance && dealerValue.lo === 1) {
+          dealerHasBlackjack = false
           handInfo.availableActions = Object.assign(handInfo.availableActions, {
             stand: false,
             double: false,
