@@ -4,7 +4,7 @@
   "description": "A simple nodeJs engine to play blackjack",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --compilers js:babel-core/register",
+    "test": "mocha",
     "example1": "node examples/basicUI/miniserver.js"
   },
   "repository": {
@@ -25,12 +25,10 @@
   "author": "Marco Casula <marco.casula@linux.com>",
   "license": "GPL-2.0",
   "devDependencies": {
-    "babel-core": "^6.17.0",
-    "babel-preset-es2015": "^6.16.0",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "express-session": "^1.14.1",
-    "mocha": "^3.0.2"
+    "mocha": "^3.2.0"
   },
   "dependencies": {}
 }

@@ -390,7 +390,8 @@ const getPrize = (playerHand, dealerCards) => {
   } = playerHand
   const dealerValue = calculate(dealerCards).hi
   const dealerHasBlackjack = isBlackjack(dealerCards)
-  const insurancePrize = dealerHasBlackjack && playerInsuranceValue > 0 ? playerInsuranceValue * 2 : 0
+  const isFirstCardAce = dealerCards[0].value === 1
+  const insurancePrize = (isFirstCardAce && dealerHasBlackjack && playerInsuranceValue > 0) ? playerInsuranceValue * 2 : 0
   if (!close) {
     return 0
   }

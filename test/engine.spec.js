@@ -135,4 +135,42 @@ describe('prize calculation', function () {
     assert.equal(lib.getPrize(playerHand, dealerCards.concat(lib.serializeCards('♥1'))), initialBet, 'player Push (bet value is returned')
     assert.equal(lib.getPrize(playerHand, dealerCards.concat(lib.serializeCards('♥2'))), 0, 'player lose')
   })
+  it('should pay insurance when dealer has BJ', function () {
+    const playerCards = lib.serializeCards('2d 3d')
+    const playerValue = lib.calculate(playerCards)
+    const dealerCards = lib.serializeCards('1d 11d')
+    const initialBet = 10
+    const insuranceBet = 5
+    const playerHand = {
+      close: true,
+      playerInsuranceValue: 5,
+      playerHasSurrendered: false,
+      playerHasBlackjack: false,
+      playerHasBusted: false,
+      playerValue: playerValue,
+      bet: initialBet
+    }
+    const prize = lib.getPrize(playerHand, dealerCards)
+    assert.equal(prize, insuranceBet * 2, `insurance should pay ${insuranceBet} * 2`)
+  })
+  it('should NOT pay insurance when dealer has BJ and first card is NOT Ace', function () {
+    const playerCards = lib.serializeCards('2d 3d')
+    const playerValue = lib.calculate(playerCards)
+    const dealerCards = lib.serializeCards('11d 1d')
+    const initialBet = 10
+    const insuranceBet = 5
+    const playerHand = {
+      close: true,
+      playerInsuranceValue: 5,
+      playerHasSurrendered: false,
+      playerHasBlackjack: false,
+      playerHasBusted: false,
+      playerValue: playerValue,
+      bet: initialBet
+    }
+    const prize = lib.getPrize(playerHand, dealerCards)
+    assert.equal(lib.isBlackjack(dealerCards), true, 'dealer has blackjack')
+    assert.notEqual(dealerCards[0].value, 1, 'first cards IS NOT an Ace')
+    assert.equal(prize, insuranceBet * 0, `it should not pay insurance when first card is not Ace`)
+  })
 })
