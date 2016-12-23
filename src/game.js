@@ -215,15 +215,11 @@ class Game {
         const { bet = 0 } = action.payload
         const { handInfo, dealerCards, dealerHoleCard, initialBet, history, hits } = this.state
         const dealerHasBlackjack = engine.calculate(dealerCards.concat([dealerHoleCard])).hi === 21
-        handInfo.right = this.enforceRules(engine.getHandInfoAfterDeal(handInfo.right.cards, dealerCards, bet))
-        handInfo.right.availableActions = Object.assign(handInfo.right.availableActions, {
-          insurance: false
-        })
+        const insuranceValue = bet > initialBet / 2 ? initialBet / 2 : bet
+        handInfo.right = this.enforceRules(engine.getHandInfoAfterInsurance(handInfo.right.cards, dealerCards, insuranceValue || 0))
+        handInfo.right.bet = initialBet
         handInfo.right.close = dealerHasBlackjack
-        if (bet > 0) {
-          handInfo.right.playerInsuranceValue = bet <= 0 || bet > initialBet / 2 ? initialBet / 2 : bet
-        }
-        history.push(appendEpoch(Object.assign(action, { payload: { bet: handInfo.right.playerInsuranceValue || 0 } })))
+        history.push(appendEpoch(Object.assign(action, { payload: { bet: insuranceValue || 0 } })))
         this.setState({
           handInfo: handInfo,
           history: history,

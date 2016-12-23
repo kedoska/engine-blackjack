@@ -305,10 +305,19 @@ const getHandInfoAfterSurrender = (handInfo) => {
   })
 }
 
-const getHandInfoAfterInsurance = (handInfo, bet) => {
-  const availableActions = handInfo.availableActions
-  availableActions.insurance = false
-  return Object.assign(handInfo, { playerInsuranceValue: bet, availableActions: availableActions })
+const getHandInfoAfterInsurance = (playerCards, dealerCards, insuranceValue) => {
+  const hand = getHandInfo(playerCards, dealerCards)
+  const availableActions = hand.availableActions
+  hand.availableActions = Object.assign(availableActions, {
+    stand: true,
+    hit: true,
+    surrender: true,
+    insurance: false
+  })
+  return Object.assign(hand, {
+    close: hand.playerHasBlackjack ? true : false,
+    playerInsuranceValue: insuranceValue
+  })
 }
 
 const isLuckyLucky = (playerCards, dealerCards) => {
