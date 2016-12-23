@@ -416,6 +416,20 @@ const getPrize = (playerHand, dealerCards) => {
   return insurancePrize
 }
 
+const getPrizes = ({history, handInfo: { left, right }, dealerCards }) => {
+  const finalBet = history.reduce((memo, x) => {
+    memo += x.value
+    return memo
+  }, 0)
+  const wonOnRight = getPrize(right, dealerCards)
+  const wonOnLeft = getPrize(left, dealerCards)
+  return {
+    finalBet: finalBet,
+    wonOnRight: wonOnRight,
+    wonOnLeft: wonOnLeft
+  }
+}
+
 module.exports.newDeck = newDeck
 module.exports.newDecks = newDecks
 module.exports.shuffle = shuffle
@@ -435,3 +449,4 @@ module.exports.serializeCard = serializeCard
 module.exports.serializeCards = serializeCards
 module.exports.isActionAllowed = isActionAllowed
 module.exports.getPrize = getPrize
+module.exports.getPrizes = getPrizes

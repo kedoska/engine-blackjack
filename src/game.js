@@ -82,21 +82,6 @@ class Game {
     this.state = Object.assign(this.state, state)
   }
 
-  getPrizes () {
-    const finalBet = this.state.history.reduce((memo, x) => {
-      memo += x.value
-      return memo
-    }, 0)
-    const dealerCards = this.state.dealerCards
-    const wonOnRight = engine.getPrize(this.state.handInfo.right, dealerCards)
-    const wonOnLeft = engine.getPrize(this.state.handInfo.left, dealerCards)
-    return {
-      finalBet: finalBet,
-      wonOnRight: wonOnRight,
-      wonOnLeft: wonOnLeft
-    }
-  }
-
   dispatch (action) {
     const { stage, handInfo, history } = this.state
     const { type, payload = {} } = action
@@ -414,7 +399,7 @@ class Game {
         if (dealerHoleCardOnly) {
           this.setState(Object.assign({
             stage: 'done'
-          }, this.getPrizes()))
+          }, engine.getPrizes(this.state)))
           break
         }
         const checkLeftStatus = history.some(x => x.type === 'SPLIT')
@@ -422,20 +407,20 @@ class Game {
         if (check1) {
           this.setState(Object.assign({
             stage: 'done'
-          }, this.getPrizes()))
+          }, engine.getPrizes(this.state)))
           break
         }
         const check2 = checkLeftStatus && (handInfo.left.playerHasBusted || handInfo.left.playerHasBlackjack) && check1
         if (check2) {
           this.setState(Object.assign({
             stage: 'done'
-          }, this.getPrizes()))
+          }, engine.getPrizes(this.state)))
           break
         }
         while(this.getState().stage === 'dealer-turn'){
           this._dispatch(actions.dealerHit())
         }
-        this.setState(this.getPrizes())
+        this.setState(engine.getPrizes(this.state))
         break
       }
       case 'SURRENDER': {
