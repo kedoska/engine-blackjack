@@ -57,12 +57,6 @@ describe('Game flow', function () {
         finalWin: 0
       },
       {
-        cards: '♠2 ♦1 ♥5 ♣6 ♠11 ♦10',
-        actions: ['restore', 'deal', 'split', 'hitR', 'hitR', 'hitR'],
-        stage: 'done',
-        finalWin: 0
-      },
-      {
         cards: '♥3 ♣3 ♠2 ♦2',
         actions: ['restore', 'deal', 'split', 'standR'],
         stage: 'player-turn-left',
@@ -198,5 +192,25 @@ describe('Game flow', function () {
       const state = executeFlow(rules, '♦5 ♥1 ♦2 ♦2', actions.map(x => functions[x]))
       assert.equal(state.stage, 'player-turn-right', '♦5 ♥1 ♦2 ♦2')
     })
+  })
+  it('split on 10, have bj on left and bust on right', function () {
+    const cards = '♠6 ♦1 ♥5 ♣6 ♠11 ♦10'
+    const actions = ['restore', 'deal', 'split', 'hitR', 'hitR', 'hitR']
+    const rules = {
+      decks: 1,
+      standOnSoft17: true,
+      double: 'any',
+      split: true,
+      doubleAfterSplit: true,
+      surrender: true,
+      insurance: true,
+      showdownAfterAceSplit: true
+    }
+    const state = executeFlow(rules, cards, actions.map(x => functions[x]))
+    const { stage, handInfo: { left, right} } = state
+    assert.equal(stage, 'done', cards)
+    assert.equal(left.close, true, 'L is close')
+    assert.equal(left.playerHasBlackjack, true, 'L has BJ')
+    assert.equal(right.playerHasBusted, true, 'R has busted')
   })
 })
