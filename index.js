@@ -6,8 +6,8 @@
 
 'use strict'
 
-module.exports = require('./src/engine')
 module.exports = {
+  constants: require('./src/constants'),
   engine: require('./src/engine'),
   presets: require('./src/presets'),
   actions: require('./src/actions'),

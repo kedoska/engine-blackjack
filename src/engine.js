@@ -16,6 +16,8 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+const TYPES = require('./constants')
+
 const cardName = (number) => {
   if (!number) {
     return null
@@ -353,24 +355,24 @@ const getSideBetsInfo = (availableBets, sideBets, playerCards, dealerCards) => {
  * @returns {boolean}
  */
 const isActionAllowed = (actionName, stage) => {
-  if (actionName === 'RESTORE') {
+  if (actionName === TYPES.RESTORE) {
     return true
   }
   switch (stage) {
-    case 'ready': {
-      return ['RESTORE', 'DEAL'].indexOf(actionName) > -1
+    case TYPES.STAGE_READY: {
+      return [TYPES.RESTORE, TYPES.DEAL].indexOf(actionName) > -1
     }
-    case 'player-turn-right': {
-      return ['STAND', 'INSURANCE', 'SURRENDER', 'SPLIT', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
+    case TYPES.STAGE_PLAYER_TURN_RIGHT: {
+      return [TYPES.STAND, TYPES.INSURANCE, TYPES.SURRENDER, TYPES.SPLIT, TYPES.HIT, TYPES.DOUBLE].indexOf(actionName) > -1
     }
-    case 'player-turn-left': {
-      return ['STAND', 'HIT', 'DOUBLE'].indexOf(actionName) > -1
+    case TYPES.STAGE_PLAYER_TURN_LEFT: {
+      return [TYPES.STAND, TYPES.HIT, TYPES.DOUBLE].indexOf(actionName) > -1
     }
-    case 'showdown': {
-      return ['SHOWDOWN', 'STAND'].indexOf(actionName) > -1
+    case TYPES.SHOWDOWN: {
+      return [TYPES.SHOWDOWN, TYPES.STAND].indexOf(actionName) > -1
     }
-    case 'dealer-turn': {
-      return ['DEALER-HIT'].indexOf(actionName) > -1
+    case TYPES.STAGE_DEALER_TURN: {
+      return [TYPES.DEALER_HIT].indexOf(actionName) > -1
     }
     default: {
       return false

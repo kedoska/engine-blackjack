@@ -16,8 +16,9 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+const TYPES = require('./constants')
 const engine = require('./engine')
-const actions = require('../src/actions')
+const actions = require('./actions')
 const presets = require('./presets')
 
 const appendEpoch = (obj) => {
@@ -64,7 +65,7 @@ class Game {
       availableActions.surrender = false
     }
     if (!rules.doubleAfterSplit) {
-      if (history.some(x => x.type === 'SPLIT')) {
+      if (history.some(x => x.type === TYPES.SPLIT)) {
         availableActions.double = false
       }
     }
@@ -85,9 +86,9 @@ class Game {
   dispatch (action) {
     const { stage, handInfo, history } = this.state
     const { type, payload = {} } = action
-    const { position = 'right' } = payload
-    const isLeft = position === 'left'
-    const historyHasSplit = history.some(x => x.type === 'SPLIT')
+    const { position = TYPES.RIGHT } = payload
+    const isLeft = position === TYPES.LEFT
+    const historyHasSplit = history.some(x => x.type === TYPES.SPLIT)
     const hand = handInfo[position]
 
     let isActionAllowed = engine.isActionAllowed(type, stage)
@@ -96,12 +97,12 @@ class Game {
       return this._dispatch(actions.invalid(action, `${type} is not allowed when stage is ${stage}`))
     }
 
-    const whiteList = ['RESTORE', 'DEAL', 'SHOWDOWN']
+    const whiteList = [TYPES.RESTORE, TYPES.DEAL, TYPES.SHOWDOWN]
 
     if (isActionAllowed && whiteList.some(x => x === type)) {
       // this is a safe action. We do not need to check the status of the stage
       // so we return the result now!
-      if (type === 'DEAL' && typeof payload.bet !== 'number') {
+      if (type === TYPES.DEAL && typeof payload.bet !== 'number') {
         return this._dispatch(actions.invalid(action, `${type} without bet value on stage ${stage}`))
       }
       return this._dispatch(action)
@@ -116,7 +117,7 @@ class Game {
       // You want to do something on "left" but no split found in history.
       // default side is "right". When an action want to edit the "left" side of the table
       // a valid split should be appear in the history. If not, "left" position is not ready to be changed
-      if (!history.some(x => x.type === 'SPLIT')) {
+      if (!history.some(x => x.type === TYPES.SPLIT)) {
         return this._dispatch(actions.invalid(action, `${type} is not allowed because there is no SPLIT in current stage "${stage}"`))
       }
     }
@@ -135,7 +136,7 @@ class Game {
 
   _dispatch (action) {
     switch (action.type) {
-      case 'DEAL': {
+      case TYPES.DEAL: {
         const { bet, sideBets } = action.payload
         const { rules : { insurance }, availableBets, history, hits } = this.state
         const playerCards = this.state.deck.splice(this.state.deck.length - 2, 2)
@@ -161,7 +162,7 @@ class Game {
         })))
         this.setState({
           initialBet: bet,
-          stage: 'player-turn-right',
+          stage: TYPES.STAGE_PLAYER_TURN_RIGHT,
           dealerCards: dealerCards,
           dealerHoleCard: dealerHoleCard,
           dealerValue: dealerValue,
@@ -196,7 +197,7 @@ class Game {
         }
         break
       }
-      case 'INSURANCE': {
+      case TYPES.INSURANCE: {
         const { bet = 0 } = action.payload
         const { handInfo, dealerCards, dealerHoleCard, initialBet, history, hits } = this.state
         const dealerHasBlackjack = engine.calculate(dealerCards.concat([dealerHoleCard])).hi === 21
@@ -215,7 +216,7 @@ class Game {
         }
         break
       }
-      case 'SPLIT': {
+      case TYPES.SPLIT: {
         const { rules, initialBet, handInfo, dealerCards, history, hits } = this.state
         let deck = this.state.deck
         const playerCardsLeftPosition = [ handInfo.right.cards[ 0 ]]
@@ -235,16 +236,16 @@ class Game {
         let handInfoRight = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet))
         let stage = ''
         if (forceShowdown) {
-          stage = 'showdown'
+          stage = TYPES.STAGE_SHOWDOWN
         } else {
           if (handInfoRight.close) {
-            stage = 'player-turn-left'
+            stage = TYPES.STAGE_PLAYER_TURN_LEFT
           } else {
-            stage = 'player-turn-right'
+            stage = TYPES.STAGE_PLAYER_TURN_RIGHT
           }
         }
         if (handInfoRight.close && handInfoLeft.close) {
-          stage = 'showdown'
+          stage = TYPES.STAGE_SHOWDOWN
         }
         this.setState({
           stage: stage,
@@ -256,23 +257,23 @@ class Game {
           history: history,
           hits: hits + 1
         })
-        if (stage === 'showdown') {
+        if (stage === TYPES.STAGE_SHOWDOWN) {
           this._dispatch(actions.showdown())
         }
         break
       }
-      case 'HIT': {
+      case TYPES.HIT: {
         let stage = ''
         const { initialBet, deck, handInfo, dealerCards, cardCount, history, hits } = this.state
         const position = action.payload.position
         const card = deck.splice(deck.length - 1, 1)
         let playerCards = null
         // TODO: remove position and replace it with stage info #hit
-        if (position === 'left') {
+        if (position === TYPES.LEFT) {
           playerCards = handInfo.left.cards.concat(card)
           handInfo.left = engine.getHandInfoAfterHit(playerCards, dealerCards, initialBet)
           if (handInfo.left.close) {
-            stage = 'showdown'
+            stage = TYPES.STAGE_SHOWDOWN
           } else {
             stage = `player-turn-${position}`
           }
@@ -280,16 +281,16 @@ class Game {
           playerCards = handInfo.right.cards.concat(card)
           handInfo.right = engine.getHandInfoAfterHit(playerCards, dealerCards, initialBet)
           if (handInfo.right.close) {
-            if (history.some(x => x.type === 'SPLIT')) {
-              stage = 'player-turn-left'
+            if (history.some(x => x.type === TYPES.SPLIT)) {
+              stage = TYPES.STAGE_PLAYER_TURN_LEFT
             } else {
-              stage = 'showdown'
+              stage = TYPES.STAGE_SHOWDOWN
             }
           } else {
             stage = `player-turn-${position}`
           }
           if (handInfo.right.close && handInfo.left.close) {
-            stage = 'showdown'
+            stage = TYPES.STAGE_SHOWDOWN
           }
         }
         const objCards = {}
@@ -303,23 +304,23 @@ class Game {
           history: history,
           hits: hits + 1
         })
-        if (stage === 'showdown') {
+        if (stage === TYPES.STAGE_SHOWDOWN) {
           this._dispatch(actions.showdown())
         }
         break
       }
-      case 'DOUBLE': {
+      case TYPES.DOUBLE: {
         let stage = ''
         const { initialBet, deck, handInfo, dealerCards, cardCount, history, hits } = this.state
         const position = action.payload.position
         const card = deck.splice(deck.length - 1, 1)
         let playerCards = null
         // TODO: remove position and replace it with stage info #hit
-        if (position === 'left') {
+        if (position === TYPES.LEFT) {
           playerCards = handInfo.left.cards.concat(card)
           handInfo.left = engine.getHandInfoAfterDouble(playerCards, dealerCards, initialBet)
           if (handInfo.left.close) {
-            stage = 'showdown'
+            stage = TYPES.STAGE_SHOWDOWN
           } else {
             stage = `player-turn-${position}`
           }
@@ -327,10 +328,10 @@ class Game {
           playerCards = handInfo.right.cards.concat(card)
           handInfo.right = engine.getHandInfoAfterDouble(playerCards, dealerCards, initialBet)
           if (handInfo.right.close) {
-            if (history.some(x => x.type === 'SPLIT')) {
-              stage = 'player-turn-left'
+            if (history.some(x => x.type === TYPES.SPLIT)) {
+              stage = TYPES.STAGE_PLAYER_TURN_LEFT
             } else {
-              stage = 'showdown'
+              stage = TYPES.STAGE_SHOWDOWN
             }
           } else {
             stage = `player-turn-${position}`
@@ -350,27 +351,27 @@ class Game {
         this._dispatch(actions.stand(position))
         break
       }
-      case 'STAND': {
+      case TYPES.STAND: {
         let stage = this.state.stage
         const { handInfo, history, hits } = this.state
         const position = action.payload.position
         // TODO: remove position and replace it with stage info #hit
-        if (position === 'left') {
+        if (position === TYPES.LEFT) {
           handInfo.left = engine.getHandInfoAfterStand(handInfo.left)
-          stage = 'showdown'
+          stage = TYPES.STAGE_SHOWDOWN
         } else {
           handInfo.right = engine.getHandInfoAfterStand(handInfo.right)
-          const hasSplit = history.some(x => x.type === 'SPLIT')
+          const hasSplit = history.some(x => x.type === TYPES.SPLIT)
           if (hasSplit) {
-            stage = stage !== 'showdown' ? 'player-turn-left' : 'showdown'
+            stage = stage !== TYPES.STAGE_SHOWDOWN ? TYPES.STAGE_PLAYER_TURN_LEFT : TYPES.STAGE_SHOWDOWN
           } else {
-            stage = 'showdown'
+            stage = TYPES.STAGE_SHOWDOWN
           }
           if (handInfo.right.close) {
-            stage = 'showdown'
+            stage = TYPES.STAGE_SHOWDOWN
           }
           if (hasSplit && !handInfo.left.close) {
-            stage = 'player-turn-left'
+            stage = TYPES.STAGE_PLAYER_TURN_LEFT
           }
         }
         history.push(appendEpoch(action))
@@ -380,17 +381,17 @@ class Game {
           history: history,
           hits: hits + 1
         })
-        if (stage === 'showdown') {
+        if (stage === TYPES.STAGE_SHOWDOWN) {
           this._dispatch(actions.showdown())
         }
         break
       }
-      case 'SHOWDOWN': {
+      case TYPES.SHOWDOWN: {
         const { dealerHoleCard, handInfo, history, hits } = this.state
         const { dealerHoleCardOnly } = action.payload
         history.push(appendEpoch(action))
         this.setState({
-          stage: 'dealer-turn',
+          stage: TYPES.STAGE_DEALER_TURN,
           history: history,
           hits: hits + 1
         })
@@ -398,37 +399,37 @@ class Game {
         this._dispatch(actions.dealerHit({dealerHoleCard: dealerHoleCard}))
         if (dealerHoleCardOnly) {
           this.setState(Object.assign({
-            stage: 'done'
+            stage: TYPES.STAGE_DONE
           }, engine.getPrizes(this.state)))
           break
         }
-        const checkLeftStatus = history.some(x => x.type === 'SPLIT')
+        const checkLeftStatus = history.some(x => x.type === TYPES.SPLIT)
         const check1 = (handInfo.right.playerHasBusted || handInfo.right.playerHasBlackjack) && !checkLeftStatus
         if (check1) {
           this.setState(Object.assign({
-            stage: 'done'
+            stage: TYPES.STAGE_DONE
           }, engine.getPrizes(this.state)))
           break
         }
         const check2 = checkLeftStatus && (handInfo.left.playerHasBusted || handInfo.left.playerHasBlackjack) && check1
         if (check2) {
           this.setState(Object.assign({
-            stage: 'done'
+            stage: TYPES.STAGE_DONE
           }, engine.getPrizes(this.state)))
           break
         }
-        while(this.getState().stage === 'dealer-turn'){
+        while(this.getState().stage === TYPES.STAGE_DEALER_TURN){
           this._dispatch(actions.dealerHit())
         }
         this.setState(engine.getPrizes(this.state))
         break
       }
-      case 'SURRENDER': {
+      case TYPES.SURRENDER: {
         const { handInfo, history, hits } = this.state
         handInfo.right = engine.getHandInfoAfterSurrender(handInfo.right)
         history.push(appendEpoch(action))
         this.setState({
-          stage: 'showdown',
+          stage: TYPES.STAGE_SHOWDOWN,
           handInfo: handInfo,
           history: history,
           hits: hits + 1
@@ -436,7 +437,7 @@ class Game {
         this._dispatch(actions.showdown({ dealerHoleCardOnly: true }))
         break
       }
-      case 'DEALER-HIT': {
+      case TYPES.DEALER_HIT: {
         const { rules, deck, handInfo, cardCount, history, hits } = this.state
         // the new card for dealer can be the "dealerHoleCard" or a new card
         // dealerHoleCard was set at the deal()
@@ -451,27 +452,27 @@ class Game {
         const stopPoint = playerRightValue > playerLeftValue ? playerRightValue : playerLeftValue
         let stage = null
         if (dealerValue.hi < 17) {
-          stage = 'dealer-turn'
+          stage = TYPES.STAGE_DEALER_TURN
         } else {
           if (!rules.standOnSoft17) {
             if (dealerValue.hi >= stopPoint) {
-              stage = 'done'
+              stage = TYPES.STAGE_DONE
             } else {
-              stage = 'dealer-turn'
+              stage = TYPES.STAGE_DEALER_TURN
             }
           } else {
             if (dealerValue.hi === 17 && dealerValue.hi >= stopPoint && dealerCards.some(x => x.value === 1)) {
-              stage = 'done'
+              stage = TYPES.STAGE_DONE
             } else {
               if (dealerValue.hi >= stopPoint) {
-                stage = 'done'
+                stage = TYPES.STAGE_DONE
               } else {
-                stage = 'dealer-turn'
+                stage = TYPES.STAGE_DEALER_TURN
               }
             }
           }
           if (dealerHasBlackjack || dealerHasBusted) {
-            stage = 'done'
+            stage = TYPES.STAGE_DONE
           }
         }
         history.push(appendEpoch(Object.assign(action, {dealerCards: dealerCards})))

@@ -15,7 +15,7 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
+const TYPES = require('./constants')
 const engine = require('./engine')
 
 const getDefaultSideBets = (active = false) => {
@@ -59,7 +59,7 @@ const defaultState = (rules) => {
     finalWin: 0,
     wonOnRight: 0,
     wonOnLeft: 0,
-    stage: 'ready',
+    stage: TYPES.STAGE_READY,
     deck: engine.shuffle(engine.newDecks(rules.decks)),
     handInfo: {
       left: {},

@@ -16,9 +16,11 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+const TYPES = require('./constants')
+
 module.exports.invalid = (action, info) => {
   return {
-    type: 'INVALID',
+    type: TYPES.INVALID,
     payload: {
       type: action.type,
       payload: action.payload,
@@ -29,13 +31,13 @@ module.exports.invalid = (action, info) => {
 
 module.exports.restore = () => {
   return {
-    type: 'RESTORE'
+    type: TYPES.RESTORE
   }
 }
 
 module.exports.deal = ({bet = 10}) => {
   return {
-    type: 'DEAL',
+    type: TYPES.DEAL,
     payload: {
       bet: bet,
       sideBets: {} // will be matched with availableBets
@@ -45,7 +47,7 @@ module.exports.deal = ({bet = 10}) => {
 
 module.exports.insurance = ({bet = 1}) => {
   return {
-    type: 'INSURANCE',
+    type: TYPES.INSURANCE,
     payload: {
       bet: bet
     }
@@ -54,13 +56,13 @@ module.exports.insurance = ({bet = 1}) => {
 
 module.exports.split = () => {
   return {
-    type: 'SPLIT'
+    type: TYPES.SPLIT
   }
 }
 
 module.exports.hit = ({position = 'right'}) => {
   return {
-    type: 'HIT',
+    type: TYPES.HIT,
     payload: {
       position: position // left or right
     }
@@ -69,7 +71,7 @@ module.exports.hit = ({position = 'right'}) => {
 
 module.exports.double = ({position = 'right'}) => {
   return {
-    type: 'DOUBLE',
+    type: TYPES.DOUBLE,
     payload: {
       position: position // left or right
     }
@@ -78,7 +80,7 @@ module.exports.double = ({position = 'right'}) => {
 
 module.exports.stand = ({position = 'right'}) => {
   return {
-    type: 'STAND',
+    type: TYPES.STAND,
     payload: {
       position: position // left or right
     }
@@ -87,13 +89,13 @@ module.exports.stand = ({position = 'right'}) => {
 
 module.exports.surrender = () => {
   return {
-    type: 'SURRENDER'
+    type: TYPES.SURRENDER
   }
 }
 
 module.exports.showdown = ({dealerHoleCardOnly = false} = {}) => {
   return {
-    type: 'SHOWDOWN',
+    type: TYPES.SHOWDOWN,
     payload: {
       dealerHoleCardOnly: dealerHoleCardOnly
     }
@@ -102,7 +104,7 @@ module.exports.showdown = ({dealerHoleCardOnly = false} = {}) => {
 
 module.exports.dealerHit = ({dealerHoleCard: dealerHoleCard} = {}) => {
   return {
-    type: 'DEALER-HIT',
+    type: TYPES.DEALER_HIT,
     payload: {
       dealerHoleCard: dealerHoleCard
     }
