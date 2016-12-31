@@ -447,31 +447,13 @@ class Game {
         const dealerValue = engine.calculate(dealerCards)
         const dealerHasBlackjack = dealerValue.hi === 21
         const dealerHasBusted = dealerValue.hi > 21
-        const playerRightValue = handInfo.right.playerValue.hi
-        const playerLeftValue = (handInfo.left.playerValue) ? handInfo.left.playerValue.hi : 0
-        const stopPoint = playerRightValue > playerLeftValue ? playerRightValue : playerLeftValue
         let stage = null
         if (dealerValue.hi < 17) {
           stage = TYPES.STAGE_DEALER_TURN
         } else {
-          if (!rules.standOnSoft17) {
-            if (dealerValue.hi >= stopPoint) {
-              stage = TYPES.STAGE_DONE
-            } else {
-              stage = TYPES.STAGE_DEALER_TURN
-            }
+          if (!rules.standOnSoft17 && engine.isSoftHand(dealerCards)) {
+            stage = TYPES.STAGE_DEALER_TURN
           } else {
-            if (dealerValue.hi === 17 && dealerValue.hi >= stopPoint && dealerCards.some(x => x.value === 1)) {
-              stage = TYPES.STAGE_DONE
-            } else {
-              if (dealerValue.hi >= stopPoint) {
-                stage = TYPES.STAGE_DONE
-              } else {
-                stage = TYPES.STAGE_DEALER_TURN
-              }
-            }
-          }
-          if (dealerHasBlackjack || dealerHasBusted) {
             stage = TYPES.STAGE_DONE
           }
         }

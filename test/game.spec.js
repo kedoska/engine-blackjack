@@ -42,6 +42,7 @@ const functions = {
   'hitR': () => actions.hit({position: 'right'}),
   'standR': () => actions.stand({position: 'right'}),
   'standL': () => actions.stand({position: 'left'}),
+  'doubleL': () => actions.double({position: 'left'}),
   'insuranceInjectAmount': () => actions.insurance({bet: 100}),
   'insuranceYes': () => actions.insurance({bet: 1}),
   'insuranceNo': () => actions.insurance({bet: 0})
@@ -212,5 +213,31 @@ describe('Game flow', function () {
     assert.equal(left.close, true, 'L is close')
     assert.equal(left.playerHasBlackjack, true, 'L has BJ')
     assert.equal(right.playerHasBusted, true, 'R has busted')
+  })
+})
+
+describe('Must Stand on 17', function () {
+  it('stand on 17', function () {
+    const cards = '11d 9s 9d 4s 12h 13d 13h 11h'
+    const actions = [ 'restore', 'deal', 'split', 'standR', 'doubleL', 'standL' ]
+    const rules = {
+      decks: 1,
+      standOnSoft17: true,
+      double: 'any',
+      split: true,
+      doubleAfterSplit: true,
+      showdownAfterAceSplit: true
+    }
+    const state = executeFlow(rules, cards, actions.map(x => functions[ x ]))
+    const { stage, finalBet, wonOnRight, wonOnLeft, dealerValue,
+      handInfo: { left, right }
+    } = state
+    assert.equal(stage, 'done', cards)
+    assert.equal(finalBet, 30, 'Deal 10, Split 10, DoubleR 10')
+    assert.equal(wonOnLeft, 0, 'Won 0 Left (busted)')
+    assert.equal(dealerValue.hi, 20, 'Dealer must stop at 20')
+    assert.equal(right.playerValue.hi, 19, 'Player Right position 19')
+    assert.equal(left.playerValue.hi, 23, 'Player Left position 19')
+    assert.equal(wonOnRight, 0, 'Won 0 on Right')
   })
 })
