@@ -168,6 +168,15 @@ const calculate = (array) => {
 
 const isBlackjack = (array) => array.length === 2 && calculate(array).hi === 21
 
+const isSoftHand = (array) => {
+  return array.some(x => x.value === 1) &&
+    array
+      .reduce((memo, x) => {
+        memo += (x.value === 1 && memo < 11) ? 11 : x.value
+        return memo
+      }, 0) === 17
+}
+
 const serializeCard = (value) => {
   const digits = value.match(/\d/g)
   let number = null
@@ -447,6 +456,7 @@ module.exports.getHandInfoAfterSurrender = getHandInfoAfterSurrender
 module.exports.getHandInfoAfterInsurance = getHandInfoAfterInsurance
 module.exports.getSideBetsInfo = getSideBetsInfo
 module.exports.isBlackjack = isBlackjack
+module.exports.isSoftHand = isSoftHand
 module.exports.serializeCard = serializeCard
 module.exports.serializeCards = serializeCards
 module.exports.isActionAllowed = isActionAllowed

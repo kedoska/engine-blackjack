@@ -174,3 +174,29 @@ describe('prize calculation', function () {
     assert.equal(prize, insuranceBet * 0, `it should not pay insurance when first card is not Ace`)
   })
 })
+
+describe('Soft Hand', function () {
+  describe('# are all soft hands', function () {
+    [
+      '1d 3d 3s',
+      '1d 6h',
+      '1d 2h 4h',
+      '1d 1h 5s'
+    ].forEach(cards => {
+      it(cards, function () {
+        assert.ok(lib.isSoftHand(lib.serializeCards(cards)))
+      })
+    })
+  })
+  describe('# are not soft hands', function () {
+    [
+      '10d 7d',
+      '7d 9h',
+      '5d 2h 9h'
+    ].forEach(cards => {
+      it(cards, function () {
+        assert.ok(!lib.isSoftHand(lib.serializeCards(cards)))
+      })
+    })
+  })
+})
