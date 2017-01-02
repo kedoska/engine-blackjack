@@ -16,6 +16,8 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+const payTables = require('./paytables/luchyLuchy')
+
 const TYPES = require('./constants')
 
 const cardName = (number) => {
@@ -177,6 +179,14 @@ const isSoftHand = (array) => {
       }, 0) === 17
 }
 
+const isSuited = (array = []) => {
+  if (!array.length) {
+    return false
+  }
+  const suite = array[0].suite
+  return array.every(x => x.suite === suite)
+}
+
 const serializeCard = (value) => {
   const digits = value.match(/\d/g)
   let number = null
@@ -201,6 +211,9 @@ const serializeCard = (value) => {
 }
 
 const serializeCards = (value) => {
+  if (value === ''){
+    throw Error('value should contains a valid raw card/s definition')
+  }
   return value.split(' ').map(serializeCard)
 }
 
@@ -333,8 +346,19 @@ const getHandInfoAfterInsurance = (playerCards, dealerCards, insuranceValue) => 
 
 const isLuckyLucky = (playerCards, dealerCards) => {
   // Player hand and dealer's up card sum to 19, 20, or 21 ("Lucky Lucky")
-  const value = calculate(playerCards).hi + calculate(dealerCards).hi
-  return value >= 19 && value <= 21
+  const v1 = calculate(playerCards).hi + calculate(dealerCards).hi
+  const v2 = calculate(playerCards).lo + calculate(dealerCards).lo
+  const v3 = calculate(playerCards).hi + calculate(dealerCards).lo
+  const v4 = calculate(playerCards).lo + calculate(dealerCards).hi
+  return (v1 >= 19 && v1 <= 21) ||  (v2 >= 19 && v2 <= 21) ||  (v3 >= 19 && v3 <= 21) ||  (v4 >= 19 && v4 <= 21)
+}
+
+const getLuckyLuckyMultiplier = (playerCards, dealerCards) => {
+  const cards = [].concat(playerCards, dealerCards)
+  const isSameSuite = isSuited(cards)
+  const flatCards = cards.map(x => x.value).join('')
+  const value = calculate(cards)
+  return payTables.luckyLucky(flatCards, isSameSuite, value)
 }
 
 const isPerfectPairs = (playerCards) => playerCards[0].value === playerCards[1].value
@@ -345,7 +369,8 @@ const getSideBetsInfo = (availableBets, sideBets, playerCards, dealerCards) => {
     perfectPairs: 0
   }
   if (availableBets.luckyLucky && sideBets.luckyLucky && isLuckyLucky(playerCards, dealerCards)) {
-    sideBetsInfo.luckyLucky = sideBets.luckyLucky * 2
+    const multiplier = getLuckyLuckyMultiplier(playerCards, dealerCards)
+    sideBetsInfo.luckyLucky = sideBets.luckyLucky * multiplier
   }
   if (availableBets.perfectPairs && sideBets.perfectPairs && isPerfectPairs(playerCards)) {
     // TODO: impl colored pairs
@@ -457,6 +482,9 @@ module.exports.getHandInfoAfterInsurance = getHandInfoAfterInsurance
 module.exports.getSideBetsInfo = getSideBetsInfo
 module.exports.isBlackjack = isBlackjack
 module.exports.isSoftHand = isSoftHand
+module.exports.isSuited = isSuited
+module.exports.isLuckyLucky = isLuckyLucky
+module.exports.getLuckyLuckyMultiplier = getLuckyLuckyMultiplier
 module.exports.serializeCard = serializeCard
 module.exports.serializeCards = serializeCards
 module.exports.isActionAllowed = isActionAllowed

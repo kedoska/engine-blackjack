@@ -22,7 +22,6 @@ const presets = require('../src/presets')
 const actions = require('../src/actions')
 const engine = require('../src/engine')
 
-
 const executeFlow = (rules = {} , cards, activity) => {
   const game = new Game(null, presets.getRules(rules))
   let status = game.getState()
@@ -38,6 +37,7 @@ const executeFlow = (rules = {} , cards, activity) => {
 const functions = {
   'restore': () => actions.restore(),
   'deal': () => actions.deal({bet: 10}),
+  'deal-luckyLucky': () => actions.deal({bet: 10, sideBets: { luckyLucky: 10 }}),
   'split': () => actions.split(),
   'hitR': () => actions.hit({position: 'right'}),
   'standR': () => actions.stand({position: 'right'}),
@@ -47,6 +47,8 @@ const functions = {
   'insuranceYes': () => actions.insurance({bet: 1}),
   'insuranceNo': () => actions.insurance({bet: 0})
 }
+
+const mapToActions = (actions) => actions.map(x => functions[x])
 
 describe('Game flow', function () {
   describe('# Finish the game', function () {
@@ -239,5 +241,57 @@ describe('Must Stand on 17', function () {
     assert.equal(right.playerValue.hi, 19, 'Player Right position 19')
     assert.equal(left.playerValue.hi, 23, 'Player Left position 19')
     assert.equal(wonOnRight, 0, 'Won 0 on Right')
+  })
+})
+
+describe('Side bets', function () {
+  describe('Lucky Lucky', function () {
+    it('777 suited should pays 200', function () {
+      const dealerCards = engine.serializeCards('7s')
+      const playerCards = engine.serializeCards('7s 7s')
+      const x = engine.getLuckyLuckyMultiplier(playerCards, dealerCards)
+      assert.equal(x, 200, 'LL multiplier')
+    })
+    it('777 NO-suited should pays 50', function () {
+      const dealerCards = engine.serializeCards('7h')
+      const playerCards = engine.serializeCards('7s 7s')
+      const x = engine.getLuckyLuckyMultiplier(playerCards, dealerCards)
+      assert.equal(x, 50, 'LL multiplier')
+    })
+    it('678 suited should pays 100', function () {
+      const dealerCards = engine.serializeCards('8s')
+      const playerCards = engine.serializeCards('6s 7s')
+      const x = engine.getLuckyLuckyMultiplier(playerCards, dealerCards)
+      assert.equal(x, 100, 'LL multiplier')
+    })
+    it('678 NO-suited should pays 30', function () {
+      const dealerCards = engine.serializeCards('8s')
+      const playerCards = engine.serializeCards('6s 7c')
+      const x = engine.getLuckyLuckyMultiplier(playerCards, dealerCards)
+      assert.equal(x, 30, 'LL multiplier')
+    })
+    it('21 suited should pays 10', function () {
+      const dealerCards = engine.serializeCards('10h')
+      const playerCards = engine.serializeCards('9h 2h')
+      const x = engine.getLuckyLuckyMultiplier(playerCards, dealerCards)
+      assert.equal(x, 10, 'LL multiplier')
+    })
+    it('21 NO-suited should pays 3', function () {
+      const dealerCards = engine.serializeCards('10c')
+      const playerCards = engine.serializeCards('9h 2h')
+      const x = engine.getLuckyLuckyMultiplier(playerCards, dealerCards)
+      assert.equal(x, 3, 'LL multiplier')
+    })
+    it('10 1 8 should pay luckyLucky', function () {
+      const rules = {}
+      const cards = '9h 10h 1c 8s'
+      const actions = mapToActions(['restore', 'deal-luckyLucky'])
+      const state = executeFlow(rules, cards, actions)
+      const { handInfo: { right: { cards : playerCards } }, dealerCards } = state
+      const sideBetsInfo = engine.getSideBetsInfo({luckyLucky: true}, {luckyLucky: 10}, playerCards, dealerCards)
+      assert.equal(sideBetsInfo.luckyLucky, 20, 'amount is positive (engine)')
+      assert.equal(state.availableBets.luckyLucky, false, 'rule is OFF after deal')
+      assert.equal(state.sideBetsInfo.luckyLucky, 20, 'amount is positive (game)')
+    })
   })
 })
