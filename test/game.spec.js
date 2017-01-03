@@ -98,6 +98,23 @@ describe('Game flow', function () {
         }
       })
     })
+    it('should finish the game when player hits 21 (soft)', function () {
+      const cards = '♠6 ♠5 ♥3 ♦K ♦1 ♦9'
+      const actions = [ 'restore', 'deal', 'hitR', 'hitR' ]
+      const rules = {
+        decks: 1,
+        standOnSoft17: true,
+        double: 'any',
+        split: true,
+        doubleAfterSplit: true,
+        showdownAfterAceSplit: true
+      }
+      const state = executeFlow(rules, cards, actions.map(x => functions[ x ]))
+      const { stage, wonOnRight, handInfo: { right } } = state
+      assert.equal(right.playerValue.hi, 21, 'Player has 21 on right')
+      assert.equal(stage, 'done', 'game is over')
+      assert.equal(wonOnRight, 10 * 2, 'Won')
+    })
   })
   describe('# insurance dealer BJ', function() {
     const test = {
