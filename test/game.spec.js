@@ -99,7 +99,7 @@ describe('Game flow', function () {
       })
     })
     it('should finish the game when player hits 21 (soft)', function () {
-      const cards = '♠6 ♠5 ♥3 ♦K ♦1 ♦9'
+      const cards = '♠6 ♠5 ♥10 ♦10 ♦1 ♦9'
       const actions = [ 'restore', 'deal', 'hitR', 'hitR' ]
       const rules = {
         decks: 1,
