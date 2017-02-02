@@ -143,7 +143,7 @@ class Game {
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
         const dealerHoleCard = this.state.deck.splice(this.state.deck.length - 1, 1)[ 0 ]
         const dealerValue = engine.calculate(dealerCards)
-        let dealerHasBlackjack = engine.calculate(dealerCards.concat([dealerHoleCard])).hi === 21
+        let dealerHasBlackjack = engine.isBlackjack(dealerCards.concat([dealerHoleCard]))
         const handInfo = this.enforceRules(engine.getHandInfoAfterDeal(playerCards, dealerCards, bet))
         if (insurance && dealerValue.lo === 1) {
           dealerHasBlackjack = false
@@ -200,7 +200,7 @@ class Game {
       case TYPES.INSURANCE: {
         const { bet = 0 } = action.payload
         const { handInfo, dealerCards, dealerHoleCard, initialBet, history, hits } = this.state
-        const dealerHasBlackjack = engine.calculate(dealerCards.concat([dealerHoleCard])).hi === 21
+        const dealerHasBlackjack = engine.isBlackjack(dealerCards.concat([dealerHoleCard]))
         const insuranceValue = bet > initialBet / 2 ? initialBet / 2 : bet
         handInfo.right = this.enforceRules(engine.getHandInfoAfterInsurance(handInfo.right.cards, dealerCards, insuranceValue || 0))
         handInfo.right.bet = initialBet
@@ -445,7 +445,7 @@ class Game {
         const card = dealerHoleCard || deck.splice(deck.length - 1, 1)[ 0 ]
         const dealerCards = this.state.dealerCards.concat([card])
         const dealerValue = engine.calculate(dealerCards)
-        const dealerHasBlackjack = dealerValue.hi === 21
+        const dealerHasBlackjack = engine.isBlackjack(dealerCards)
         const dealerHasBusted = dealerValue.hi > 21
         let stage = null
         if (dealerValue.hi < 17) {
