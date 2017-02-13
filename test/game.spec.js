@@ -50,6 +50,14 @@ const functions = {
 
 const mapToActions = (actions) => actions.map(x => functions[x])
 
+describe('Action validations', function () {
+  describe('#deal', function () {
+    it('should have a default bet value', function () {
+      const game = new Game()
+      game.dispatch(actions.deal())
+    })
+  })
+})
 describe('Game flow', function () {
   describe('# Finish the game', function () {
     [

@@ -35,7 +35,7 @@ module.exports.restore = () => {
   }
 }
 
-module.exports.deal = ({bet = 10, sideBets = { luckyLucky : 0 }}) => {
+module.exports.deal = ({bet = 10, sideBets = { luckyLucky : 0 }} = {}) => {
   return {
     type: TYPES.DEAL,
     payload: {
