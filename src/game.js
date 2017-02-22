@@ -418,6 +418,12 @@ class Game {
           }, engine.getPrizes(this.state)))
           break
         }
+        if (checkLeftStatus && handInfo.left.playerHasBusted && handInfo.right.playerHasBusted) {
+          this.setState(Object.assign({
+            stage: TYPES.STAGE_DONE
+          }, engine.getPrizes(this.state)))
+          break
+        }
         while(this.getState().stage === TYPES.STAGE_DEALER_TURN){
           this._dispatch(actions.dealerHit())
         }
