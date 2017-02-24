@@ -232,7 +232,7 @@ const getHandInfo = (playerCards, dealerCards, hasSplit = false) => {
   if (!handValue) {
     return null
   }
-  const hasBlackjack = isBlackjack(playerCards)
+  const hasBlackjack = isBlackjack(playerCards) && hasSplit === false
   const hasBusted = handValue.hi > 21
   const isClosed = hasBusted || hasBlackjack || handValue.hi === 21
   const canDoubleDown = !isClosed && true
@@ -271,7 +271,7 @@ const getHandInfoAfterDeal = (playerCards, dealerCards, initialBet) => {
 }
 
 const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
-  const hand = getHandInfo(playerCards, dealerCards)
+  const hand = getHandInfo(playerCards, dealerCards, false)
   const availableActions = hand.availableActions
   hand.availableActions = Object.assign(availableActions, {
     split: false,
@@ -283,8 +283,8 @@ const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
   return hand
 }
 
-const getHandInfoAfterHit = (playerCards, dealerCards, initialBet) => {
-  const hand = getHandInfo(playerCards, dealerCards)
+const getHandInfoAfterHit = (playerCards, dealerCards, initialBet, hasSplit) => {
+  const hand = getHandInfo(playerCards, dealerCards, hasSplit)
   const availableActions = hand.availableActions
   hand.availableActions = Object.assign(availableActions, {
     double: (playerCards.length === 2),
