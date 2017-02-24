@@ -173,6 +173,25 @@ describe('prize calculation', function () {
     assert.notEqual(dealerCards[0].value, 1, 'first cards IS NOT an Ace')
     assert.equal(prize, insuranceBet * 0, `it should not pay insurance when first card is not Ace`)
   })
+  it('should NOT pay BJ after split', function () {
+    const hasSplit = true
+    const playerCards = lib.serializeCards('1d 10d')
+    const playerValue = lib.calculate(playerCards)
+    const dealerCards = lib.serializeCards('10d 7d')
+    const initialBet = 10
+    const playerHand = {
+      close: true,
+      playerInsuranceValue: 5,
+      playerHasSurrendered: false,
+      playerHasBlackjack: lib.isBlackjack(playerCards) && hasSplit === false,
+      playerHasBusted: false,
+      playerValue: playerValue,
+      bet: initialBet
+    }
+    const prize = lib.getPrize(playerHand, dealerCards)
+    assert.equal(lib.isBlackjack(dealerCards), false, 'dealer has not blackjack')
+    assert.equal(prize, initialBet * 2, `it should pay double, not bonus`)
+  })
 })
 
 describe('Soft Hand', function () {

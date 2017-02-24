@@ -265,6 +265,32 @@ describe('Game flow', function () {
     assert.equal(dealerCards.length, 2, 'dealer has 2 cards')
     assert.equal(finalWin, 0, 'player lose')
   })
+  it('no bj bonus after split', function() {
+    const cards = '♠10 ♦10 ♠10 ♦10 ♥2 ♣2 ♠1 ♦1'
+    const actions = ['restore', 'deal', 'split']
+    const rules = {
+      decks: 1,
+      standOnSoft17: true,
+      double: 'any',
+      split: true,
+      doubleAfterSplit: true,
+      surrender: true,
+      insurance: true,
+      showdownAfterAceSplit: true
+    }
+    const state = executeFlow(rules, cards, actions.map(x => functions[x]))
+    const { stage, handInfo: { left, right}, dealerHasBusted, wonOnLeft, wonOnRight } = state
+    assert.equal(stage, 'done', cards)
+    assert.equal(dealerHasBusted, true, 'dealer has busted')
+    assert.equal(left.close, true, 'L is close')
+    assert.equal(right.close, true, 'R is close')
+    assert.equal(right.playerHasBlackjack, false, 'no BJ on right')
+    assert.equal(engine.calculate(right.cards).hi, 21, '21 on right')
+    assert.equal(left.playerHasBlackjack, false, 'no BJ on left')
+    assert.equal(engine.calculate(left.cards).hi, 21, '21 on left')
+    assert.equal(wonOnLeft, 20, 'won 20 on left')
+    assert.equal(wonOnRight, 20, 'won 20 on right')
+  })
 })
 
 describe('Must Stand on 17', function () {
