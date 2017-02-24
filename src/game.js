@@ -268,10 +268,10 @@ class Game {
         const position = action.payload.position
         const card = deck.splice(deck.length - 1, 1)
         let playerCards = null
-        // TODO: remove position and replace it with stage info #hit
+        const hasSplit = history.some(x => x.type === TYPES.SPLIT)
         if (position === TYPES.LEFT) {
           playerCards = handInfo.left.cards.concat(card)
-          handInfo.left = engine.getHandInfoAfterHit(playerCards, dealerCards, initialBet)
+          handInfo.left = engine.getHandInfoAfterHit(playerCards, dealerCards, initialBet, hasSplit)
           if (handInfo.left.close) {
             stage = TYPES.STAGE_SHOWDOWN
           } else {
@@ -279,7 +279,7 @@ class Game {
           }
         } else {
           playerCards = handInfo.right.cards.concat(card)
-          handInfo.right = engine.getHandInfoAfterHit(playerCards, dealerCards, initialBet)
+          handInfo.right = engine.getHandInfoAfterHit(playerCards, dealerCards, initialBet, hasSplit)
           if (handInfo.right.close) {
             if (history.some(x => x.type === TYPES.SPLIT)) {
               stage = TYPES.STAGE_PLAYER_TURN_LEFT

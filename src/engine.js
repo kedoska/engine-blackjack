@@ -271,7 +271,7 @@ const getHandInfoAfterDeal = (playerCards, dealerCards, initialBet) => {
 }
 
 const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
-  const hand = getHandInfo(playerCards, dealerCards, false)
+  const hand = getHandInfo(playerCards, dealerCards, true)
   const availableActions = hand.availableActions
   hand.availableActions = Object.assign(availableActions, {
     split: false,
