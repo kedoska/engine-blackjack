@@ -5,7 +5,6 @@
   engine-blackjack - implement blackjack game into your software.
 </p>
 <p align="center">
-<img src="https://app.codeship.com/projects/5f4efc00-3c80-0134-f067-0e7310eecd24/status?branch=master">
 <a href="https://travis-ci.org/kedoska/engine-blackjack"><img src="https://travis-ci.org/kedoska/engine-blackjack.svg" alt="build:"></a>
 <a href="https://david-dm.org/kedoska/engine-blackjack/"><img src="https://david-dm.org/kedoska/engine-blackjack/status.svg" alt="Dependency Status"></a>
 <a href="https://david-dm.org/kedoska/engine-blackjack/?type=dev"><img src="https://david-dm.org/kedoska/engine-blackjack/dev-status.svg" alt="devDependency Status"></a>
