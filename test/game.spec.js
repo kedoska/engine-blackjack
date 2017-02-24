@@ -239,7 +239,7 @@ describe('Game flow', function () {
     const { stage, handInfo: { left, right} } = state
     assert.equal(stage, 'done', cards)
     assert.equal(left.close, true, 'L is close')
-    assert.equal(left.playerHasBlackjack, true, 'L has BJ')
+    assert.equal(left.playerHasBlackjack, false, 'L has 21')
     assert.equal(right.playerHasBusted, true, 'R has busted')
   })
   it('slits bust on both and dealer showdown', function () {
