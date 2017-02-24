@@ -25,10 +25,6 @@
   "author": "Marco Casula <marco.casula@linux.com>",
   "license": "GPL-2.0",
   "devDependencies": {
-    "body-parser": "^1.15.2",
-    "express": "^4.14.0",
-    "express-session": "^1.14.1",
     "mocha": "^3.2.0"
-  },
-  "dependencies": {}
+  }
 }
