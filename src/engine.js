@@ -227,7 +227,7 @@ const countCards = (array) => {
   }, 0)
 }
 
-const getHandInfo = (playerCards, dealerCards) => {
+const getHandInfo = (playerCards, dealerCards, hasSplit = false) => {
   const handValue = calculate(playerCards)
   if (!handValue) {
     return null
