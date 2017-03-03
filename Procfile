@@ -1,1 +1,0 @@
-web: node examples/basicUI/miniserver.js
