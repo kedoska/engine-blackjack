@@ -223,7 +223,7 @@ describe('Game flow', function () {
     })
   })
   it('split on 10, have bj on left and bust on right', function () {
-    const cards = '♠6 ♦1 ♥5 ♣6 ♠11 ♦10'
+    const cards = '♠6 ♠6 ♦1 ♥5 ♣6 ♠11 ♦10'
     const actions = ['restore', 'deal', 'split', 'hitR', 'hitR', 'hitR']
     const rules = {
       decks: 1,
