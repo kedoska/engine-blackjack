@@ -42,3 +42,4 @@ jspm_packages
 .*.swp
 ._*
 .DS_Store
+/build/

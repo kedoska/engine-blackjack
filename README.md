@@ -42,7 +42,8 @@ Here a list of direct (and maybe exotic) requests:
 
 If you are using [npm](https://www.npmjs.com/), to get the last version:
 
-`npm install engine-blackjack`
+ * `yest add engine-blackjack`
+ * `npm install engine-blackjack`
 
 I'm currently publishing the master branch into NPM until I get the first _tag_.
 Ideally, only _tagged commits_ will be uploaded as NPM after that moment.
@@ -178,7 +179,7 @@ NOTE: If you are interested in the random components, check out the `shuffle()` 
 
 ## Test
 
-Run tests by calling `npm test` or `mocha --compilers js:babel-core/registe`
+Run tests by calling `yarn test ` or `npm test`
 
 You can also write specific test cases using this syntax. For more details have a look at [game.spec.js](https://github.com/kedoska/engine-blackjack/blob/master/test/game.spec.js) 
 
@@ -191,7 +192,7 @@ You can also write specific test cases using this syntax. For more details have 
 }
 ```
 
-[mocha](https://mochajs.org/) will care about the following tasks:
+[Jest](https://facebook.github.io/jest/) will care about the following tasks:
  - create a new game
  - initialize it by injecting `♠10 ♦1 ♥5 ♣6 ♠11 ♦10` at the and of the _deck_
  - run the desired `restore`, `deal`, `split` and finally `standR` (stand on right) 
