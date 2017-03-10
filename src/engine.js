@@ -120,11 +120,13 @@ const newDeck = () => {
   )
 }
 
+const getRandom = (v) => Math.floor(Math.random() * v)
+
 const shuffle = (original) => {
   let array = original.slice(0)
   let currentIndex = array.length, temporaryValue, randomIndex
   while (0 !== currentIndex) {
-    randomIndex = Math.floor(Math.random() * currentIndex)
+    randomIndex = getRandom(currentIndex)
     currentIndex -= 1
     temporaryValue = array[currentIndex]
     array[currentIndex] = array[randomIndex]
@@ -490,3 +492,4 @@ module.exports.serializeCards = serializeCards
 module.exports.isActionAllowed = isActionAllowed
 module.exports.getPrize = getPrize
 module.exports.getPrizes = getPrizes
+module.exports.getRandom = getRandom
