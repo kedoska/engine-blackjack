@@ -1,12 +1,11 @@
 {
   "name": "engine-blackjack",
-  "version": "0.4.1",
+  "version": "0.4.3",
   "description": "A simple nodeJs engine to play blackjack",
   "main": "build/index.js",
   "scripts": {
     "test": "neutrino test --presets neutrino-preset-node neutrino-preset-jest",
-    "build": "neutrino build --presets neutrino-preset-node",
-    "prepublish": "yarn build"
+    "build": "neutrino build --presets neutrino-preset-node"
   },
   "repository": {
     "type": "git",

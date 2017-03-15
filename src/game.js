@@ -212,8 +212,8 @@ class Game {
           handInfo: handInfo,
           history: history,
           hits: hits + 1,
-          sideBetsInfo: Object.assign({}, {
-            sideBetsInfo, insurance: {
+          sideBetsInfo: Object.assign({}, sideBetsInfo, {
+            insurance: {
               risk: insuranceValue,
               win: insurancePrize
             }
