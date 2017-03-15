@@ -198,18 +198,26 @@ class Game {
         break
       }
       case TYPES.INSURANCE: {
-        const { bet = 0 } = action.payload
-        const { handInfo, dealerCards, dealerHoleCard, initialBet, history, hits } = this.state
+        const {bet = 0} = action.payload
+        const {sideBetsInfo, handInfo, dealerCards, dealerHoleCard, initialBet, history, hits} = this.state
         const dealerHasBlackjack = engine.isBlackjack(dealerCards.concat([dealerHoleCard]))
         const insuranceValue = bet > initialBet / 2 ? initialBet / 2 : bet
+        const isFirstCardAce = dealerCards[0].value === 1
+        const insurancePrize = (isFirstCardAce && dealerHasBlackjack && insuranceValue > 0) ? insuranceValue * 2 : 0
         handInfo.right = this.enforceRules(engine.getHandInfoAfterInsurance(handInfo.right.cards, dealerCards, insuranceValue || 0))
         handInfo.right.bet = initialBet
         handInfo.right.close = dealerHasBlackjack
-        history.push(appendEpoch(Object.assign(action, { payload: { bet: insuranceValue || 0 } })))
+        history.push(appendEpoch(Object.assign(action, {payload: {bet: insuranceValue || 0}})))
         this.setState({
           handInfo: handInfo,
           history: history,
-          hits: hits + 1
+          hits: hits + 1,
+          sideBetsInfo: Object.assign({}, {
+            sideBetsInfo, insurance: {
+              risk: insuranceValue,
+              win: insurancePrize
+            }
+          })
         })
         if (dealerHasBlackjack) {
           this._dispatch(actions.showdown())
