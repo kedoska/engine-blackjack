@@ -387,3 +387,26 @@ describe('Side bets', function () {
     })
   })
 })
+
+describe('Showdown after aces split', () => {
+  test('when showdownAfterAceSplit both sides must be closed', () => {
+    const actions = ['restore', 'deal', 'split']
+    const rules = {
+      showdownAfterAceSplit: true
+    }
+    const bet = 10
+    const state = executeFlow(rules, '♥8 ♥8 ♥1 ♦4 ♥10 ♦1 ♦1', actions.map(x => functions[x]))
+    const { stage, initialBet, finalBet, dealerHasBusted, dealerValue, handInfo, wonOnLeft, wonOnRight } = state
+    const { left, right } = handInfo
+    assert.equal(stage, 'done', 'stage is done')
+    assert.equal(finalBet, initialBet * 2, 'final bet is twice initial bet')
+    assert.equal(dealerHasBusted, true, 'dealer has busted')
+    assert.equal(dealerValue.hi, 22, 'dealer value is 22')
+    assert.equal(left.playerValue.hi, 12, 'player left high value is 12 = ♦1 + ♥1')
+    assert.equal(right.playerValue.hi, 19, 'player right high value is 19 = ♦1 + ♥8')
+    assert.equal(left.close, true, 'left hand should be closed')
+    assert.equal(right.close, true, 'right hand should be closed')
+    assert.equal(wonOnLeft, 20, 'won something on left')
+    assert.equal(wonOnRight, 20, 'won something on right')
+  })
+})

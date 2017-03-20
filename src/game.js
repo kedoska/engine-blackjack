@@ -245,6 +245,8 @@ class Game {
         let stage = ''
         if (forceShowdown) {
           stage = TYPES.STAGE_SHOWDOWN
+          handInfoLeft.close = true
+          handInfoRight.close = true
         } else {
           if (handInfoRight.close) {
             stage = TYPES.STAGE_PLAYER_TURN_LEFT
