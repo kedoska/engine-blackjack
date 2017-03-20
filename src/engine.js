@@ -104,7 +104,7 @@ const makeCard = (number, suite) => {
 
 const newDecks = (n) => {
   let cards = []
-  for(let i = 0; i < n; i++){
+  for (let i = 0; i < n; i++) {
     cards = newDeck().concat(cards)
   }
   return cards
@@ -124,8 +124,10 @@ const getRandom = (v) => Math.floor(Math.random() * v)
 
 const shuffle = (original) => {
   let array = original.slice(0)
-  let currentIndex = array.length, temporaryValue, randomIndex
-  while (0 !== currentIndex) {
+  let currentIndex = array.length
+  let temporaryValue
+  let randomIndex
+  while (currentIndex !== 0) {
     randomIndex = getRandom(currentIndex)
     currentIndex -= 1
     temporaryValue = array[currentIndex]
@@ -213,7 +215,7 @@ const serializeCard = (value) => {
 }
 
 const serializeCards = (value) => {
-  if (value === ''){
+  if (value === '') {
     throw Error('value should contains a valid raw card/s definition')
   }
   return value.split(' ').map(serializeCard)
@@ -221,7 +223,7 @@ const serializeCards = (value) => {
 
 const countCards = (array) => {
   const systems = {
-    'Hi-Lo': [-1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1 ]
+    'Hi-Lo': [ -1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1 ]
   }
   return array.reduce((memo, x) => {
     memo += systems['Hi-Lo'][x.value - 1]
@@ -264,12 +266,16 @@ const getHandInfoAfterDeal = (playerCards, dealerCards, initialBet) => {
   hand.bet = initialBet
   // After deal, even if we got a blackjack the hand cannot be considered closed.
   const availableActions = hand.availableActions
-  hand.availableActions = Object.assign(availableActions, {
+  hand.availableActions = {
+    ...availableActions,
     stand: true,
     hit: true,
     surrender: true
-  })
-  return Object.assign(hand, {close: hand.playerHasBlackjack ? true : false})
+  }
+  return {
+    ...hand,
+    close: hand.playerHasBlackjack
+  }
 }
 
 const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
@@ -306,7 +312,10 @@ const getHandInfoAfterDouble = (playerCards, dealerCards, initialBet) => {
     stand: false
   })
   hand.bet = initialBet * 2
-  return Object.assign(hand, {close: true})
+  return {
+    ...hand,
+    close: true
+  }
 }
 
 const getHandInfoAfterStand = (handInfo) => {
@@ -325,10 +334,11 @@ const getHandInfoAfterStand = (handInfo) => {
 
 const getHandInfoAfterSurrender = (handInfo) => {
   const hand = getHandInfoAfterStand(handInfo)
-  return Object.assign(hand, {
+  return {
+    ...hand,
     playerHasSurrendered: true,
     close: true
-  })
+  }
 }
 
 const getHandInfoAfterInsurance = (playerCards, dealerCards, insuranceValue) => {
@@ -340,10 +350,11 @@ const getHandInfoAfterInsurance = (playerCards, dealerCards, insuranceValue) => 
     surrender: true,
     insurance: false
   })
-  return Object.assign(hand, {
-    close: hand.playerHasBlackjack ? true : false,
+  return {
+    ...hand,
+    close: hand.playerHasBlackjack,
     playerInsuranceValue: insuranceValue
-  })
+  }
 }
 
 const isLuckyLucky = (playerCards, dealerCards) => {
@@ -352,7 +363,7 @@ const isLuckyLucky = (playerCards, dealerCards) => {
   const v2 = calculate(playerCards).lo + calculate(dealerCards).lo
   const v3 = calculate(playerCards).hi + calculate(dealerCards).lo
   const v4 = calculate(playerCards).lo + calculate(dealerCards).hi
-  return (v1 >= 19 && v1 <= 21) ||  (v2 >= 19 && v2 <= 21) ||  (v3 >= 19 && v3 <= 21) ||  (v4 >= 19 && v4 <= 21)
+  return (v1 >= 19 && v1 <= 21) || (v2 >= 19 && v2 <= 21) || (v3 >= 19 && v3 <= 21) || (v4 >= 19 && v4 <= 21)
 }
 
 const getLuckyLuckyMultiplier = (playerCards, dealerCards) => {
@@ -454,7 +465,7 @@ const getPrize = (playerHand, dealerCards) => {
   return insurancePrize
 }
 
-const getPrizes = ({history, handInfo: { left, right }, dealerCards }) => {
+const getPrizes = ({ history, handInfo: { left, right }, dealerCards }) => {
   const finalBet = history.reduce((memo, x) => {
     memo += x.value
     return memo

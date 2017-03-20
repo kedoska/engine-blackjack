@@ -5,11 +5,16 @@
  */
 
 'use strict'
+import constants from './constants'
+import engine from './engine'
+import presets from './presets'
+import actions from './actions'
+import Game from './game'
 
 module.exports = {
-  constants: require('./constants'),
-  engine: require('./engine'),
-  presets: require('./presets'),
-  actions: require('./actions'),
-  Game: require('./game')
+  constants,
+  engine,
+  presets,
+  actions,
+  Game
 }

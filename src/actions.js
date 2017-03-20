@@ -35,17 +35,17 @@ module.exports.restore = () => {
   }
 }
 
-module.exports.deal = ({bet = 10, sideBets = { luckyLucky : 0 }} = {}) => {
+module.exports.deal = ({ bet = 10, sideBets = { luckyLucky: 0 } } = {}) => {
   return {
     type: TYPES.DEAL,
     payload: {
-      bet: bet,
+      bet,
       sideBets
     }
   }
 }
 
-module.exports.insurance = ({bet = 1}) => {
+module.exports.insurance = ({ bet = 1 }) => {
   return {
     type: TYPES.INSURANCE,
     payload: {
@@ -60,7 +60,7 @@ module.exports.split = () => {
   }
 }
 
-module.exports.hit = ({position = 'right'}) => {
+module.exports.hit = ({ position = 'right' }) => {
   return {
     type: TYPES.HIT,
     payload: {
@@ -69,7 +69,7 @@ module.exports.hit = ({position = 'right'}) => {
   }
 }
 
-module.exports.double = ({position = 'right'}) => {
+module.exports.double = ({ position = 'right' }) => {
   return {
     type: TYPES.DOUBLE,
     payload: {
@@ -78,7 +78,7 @@ module.exports.double = ({position = 'right'}) => {
   }
 }
 
-module.exports.stand = ({position = 'right'}) => {
+module.exports.stand = ({ position = 'right' }) => {
   return {
     type: TYPES.STAND,
     payload: {
@@ -93,7 +93,7 @@ module.exports.surrender = () => {
   }
 }
 
-module.exports.showdown = ({dealerHoleCardOnly = false} = {}) => {
+module.exports.showdown = ({ dealerHoleCardOnly = false } = { }) => {
   return {
     type: TYPES.SHOWDOWN,
     payload: {
@@ -102,11 +102,11 @@ module.exports.showdown = ({dealerHoleCardOnly = false} = {}) => {
   }
 }
 
-module.exports.dealerHit = ({dealerHoleCard: dealerHoleCard} = {}) => {
+module.exports.dealerHit = ({ dealerHoleCard } = { }) => {
   return {
     type: TYPES.DEALER_HIT,
     payload: {
-      dealerHoleCard: dealerHoleCard
+      dealerHoleCard
     }
   }
 }
