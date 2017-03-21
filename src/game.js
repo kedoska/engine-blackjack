@@ -82,11 +82,16 @@ export default class Game {
   }
 
   getState () {
-    return Object.assign({}, this.state)
+    return {
+      ...this.state
+    }
   }
 
   setState (state) {
-    this.state = Object.assign(this.state, state)
+    this.state = {
+      ...this.state,
+      ...state
+    }
   }
 
   dispatch (action) {
@@ -153,13 +158,14 @@ export default class Game {
         const handInfo = this.enforceRules(engine.getHandInfoAfterDeal(playerCards, dealerCards, bet))
         if (insurance && dealerValue.lo === 1) {
           dealerHasBlackjack = false
-          handInfo.availableActions = Object.assign(handInfo.availableActions, {
+          handInfo.availableActions = {
+            ...handInfo.availableActions,
             stand: false,
             double: false,
             hit: false,
             split: false,
             surrender: false
-          })
+          }
         }
         const sideBetsInfo = engine.getSideBetsInfo(availableBets, sideBets, playerCards, dealerCards)
         history.push(appendEpoch({
@@ -222,12 +228,13 @@ export default class Game {
           handInfo: handInfo,
           history: history,
           hits: hits + 1,
-          sideBetsInfo: Object.assign({}, sideBetsInfo, {
+          sideBetsInfo: {
+            ...sideBetsInfo,
             insurance: {
               risk: insuranceValue,
               win: insurancePrize
             }
-          })
+          }
         })
         if (dealerHasBlackjack) {
           this._dispatch(actions.showdown())
@@ -316,7 +323,10 @@ export default class Game {
         }
         const objCards = {}
         objCards[position] = playerCards
-        history.push(appendEpoch(Object.assign(action, objCards)))
+        history.push(appendEpoch({
+          ...action,
+          objCards
+        }))
         this.setState({
           stage: stage,
           handInfo: handInfo,
@@ -422,36 +432,42 @@ export default class Game {
         // we want to include in the calculation the dealerHoleCard obtained in initial deal()
         this._dispatch(actions.dealerHit({ dealerHoleCard: dealerHoleCard }))
         if (dealerHoleCardOnly) {
-          this.setState(Object.assign({
-            stage: TYPES.STAGE_DONE
-          }, engine.getPrizes(this.state)))
+          this.setState({
+            stage: TYPES.STAGE_DONE,
+            ...engine.getPrizes(this.state)
+          })
           break
         }
         const checkLeftStatus = history.some(x => x.type === TYPES.SPLIT)
         const check1 = (handInfo.right.playerHasBusted || handInfo.right.playerHasBlackjack) && !checkLeftStatus
         if (check1) {
-          this.setState(Object.assign({
-            stage: TYPES.STAGE_DONE
-          }, engine.getPrizes(this.state)))
+          this.setState({
+            stage: TYPES.STAGE_DONE,
+            ...engine.getPrizes(this.state)
+          })
           break
         }
         const check2 = checkLeftStatus && (handInfo.left.playerHasBusted || handInfo.left.playerHasBlackjack) && check1
         if (check2) {
-          this.setState(Object.assign({
-            stage: TYPES.STAGE_DONE
-          }, engine.getPrizes(this.state)))
+          this.setState({
+            stage: TYPES.STAGE_DONE,
+            ...engine.getPrizes(this.state)
+          })
           break
         }
         if (checkLeftStatus && handInfo.left.playerHasBusted && handInfo.right.playerHasBusted) {
-          this.setState(Object.assign({
-            stage: TYPES.STAGE_DONE
-          }, engine.getPrizes(this.state)))
+          this.setState({
+            stage: TYPES.STAGE_DONE,
+            ...engine.getPrizes(this.state)
+          })
           break
         }
         while (this.getState().stage === TYPES.STAGE_DEALER_TURN) {
           this._dispatch(actions.dealerHit())
         }
-        this.setState(engine.getPrizes(this.state))
+        this.setState({
+          ...engine.getPrizes(this.state)
+        })
         break
       }
       case TYPES.SURRENDER: {
