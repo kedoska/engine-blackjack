@@ -1,12 +1,11 @@
 {
   "name": "engine-blackjack",
-  "version": "0.4.4",
+  "version": "0.5.1",
   "description": "A simple nodeJs engine to play blackjack",
   "main": "build/index.js",
-
   "scripts": {
     "test": "neutrino test --presets neutrino-preset-node neutrino-preset-jest",
-    "build": "neutrino build --presets neutrino-preset-standard neutrino-preset-node"
+    "build": "neutrino build --presets neutrino-preset-standard neutrino-preset-node neutrino-middleware-minify"
   },
   "repository": {
     "type": "git",
@@ -29,6 +28,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-es2015": "^6.22.0",
     "neutrino": "^4.3.1",
+    "neutrino-middleware-minify": "^5.0.0-beta.1",
     "neutrino-preset-jest": "^4.3.0",
     "neutrino-preset-node": "^4.2.2",
     "neutrino-preset-standard": "^4.3.3"
