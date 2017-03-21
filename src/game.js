@@ -16,8 +16,8 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-const TYPES = require('./constants')
-const engine = require('./engine')
+import * as TYPES from './constants'
+import * as engine from './engine'
 const actions = require('./actions')
 const presets = require('./presets')
 
@@ -33,7 +33,7 @@ const appendEpoch = (obj) => {
   )
 }
 
-class Game {
+export default class Game {
   constructor (initialState, rules = presets.getRules({})) {
     this.state = initialState || presets.defaultState(rules)
     this.dispatch = this.dispatch.bind(this)
@@ -517,5 +517,3 @@ class Game {
     return this.getState()
   }
 }
-
-module.exports = Game

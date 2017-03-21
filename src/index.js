@@ -5,13 +5,13 @@
  */
 
 'use strict'
-import constants from './constants'
-import engine from './engine'
+import * as constants from './constants'
+import * as engine from './engine'
 import presets from './presets'
-import actions from './actions'
+import * as actions from './actions'
 import Game from './game'
 
-module.exports = {
+export default {
   constants,
   engine,
   presets,

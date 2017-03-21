@@ -16,9 +16,9 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-const TYPES = require('./constants')
+import * as TYPES from './constants'
 
-module.exports.invalid = (action, info) => {
+export const invalid = (action, info) => {
   return {
     type: TYPES.INVALID,
     payload: {
@@ -29,13 +29,13 @@ module.exports.invalid = (action, info) => {
   }
 }
 
-module.exports.restore = () => {
+export const restore = () => {
   return {
     type: TYPES.RESTORE
   }
 }
 
-module.exports.deal = ({ bet = 10, sideBets = { luckyLucky: 0 } } = {}) => {
+export const deal = ({ bet = 10, sideBets = { luckyLucky: 0 } } = {}) => {
   return {
     type: TYPES.DEAL,
     payload: {
@@ -45,7 +45,7 @@ module.exports.deal = ({ bet = 10, sideBets = { luckyLucky: 0 } } = {}) => {
   }
 }
 
-module.exports.insurance = ({ bet = 1 }) => {
+export const insurance = ({ bet = 1 }) => {
   return {
     type: TYPES.INSURANCE,
     payload: {
@@ -54,13 +54,13 @@ module.exports.insurance = ({ bet = 1 }) => {
   }
 }
 
-module.exports.split = () => {
+export const split = () => {
   return {
     type: TYPES.SPLIT
   }
 }
 
-module.exports.hit = ({ position = 'right' }) => {
+export const hit = ({ position = 'right' }) => {
   return {
     type: TYPES.HIT,
     payload: {
@@ -69,7 +69,7 @@ module.exports.hit = ({ position = 'right' }) => {
   }
 }
 
-module.exports.double = ({ position = 'right' }) => {
+export const double = ({ position = 'right' }) => {
   return {
     type: TYPES.DOUBLE,
     payload: {
@@ -78,7 +78,7 @@ module.exports.double = ({ position = 'right' }) => {
   }
 }
 
-module.exports.stand = ({ position = 'right' }) => {
+export const stand = ({ position = 'right' }) => {
   return {
     type: TYPES.STAND,
     payload: {
@@ -87,13 +87,13 @@ module.exports.stand = ({ position = 'right' }) => {
   }
 }
 
-module.exports.surrender = () => {
+export const surrender = () => {
   return {
     type: TYPES.SURRENDER
   }
 }
 
-module.exports.showdown = ({ dealerHoleCardOnly = false } = { }) => {
+export const showdown = ({ dealerHoleCardOnly = false } = { }) => {
   return {
     type: TYPES.SHOWDOWN,
     payload: {
@@ -102,7 +102,7 @@ module.exports.showdown = ({ dealerHoleCardOnly = false } = { }) => {
   }
 }
 
-module.exports.dealerHit = ({ dealerHoleCard } = { }) => {
+export const dealerHit = ({ dealerHoleCard } = { }) => {
   return {
     type: TYPES.DEALER_HIT,
     payload: {
