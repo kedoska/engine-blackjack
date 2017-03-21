@@ -22,7 +22,7 @@ const actions = require('./actions')
 const presets = require('./presets')
 
 const appendEpoch = (obj) => {
-  const { payload = {bet: 0} } = obj
+  const { payload = { bet: 0 } } = obj
   return Object.assign(
     {},
     obj,
@@ -44,11 +44,17 @@ class Game {
   }
 
   canDouble (double, playerValue) {
-    if (double == 'none') return false
-    else if (double == '9or10') return ((playerValue.hi == 9) || (playerValue.hi == 10))
-    else if (double == '9or10or11') return ((playerValue.hi >= 9) && (playerValue.hi <= 11))
-    else if (double == '9thru15') return ((playerValue.hi >= 9) && (playerValue.hi <= 15))
-    else return true
+    if (double === 'none') {
+      return false
+    } else if (double === '9or10') {
+      return ((playerValue.hi === 9) || (playerValue.hi === 10))
+    } else if (double === '9or10or11') {
+      return ((playerValue.hi >= 9) && (playerValue.hi <= 11))
+    } else if (double === '9thru15') {
+      return ((playerValue.hi >= 9) && (playerValue.hi <= 15))
+    } else {
+      return true
+    }
   }
 
   enforceRules (handInfo) {
@@ -138,7 +144,7 @@ class Game {
     switch (action.type) {
       case TYPES.DEAL: {
         const { bet, sideBets } = action.payload
-        const { rules : { insurance }, availableBets, history, hits } = this.state
+        const { rules: { insurance }, availableBets, history, hits } = this.state
         const playerCards = this.state.deck.splice(this.state.deck.length - 2, 2)
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
         const dealerHoleCard = this.state.deck.splice(this.state.deck.length - 1, 1)[ 0 ]
@@ -156,10 +162,11 @@ class Game {
           })
         }
         const sideBetsInfo = engine.getSideBetsInfo(availableBets, sideBets, playerCards, dealerCards)
-        history.push(appendEpoch(Object.assign(action, {
+        history.push(appendEpoch({
+          ...action,
           right: playerCards,
           dealerCards
-        })))
+        }))
         this.setState({
           initialBet: bet,
           stage: TYPES.STAGE_PLAYER_TURN_RIGHT,
@@ -191,15 +198,15 @@ class Game {
             // nothing left, let's go and tell the customer he loses this game
             this._dispatch(actions.showdown())
           }
-          // else
-          // in this case, the game must continue in "player-turn-right"
-          // waiting for the insurance action
+        // else
+        // in this case, the game must continue in "player-turn-right"
+        // waiting for the insurance action
         }
         break
       }
       case TYPES.INSURANCE: {
-        const {bet = 0} = action.payload
-        const {sideBetsInfo, handInfo, dealerCards, dealerHoleCard, initialBet, history, hits} = this.state
+        const { bet = 0 } = action.payload
+        const { sideBetsInfo, handInfo, dealerCards, dealerHoleCard, initialBet, history, hits } = this.state
         const dealerHasBlackjack = engine.isBlackjack(dealerCards.concat([dealerHoleCard]))
         const insuranceValue = bet > initialBet / 2 ? initialBet / 2 : bet
         const isFirstCardAce = dealerCards[0].value === 1
@@ -207,7 +214,10 @@ class Game {
         handInfo.right = this.enforceRules(engine.getHandInfoAfterInsurance(handInfo.right.cards, dealerCards, insuranceValue || 0))
         handInfo.right.bet = initialBet
         handInfo.right.close = dealerHasBlackjack
-        history.push(appendEpoch(Object.assign(action, {payload: {bet: insuranceValue || 0}})))
+        history.push(appendEpoch({
+          ...action,
+          payload: { bet: insuranceValue || 0 }
+        }))
         this.setState({
           handInfo: handInfo,
           history: history,
@@ -227,19 +237,20 @@ class Game {
       case TYPES.SPLIT: {
         const { rules, initialBet, handInfo, dealerCards, history, hits } = this.state
         let deck = this.state.deck
-        const playerCardsLeftPosition = [ handInfo.right.cards[ 0 ]]
-        const playerCardsRightPosition = [ handInfo.right.cards[ 1 ]]
+        const playerCardsLeftPosition = [handInfo.right.cards[ 0 ]]
+        const playerCardsRightPosition = [handInfo.right.cards[ 1 ]]
         const forceShowdown = rules.showdownAfterAceSplit && playerCardsRightPosition[ 0 ].value === 1
         let cardRight = deck.splice(deck.length - 2, 1)
         let cardLeft = deck.splice(deck.length - 1, 1)
         deck = deck.filter(x => [ cardLeft, cardRight ].indexOf(x) === -1)
         playerCardsLeftPosition.push(cardLeft[ 0 ])
         playerCardsRightPosition.push(cardRight[ 0 ])
-        history.push(appendEpoch(Object.assign(action, {
-          payload: {bet: initialBet },
+        history.push(appendEpoch({
+          ...action,
+          payload: { bet: initialBet },
           left: playerCardsLeftPosition,
-          right: playerCardsRightPosition,
-        })))
+          right: playerCardsRightPosition
+        }))
         let handInfoLeft = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet))
         let handInfoRight = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet))
         let stage = ''
@@ -349,7 +360,10 @@ class Game {
         }
         const objCards = {}
         objCards[position] = playerCards
-        history.push(appendEpoch(Object.assign(action, { payload: {bet: initialBet } }, objCards)))
+        history.push(appendEpoch({
+          ...action,
+          payload: { bet: initialBet } },
+          objCards))
         this.setState({
           stage: stage,
           handInfo: handInfo,
@@ -406,7 +420,7 @@ class Game {
           hits: hits + 1
         })
         // we want to include in the calculation the dealerHoleCard obtained in initial deal()
-        this._dispatch(actions.dealerHit({dealerHoleCard: dealerHoleCard}))
+        this._dispatch(actions.dealerHit({ dealerHoleCard: dealerHoleCard }))
         if (dealerHoleCardOnly) {
           this.setState(Object.assign({
             stage: TYPES.STAGE_DONE
@@ -434,7 +448,7 @@ class Game {
           }, engine.getPrizes(this.state)))
           break
         }
-        while(this.getState().stage === TYPES.STAGE_DEALER_TURN){
+        while (this.getState().stage === TYPES.STAGE_DEALER_TURN) {
           this._dispatch(actions.dealerHit())
         }
         this.setState(engine.getPrizes(this.state))
@@ -454,7 +468,7 @@ class Game {
         break
       }
       case TYPES.DEALER_HIT: {
-        const { rules, deck, handInfo, cardCount, history, hits } = this.state
+        const { rules, deck, cardCount, history, hits } = this.state
         // the new card for dealer can be the "dealerHoleCard" or a new card
         // dealerHoleCard was set at the deal()
         const { dealerHoleCard } = action.payload
@@ -473,7 +487,10 @@ class Game {
             stage = TYPES.STAGE_DONE
           }
         }
-        history.push(appendEpoch(Object.assign(action, {dealerCards: dealerCards})))
+        history.push(appendEpoch({
+          ...action,
+          dealerCards
+        }))
         this.setState({
           stage: stage,
           dealerCards: dealerCards,
