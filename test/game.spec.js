@@ -410,3 +410,15 @@ describe('Showdown after aces split', () => {
     assert.equal(wonOnRight, 20, 'won something on right')
   })
 })
+
+describe('History detail for each action', () => {
+  test('hit should have side cards', () => {
+    const cards = '♠6 ♠5 ♥10 ♦10 ♦1 ♦9'
+    const actions = [ 'restore', 'deal', 'hitR', 'hitR' ]
+    const rules = {}
+    const state = executeFlow(rules, cards, actions.map(x => functions[ x ]))
+    const { history: [ restore, deal, firstHit, secondHit ] } = state
+    assert.ok(firstHit.right.length === 3, 'HIT action has 3 cards')
+    assert.ok(secondHit.right.length === 4, 'HIT action has 3 cards')
+  })
+})
