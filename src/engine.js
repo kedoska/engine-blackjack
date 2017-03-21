@@ -281,12 +281,13 @@ export const getHandInfoAfterDeal = (playerCards, dealerCards, initialBet) => {
 export const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
   const hand = getHandInfo(playerCards, dealerCards, true)
   const availableActions = hand.availableActions
-  hand.availableActions = Object.assign(availableActions, {
+  hand.availableActions = {
+    ...availableActions,
     split: false,
     double: !hand.close && (playerCards.length === 2),
     insurance: false,
     surrender: false
-  })
+  }
   hand.bet = initialBet
   return hand
 }
@@ -294,12 +295,13 @@ export const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
 export const getHandInfoAfterHit = (playerCards, dealerCards, initialBet, hasSplit) => {
   const hand = getHandInfo(playerCards, dealerCards, hasSplit)
   const availableActions = hand.availableActions
-  hand.availableActions = Object.assign(availableActions, {
+  hand.availableActions = {
+    ...availableActions,
     double: (playerCards.length === 2),
     split: false,
     insurance: false,
     surrender: false
-  })
+  }
   hand.bet = initialBet
   return hand
 }
@@ -307,10 +309,11 @@ export const getHandInfoAfterHit = (playerCards, dealerCards, initialBet, hasSpl
 export const getHandInfoAfterDouble = (playerCards, dealerCards, initialBet) => {
   const hand = getHandInfoAfterHit(playerCards, dealerCards)
   const availableActions = hand.availableActions
-  hand.availableActions = Object.assign(availableActions, {
+  hand.availableActions = {
+    ...availableActions,
     hit: false,
     stand: false
-  })
+  }
   hand.bet = initialBet * 2
   return {
     ...hand,
@@ -319,7 +322,8 @@ export const getHandInfoAfterDouble = (playerCards, dealerCards, initialBet) => 
 }
 
 export const getHandInfoAfterStand = (handInfo) => {
-  return Object.assign(handInfo, {
+  return {
+    ...handInfo,
     close: true,
     availableActions: {
       double: false,
@@ -329,7 +333,7 @@ export const getHandInfoAfterStand = (handInfo) => {
       stand: false,
       surrender: false
     }
-  })
+  }
 }
 
 export const getHandInfoAfterSurrender = (handInfo) => {
@@ -344,12 +348,13 @@ export const getHandInfoAfterSurrender = (handInfo) => {
 export const getHandInfoAfterInsurance = (playerCards, dealerCards, insuranceValue) => {
   const hand = getHandInfo(playerCards, dealerCards)
   const availableActions = hand.availableActions
-  hand.availableActions = Object.assign(availableActions, {
+  hand.availableActions = {
+    ...availableActions,
     stand: true,
     hit: true,
     surrender: true,
     insurance: false
-  })
+  }
   return {
     ...hand,
     close: hand.playerHasBlackjack,
