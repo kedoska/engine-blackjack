@@ -17,7 +17,7 @@
  */
 
 const assert = require('assert')
-const lib = require('../src/engine')
+import * as lib from '../src/engine'
 
 describe('utils', function () {
   describe('# serializeCard()', function () {

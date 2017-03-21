@@ -1,5 +1,5 @@
-module.exports.luckyLucky = (flatCards, suited, value) => {
-  const key = `${flatCards}${suited ? 's': ''}`
+export default (flatCards, suited, value) => {
+  const key = `${flatCards}${suited ? 's' : ''}`
   if (key === '777s') {
     return 200
   }
@@ -21,7 +21,7 @@ module.exports.luckyLucky = (flatCards, suited, value) => {
   if ((value.hi === 20 || value.lo === 20)) {
     return 3
   }
-  if (value.hi === 19 || value.lo === 19)  {
+  if (value.hi === 19 || value.lo === 19) {
     return 2
   }
   return 0

@@ -17,10 +17,10 @@
  */
 
 const assert = require('assert')
-const Game = require('../src/game')
-const presets = require('../src/presets')
-const actions = require('../src/actions')
-const engine = require('../src/engine')
+import * as engine from '../src/engine'
+import presets from '../src/presets'
+import * as actions from '../src/actions'
+import Game from '../src/game'
 
 const executeFlow = (rules = {} , cards, activity) => {
   const game = new Game(null, presets.getRules(rules))
