@@ -11,7 +11,7 @@ import presets from './presets'
 import * as actions from './actions'
 import Game from './game'
 
-export default {
+export {
   constants,
   engine,
   presets,
