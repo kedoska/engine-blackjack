@@ -18,12 +18,12 @@
 
 const assert = require('assert')
 import * as engine from '../src/engine'
-import presets from '../src/presets'
+import { getRules } from '../src/presets'
 import * as actions from '../src/actions'
 import Game from '../src/game'
 
 const executeFlow = (rules = {} , cards, activity) => {
-  const game = new Game(null, presets.getRules(rules))
+  const game = new Game(null, getRules(rules))
   let status = game.getState()
   status.deck = status.deck.concat(engine.serializeCards(cards))
   activity.forEach(fn => {

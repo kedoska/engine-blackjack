@@ -18,7 +18,7 @@
 const TYPES = require('./constants')
 const engine = require('./engine')
 
-const getDefaultSideBets = (active = false) => {
+export const getDefaultSideBets = (active = false) => {
   return {
     luckyLucky: active,
     perfectPairs: active,
@@ -29,7 +29,7 @@ const getDefaultSideBets = (active = false) => {
   }
 }
 
-const getRules = ({
+export const getRules = ({
   decks = 1,
   standOnSoft17 = true,
   double = 'any',
@@ -51,7 +51,7 @@ const getRules = ({
   }
 }
 
-const defaultState = (rules) => {
+export const defaultState = (rules) => {
   return {
     hits: 0,
     initialBet: 0,
@@ -74,7 +74,3 @@ const defaultState = (rules) => {
     dealerHasBusted: false
   }
 }
-
-module.exports.defaultState = defaultState
-module.exports.getRules = getRules
-module.exports.getDefaultSideBets = getDefaultSideBets

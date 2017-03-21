@@ -19,7 +19,7 @@
 import * as TYPES from './constants'
 import * as engine from './engine'
 const actions = require('./actions')
-const presets = require('./presets')
+import { getRules, defaultState, getDefaultSideBets } from './presets'
 
 const appendEpoch = (obj) => {
   const { payload = { bet: 0 } } = obj
@@ -34,8 +34,8 @@ const appendEpoch = (obj) => {
 }
 
 export default class Game {
-  constructor (initialState, rules = presets.getRules({})) {
-    this.state = initialState || presets.defaultState(rules)
+  constructor (initialState, rules = getRules({})) {
+    this.state = initialState || defaultState(rules)
     this.dispatch = this.dispatch.bind(this)
     this.getState = this.getState.bind(this)
     this.setState = this.setState.bind(this)
@@ -189,7 +189,7 @@ export default class Game {
             right: handInfo
           },
           sideBetsInfo: sideBetsInfo,
-          availableBets: presets.getDefaultSideBets(false),
+          availableBets: getDefaultSideBets(false),
           history: history,
           hits: hits + 1
         })
