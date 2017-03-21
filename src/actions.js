@@ -49,7 +49,7 @@ export const insurance = ({ bet = 1 }) => {
   return {
     type: TYPES.INSURANCE,
     payload: {
-      bet: bet
+      bet
     }
   }
 }
@@ -64,7 +64,7 @@ export const hit = ({ position = 'right' }) => {
   return {
     type: TYPES.HIT,
     payload: {
-      position: position // left or right
+      position
     }
   }
 }
@@ -73,7 +73,7 @@ export const double = ({ position = 'right' }) => {
   return {
     type: TYPES.DOUBLE,
     payload: {
-      position: position // left or right
+      position
     }
   }
 }
@@ -82,7 +82,7 @@ export const stand = ({ position = 'right' }) => {
   return {
     type: TYPES.STAND,
     payload: {
-      position: position // left or right
+      position
     }
   }
 }
@@ -97,7 +97,7 @@ export const showdown = ({ dealerHoleCardOnly = false } = { }) => {
   return {
     type: TYPES.SHOWDOWN,
     payload: {
-      dealerHoleCardOnly: dealerHoleCardOnly
+      dealerHoleCardOnly
     }
   }
 }
