@@ -31,7 +31,6 @@
     "neutrino": "^4.3.1",
     "neutrino-preset-jest": "^4.3.0",
     "neutrino-preset-node": "^4.2.2",
-    "neutrino-preset-standard": "^4.3.3",
-    "source-map-support": "^0.4.11"
+    "neutrino-preset-standard": "^4.3.3"
   }
 }
