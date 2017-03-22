@@ -43,6 +43,7 @@ const functions = {
   'hitL': () => actions.hit({position: 'left'}),
   'standR': () => actions.stand({position: 'right'}),
   'standL': () => actions.stand({position: 'left'}),
+  'doubleR': () => actions.double({position: 'right'}),
   'doubleL': () => actions.double({position: 'left'}),
   'insuranceInjectAmount': () => actions.insurance({bet: 100}),
   'insuranceYes': () => actions.insurance({bet: 1}),
@@ -420,5 +421,14 @@ describe('History detail for each action', () => {
     const { history: [ restore, deal, firstHit, secondHit ] } = state
     assert.ok(firstHit.right.length === 3, 'HIT action has 3 cards')
     assert.ok(secondHit.right.length === 4, 'HIT action has 3 cards')
+  })
+  test('double should have side cards', () => {
+    const cards = '♠6 ♠5 ♥10 ♦10 ♦1 ♦9'
+    const actions = [ 'restore', 'deal', 'doubleR' ]
+    const rules = {}
+    const state = executeFlow(rules, cards, actions.map(x => functions[ x ]))
+    const { history: [ restore, deal, double ] } = state
+    assert.ok(deal.right.length === 2, '2 cards on right after deal')
+    assert.ok(double.right.length === 3, '3 cards on right after double')
   })
 })

@@ -372,8 +372,9 @@ export default class Game {
         objCards[position] = playerCards
         history.push(appendEpoch({
           ...action,
-          payload: { bet: initialBet } },
-          ...objCards))
+          payload: { bet: initialBet },
+          ...objCards
+        }))
         this.setState({
           stage: stage,
           handInfo: handInfo,
