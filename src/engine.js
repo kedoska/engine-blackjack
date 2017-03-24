@@ -371,7 +371,7 @@ export const getHandInfoAfterInsurance = (playerCards, dealerCards, insuranceVal
 export const isLuckyLucky = (playerCards, dealerCards) => {
   // Player hand and dealer's up card sum to 19, 20, or 21 ("Lucky Lucky")
   const v1 = calculate(playerCards).hi + calculate(dealerCards).hi
-  const v2 = calculate(playerCards).lo + calculate(dealerCards).logs
+  const v2 = calculate(playerCards).lo + calculate(dealerCards).lo
   const v3 = calculate(playerCards).hi + calculate(dealerCards).lo
   const v4 = calculate(playerCards).lo + calculate(dealerCards).hi
   return (v1 >= 19 && v1 <= 21) || (v2 >= 19 && v2 <= 21) || (v3 >= 19 && v3 <= 21) || (v4 >= 19 && v4 <= 21)
