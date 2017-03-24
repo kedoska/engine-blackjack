@@ -165,12 +165,12 @@ describe('Game flow', function () {
       const actions = ['restore', 'deal', 'insuranceYes']
       const rules = {insurance: true}
       const state = executeFlow(rules, test.cards, actions.map(x => functions[x]))
-      const { finalBet, wonOnRight, handInfo: { right } } = state
+      const { finalBet, wonOnRight, handInfo: { right }, sideBetsInfo: { insurance: { win } } } = state
       assert.equal(state.stage, 'done', 'blackjack but insurance is ON and first card is ♥1')
-      assert.equal(right.playerInsuranceValue, 1, 'insurance risk should be 1')
       assert.equal(finalBet, 11, 'bet 10 and insurance 1')
       assert.equal(right.close, true, 'right hand should be close')
-      assert.equal(wonOnRight, 2, 'insurance pays 2 to 1 when dealer has bj')
+      assert.equal(win, 2, 'insurance pays 2 to 1 when dealer has bj')
+      assert.equal(wonOnRight, 0, 'right has no prize')
     })
     it(`INSURANCE ON: prevent amount injection`, function () {
       const actions = ['restore', 'deal', 'insuranceInjectAmount']
@@ -178,12 +178,12 @@ describe('Game flow', function () {
       const state = executeFlow(rules, test.cards, actions.map(x => functions[x]))
       const bet = 10
       const maxInsuranceAmount = bet / 2
-      const { finalBet, wonOnRight, handInfo: { right } } = state
+      const { finalBet, wonOnRight, handInfo: { right }, sideBetsInfo: { insurance: { win } }  } = state
       assert.equal(state.stage, 'done', 'blackjack but insurance is ON and first card is ♥1')
-      assert.equal(right.playerInsuranceValue, maxInsuranceAmount, 'insurance risk should be 1')
       assert.equal(finalBet, bet + (maxInsuranceAmount), `bet ${bet} and max insurance ${maxInsuranceAmount}`)
       assert.equal(right.close, true, 'right hand should be close')
-      assert.equal(wonOnRight, 5 * 2, 'insurance pays 2 to 1 when dealer has bj')
+      assert.equal(win, 5 * 2, 'insurance pays 2 to 1 when dealer has bj')
+      assert.equal(wonOnRight, 0, 'right has no prize')
     })
     it(`INSURANCE OFF: should deal ${test.cards} and finish`, function () {
       const actions = ['restore', 'deal']
@@ -214,7 +214,6 @@ describe('Game flow', function () {
       const state = executeFlow(rules, '♦5 ♥1 ♦2 ♦2', actions.map(x => functions[x]))
       const { finalBet, wonOnRight, handInfo: { right }, dealerHasBusted } = state
       assert.equal(state.stage, 'done', 'no blackjack, first card is ♥1, should go on')
-      assert.equal(right.playerInsuranceValue, 1, 'insurance risk should be 1')
       assert.equal(finalBet, 11, 'bet 10 and insurance 1')
       assert.equal(right.close, true, 'right hand should be close')
       assert.equal(wonOnRight, dealerHasBusted ? bet * 2 : 0, 'insurance pays 0 when dealer has no bj')
@@ -227,7 +226,6 @@ describe('Game flow', function () {
       const maxInsuranceAmount = bet / 2
       const { finalBet, wonOnRight, handInfo: { right }, dealerHasBusted } = state
       assert.equal(state.stage, 'done', 'blackjack but insurance is ON and first card is ♥1')
-      assert.equal(right.playerInsuranceValue, maxInsuranceAmount, 'insurance risk should be 1')
       assert.equal(right.playerValue.hi, 4, 'player value must be 4')
       assert.equal(finalBet, bet + (maxInsuranceAmount), `bet ${bet} and max insurance ${maxInsuranceAmount}`)
       assert.equal(right.close, true, 'right hand should be close')

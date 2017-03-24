@@ -20,8 +20,14 @@ import luckyLucky from './paytables/luchyLuchy'
 
 import * as TYPES from './constants'
 
+export const isNull = (obj) => obj === null
+
+export const isUndefined = (obj) => obj === undefined
+
+export const isNullOrUndef = (obj) => isUndefined(obj) || isNull(obj)
+
 export const cardName = (number) => {
-  if (!number) {
+  if (isNullOrUndef(number)) {
     return null
   }
   switch (number) {
@@ -139,7 +145,7 @@ export const shuffle = (original) => {
 
 export const calculate = (array) => {
   if (array.length === 1) {
-    if (!array[0]) {
+    if (isNullOrUndef(array[0])) {
       return null
     }
     const value = array[0].value
@@ -184,7 +190,7 @@ export const isSoftHand = (array) => {
 }
 
 export const isSuited = (array = []) => {
-  if (!array.length) {
+  if (array.length === 0) {
     return false
   }
   const suite = array[0].suite
@@ -248,7 +254,6 @@ export const getHandInfo = (playerCards, dealerCards, hasSplit = false) => {
     playerHasBlackjack: hasBlackjack,
     playerHasBusted: hasBusted,
     playerHasSurrendered: false,
-    playerInsuranceValue: 0,
     close: isClosed,
     availableActions: {
       double: canDoubleDown,
@@ -345,7 +350,7 @@ export const getHandInfoAfterSurrender = (handInfo) => {
   }
 }
 
-export const getHandInfoAfterInsurance = (playerCards, dealerCards, insuranceValue) => {
+export const getHandInfoAfterInsurance = (playerCards, dealerCards) => {
   const hand = getHandInfo(playerCards, dealerCards)
   const availableActions = hand.availableActions
   hand.availableActions = {
@@ -357,15 +362,14 @@ export const getHandInfoAfterInsurance = (playerCards, dealerCards, insuranceVal
   }
   return {
     ...hand,
-    close: hand.playerHasBlackjack,
-    playerInsuranceValue: insuranceValue
+    close: hand.playerHasBlackjack
   }
 }
 
 export const isLuckyLucky = (playerCards, dealerCards) => {
   // Player hand and dealer's up card sum to 19, 20, or 21 ("Lucky Lucky")
   const v1 = calculate(playerCards).hi + calculate(dealerCards).hi
-  const v2 = calculate(playerCards).lo + calculate(dealerCards).logs
+  const v2 = calculate(playerCards).lo + calculate(dealerCards).lo
   const v3 = calculate(playerCards).hi + calculate(dealerCards).lo
   const v4 = calculate(playerCards).lo + calculate(dealerCards).hi
   return (v1 >= 19 && v1 <= 21) || (v2 >= 19 && v2 <= 21) || (v3 >= 19 && v3 <= 21) || (v4 >= 19 && v4 <= 21)
@@ -427,7 +431,6 @@ export const isActionAllowed = (actionName, stage) => {
 export const getPrize = (playerHand, dealerCards) => {
   const {
     close = false,
-    playerInsuranceValue = 0,
     playerHasSurrendered = true,
     playerHasBlackjack = false,
     playerHasBusted = true,
@@ -436,30 +439,28 @@ export const getPrize = (playerHand, dealerCards) => {
   } = playerHand
   const dealerValue = calculate(dealerCards).hi
   const dealerHasBlackjack = isBlackjack(dealerCards)
-  const isFirstCardAce = dealerCards[0].value === 1
-  const insurancePrize = (isFirstCardAce && dealerHasBlackjack && playerInsuranceValue > 0) ? playerInsuranceValue * 2 : 0
   if (!close) {
     return 0
   }
   if (playerHasBusted) {
-    return insurancePrize
+    return 0
   }
   if (playerHasSurrendered) {
-    return bet / 2 + insurancePrize
+    return bet / 2
   }
   if (playerHasBlackjack && !dealerHasBlackjack) {
-    return bet + (bet * 1.5) + insurancePrize
+    return bet + (bet * 1.5)
   }
   const dealerHasBusted = dealerValue > 21
   if (dealerHasBusted) {
-    return (bet + bet) + insurancePrize
+    return (bet + bet)
   }
   if (playerValue.hi > dealerValue) {
-    return (bet + bet) + insurancePrize
+    return (bet + bet)
   } else if (playerValue.hi === dealerValue) {
-    return bet + insurancePrize
+    return bet
   }
-  return insurancePrize
+  return 0
 }
 
 export const getPrizes = ({ history, handInfo: { left, right }, dealerCards }) => {
