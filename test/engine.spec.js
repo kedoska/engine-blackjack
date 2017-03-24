@@ -140,7 +140,6 @@ describe('prize calculation', function () {
     const playerValue = lib.calculate(playerCards)
     const dealerCards = lib.serializeCards('1d 11d')
     const initialBet = 10
-    const insuranceBet = 5
     const playerHand = {
       close: true,
       playerInsuranceValue: 5,
@@ -151,7 +150,7 @@ describe('prize calculation', function () {
       bet: initialBet
     }
     const prize = lib.getPrize(playerHand, dealerCards)
-    assert.equal(prize, insuranceBet * 2, `insurance should pay ${insuranceBet} * 2`)
+    assert.equal(prize, 0, `insurance does not pay on right side`)
   })
   it('should NOT pay insurance when dealer has BJ and first card is NOT Ace', function () {
     const playerCards = lib.serializeCards('2d 3d')

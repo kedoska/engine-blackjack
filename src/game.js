@@ -217,7 +217,7 @@ export default class Game {
         const insuranceValue = bet > initialBet / 2 ? initialBet / 2 : bet
         const isFirstCardAce = dealerCards[0].value === 1
         const insurancePrize = (isFirstCardAce && dealerHasBlackjack && insuranceValue > 0) ? insuranceValue * 2 : 0
-        handInfo.right = this.enforceRules(engine.getHandInfoAfterInsurance(handInfo.right.cards, dealerCards, insuranceValue || 0))
+        handInfo.right = this.enforceRules(engine.getHandInfoAfterInsurance(handInfo.right.cards, dealerCards))
         handInfo.right.bet = initialBet
         handInfo.right.close = dealerHasBlackjack
         history.push(appendEpoch({

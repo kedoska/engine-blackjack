@@ -254,7 +254,6 @@ export const getHandInfo = (playerCards, dealerCards, hasSplit = false) => {
     playerHasBlackjack: hasBlackjack,
     playerHasBusted: hasBusted,
     playerHasSurrendered: false,
-    playerInsuranceValue: 0,
     close: isClosed,
     availableActions: {
       double: canDoubleDown,
@@ -351,7 +350,7 @@ export const getHandInfoAfterSurrender = (handInfo) => {
   }
 }
 
-export const getHandInfoAfterInsurance = (playerCards, dealerCards, insuranceValue) => {
+export const getHandInfoAfterInsurance = (playerCards, dealerCards) => {
   const hand = getHandInfo(playerCards, dealerCards)
   const availableActions = hand.availableActions
   hand.availableActions = {
@@ -363,8 +362,7 @@ export const getHandInfoAfterInsurance = (playerCards, dealerCards, insuranceVal
   }
   return {
     ...hand,
-    close: hand.playerHasBlackjack,
-    playerInsuranceValue: insuranceValue
+    close: hand.playerHasBlackjack
   }
 }
 
@@ -433,7 +431,6 @@ export const isActionAllowed = (actionName, stage) => {
 export const getPrize = (playerHand, dealerCards) => {
   const {
     close = false,
-    playerInsuranceValue = 0,
     playerHasSurrendered = true,
     playerHasBlackjack = false,
     playerHasBusted = true,
@@ -442,30 +439,28 @@ export const getPrize = (playerHand, dealerCards) => {
   } = playerHand
   const dealerValue = calculate(dealerCards).hi
   const dealerHasBlackjack = isBlackjack(dealerCards)
-  const isFirstCardAce = dealerCards[0].value === 1
-  const insurancePrize = (isFirstCardAce && dealerHasBlackjack && playerInsuranceValue > 0) ? playerInsuranceValue * 2 : 0
   if (!close) {
     return 0
   }
   if (playerHasBusted) {
-    return insurancePrize
+    return 0
   }
   if (playerHasSurrendered) {
-    return bet / 2 + insurancePrize
+    return bet / 2
   }
   if (playerHasBlackjack && !dealerHasBlackjack) {
-    return bet + (bet * 1.5) + insurancePrize
+    return bet + (bet * 1.5)
   }
   const dealerHasBusted = dealerValue > 21
   if (dealerHasBusted) {
-    return (bet + bet) + insurancePrize
+    return (bet + bet)
   }
   if (playerValue.hi > dealerValue) {
-    return (bet + bet) + insurancePrize
+    return (bet + bet)
   } else if (playerValue.hi === dealerValue) {
-    return bet + insurancePrize
+    return bet
   }
-  return insurancePrize
+  return 0
 }
 
 export const getPrizes = ({ history, handInfo: { left, right }, dealerCards }) => {
