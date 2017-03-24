@@ -20,8 +20,14 @@ import luckyLucky from './paytables/luchyLuchy'
 
 import * as TYPES from './constants'
 
+export const isNull = (obj) => obj === null
+
+export const isUndefined = (obj) => obj === undefined
+
+export const isNullOrUndef = (obj) => isUndefined(obj) || isNull(obj)
+
 export const cardName = (number) => {
-  if (!number) {
+  if (isNullOrUndef(number)) {
     return null
   }
   switch (number) {
@@ -139,7 +145,7 @@ export const shuffle = (original) => {
 
 export const calculate = (array) => {
   if (array.length === 1) {
-    if (!array[0]) {
+    if (isNullOrUndef(array[0])) {
       return null
     }
     const value = array[0].value
@@ -184,7 +190,7 @@ export const isSoftHand = (array) => {
 }
 
 export const isSuited = (array = []) => {
-  if (!array.length) {
+  if (array.length === 0) {
     return false
   }
   const suite = array[0].suite
