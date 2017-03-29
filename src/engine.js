@@ -1,3 +1,4 @@
+// @flow
 /*!
  engine-blackjack
  Copyright (C) 2016 Marco Casula
@@ -17,16 +18,16 @@
  */
 
 import luckyLucky from './paytables/luchyLuchy'
-
 import * as TYPES from './constants'
+import type { SideBets, Card, Hand, HandValue } from '../flow-typed'
 
-export const isNull = (obj) => obj === null
+export const isNull = (obj: ?any): boolean => obj === null
 
-export const isUndefined = (obj) => obj === undefined
+export const isUndefined = (obj: ?any): boolean => obj === undefined
 
-export const isNullOrUndef = (obj) => isUndefined(obj) || isNull(obj)
+export const isNullOrUndef = (obj: ?any): boolean => isUndefined(obj) || isNull(obj)
 
-export const cardName = (number) => {
+export const cardName = (number: number): ?string => {
   if (isNullOrUndef(number)) {
     return null
   }
@@ -49,7 +50,7 @@ export const cardName = (number) => {
   }
 }
 
-export const suiteName = (suite) => {
+export const suiteName = (suite: string): string => {
   switch (suite.toLowerCase()) {
     case '♥':
     case 'h':
@@ -81,7 +82,7 @@ export const suiteName = (suite) => {
   }
 }
 
-export const suiteColor = (suite) => {
+export const suiteColor = (suite: string): string => {
   switch (suite) {
     case 'hearts':
       return 'R'
@@ -96,9 +97,9 @@ export const suiteColor = (suite) => {
   }
 }
 
-export const cardValue = (number) => number < 10 ? number : 10
+export const cardValue = (number: number): number => number < 10 ? number : 10
 
-export const makeCard = (number, suite) => {
+export const makeCard = (number: number, suite: string): Card => {
   const _suite = suiteName(suite)
   return {
     text: cardName(number),
@@ -108,7 +109,7 @@ export const makeCard = (number, suite) => {
   }
 }
 
-export const newDecks = (n) => {
+export const newDecks = (n: number): Array<Card> => {
   let cards = []
   for (let i = 0; i < n; i++) {
     cards = newDeck().concat(cards)
@@ -116,7 +117,7 @@ export const newDecks = (n) => {
   return cards
 }
 
-export const newDeck = () => {
+export const newDeck = (): Array<Card> => {
   return [].concat.apply([],
     [ 'hearts', 'diamonds', 'clubs', 'spades' ]
       .map(suite => {
@@ -126,9 +127,9 @@ export const newDeck = () => {
   )
 }
 
-export const getRandom = (v) => Math.floor(Math.random() * v)
+export const getRandom = (v: number) => Math.floor(Math.random() * v)
 
-export const shuffle = (original) => {
+export const shuffle = (original: Array<Card>): Array<Card> => {
   let array = original.slice(0)
   let currentIndex = array.length
   let temporaryValue
@@ -143,7 +144,7 @@ export const shuffle = (original) => {
   return array
 }
 
-export const calculate = (array) => {
+export const calculate = (array: Array<Card>): HandValue => {
   if (array.length === 1) {
     if (isNullOrUndef(array[0])) {
       return null
@@ -163,7 +164,7 @@ export const calculate = (array) => {
     memo += x.value
     return memo
   }, 0)
-  return aces.reduce((memo, x) => {
+  return aces.reduce((memo) => {
     if ((memo.hi + 11) <= 21) {
       memo.hi += 11
       memo.lo += 1
@@ -178,9 +179,9 @@ export const calculate = (array) => {
   })
 }
 
-export const isBlackjack = (array) => array.length === 2 && calculate(array).hi === 21
+export const isBlackjack = (array: Array<Card>): boolean => array.length === 2 && calculate(array).hi === 21
 
-export const isSoftHand = (array) => {
+export const isSoftHand = (array: Array<Card>): boolean => {
   return array.some(x => x.value === 1) &&
     array
       .reduce((memo, x) => {
@@ -189,7 +190,7 @@ export const isSoftHand = (array) => {
       }, 0) === 17
 }
 
-export const isSuited = (array = []) => {
+export const isSuited = (array: Array<Card> = []): boolean => {
   if (array.length === 0) {
     return false
   }
@@ -197,7 +198,7 @@ export const isSuited = (array = []) => {
   return array.every(x => x.suite === suite)
 }
 
-export const serializeCard = (value) => {
+export const serializeCard = (value: string): Card => {
   const digits = value.match(/\d/g)
   let number = null
   let figure = null
@@ -220,14 +221,14 @@ export const serializeCard = (value) => {
   return makeCard(number, suite)
 }
 
-export const serializeCards = (value) => {
+export const serializeCards = (value:string): Array<Card> => {
   if (value === '') {
     throw Error('value should contains a valid raw card/s definition')
   }
   return value.split(' ').map(serializeCard)
 }
 
-export const countCards = (array) => {
+export const countCards = (array: Array<Card>) => {
   const systems = {
     'Hi-Lo': [ -1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1 ]
   }
@@ -237,7 +238,7 @@ export const countCards = (array) => {
   }, 0)
 }
 
-export const getHandInfo = (playerCards, dealerCards, hasSplit = false) => {
+export const getHandInfo = (playerCards: Array<Card>, dealerCards: Array<Card>, hasSplit:boolean = false): Hand => {
   const handValue = calculate(playerCards)
   if (!handValue) {
     return null
@@ -266,7 +267,7 @@ export const getHandInfo = (playerCards, dealerCards, hasSplit = false) => {
   }
 }
 
-export const getHandInfoAfterDeal = (playerCards, dealerCards, initialBet) => {
+export const getHandInfoAfterDeal = (playerCards: Array<Card>, dealerCards: Array<Card>, initialBet: number): Hand => {
   const hand = getHandInfo(playerCards, dealerCards)
   hand.bet = initialBet
   // After deal, even if we got a blackjack the hand cannot be considered closed.
@@ -283,7 +284,7 @@ export const getHandInfoAfterDeal = (playerCards, dealerCards, initialBet) => {
   }
 }
 
-export const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
+export const getHandInfoAfterSplit = (playerCards: Array<Card>, dealerCards: Array<Card>, initialBet: number): Hand => {
   const hand = getHandInfo(playerCards, dealerCards, true)
   const availableActions = hand.availableActions
   hand.availableActions = {
@@ -297,7 +298,7 @@ export const getHandInfoAfterSplit = (playerCards, dealerCards, initialBet) => {
   return hand
 }
 
-export const getHandInfoAfterHit = (playerCards, dealerCards, initialBet, hasSplit) => {
+export const getHandInfoAfterHit = (playerCards: Array<Card>, dealerCards: Array<Card>, initialBet: number, hasSplit: boolean): Hand => {
   const hand = getHandInfo(playerCards, dealerCards, hasSplit)
   const availableActions = hand.availableActions
   hand.availableActions = {
@@ -311,7 +312,7 @@ export const getHandInfoAfterHit = (playerCards, dealerCards, initialBet, hasSpl
   return hand
 }
 
-export const getHandInfoAfterDouble = (playerCards, dealerCards, initialBet) => {
+export const getHandInfoAfterDouble = (playerCards: Array<Card>, dealerCards: Array<Card>, initialBet: number): Hand => {
   const hand = getHandInfoAfterHit(playerCards, dealerCards)
   const availableActions = hand.availableActions
   hand.availableActions = {
@@ -326,7 +327,7 @@ export const getHandInfoAfterDouble = (playerCards, dealerCards, initialBet) => 
   }
 }
 
-export const getHandInfoAfterStand = (handInfo) => {
+export const getHandInfoAfterStand = (handInfo: Hand): Hand => {
   return {
     ...handInfo,
     close: true,
@@ -341,7 +342,7 @@ export const getHandInfoAfterStand = (handInfo) => {
   }
 }
 
-export const getHandInfoAfterSurrender = (handInfo) => {
+export const getHandInfoAfterSurrender = (handInfo: Hand): Hand => {
   const hand = getHandInfoAfterStand(handInfo)
   return {
     ...hand,
@@ -350,7 +351,7 @@ export const getHandInfoAfterSurrender = (handInfo) => {
   }
 }
 
-export const getHandInfoAfterInsurance = (playerCards, dealerCards) => {
+export const getHandInfoAfterInsurance = (playerCards: Array<Card>, dealerCards: Array<Card>): Hand => {
   const hand = getHandInfo(playerCards, dealerCards)
   const availableActions = hand.availableActions
   hand.availableActions = {
@@ -366,7 +367,7 @@ export const getHandInfoAfterInsurance = (playerCards, dealerCards) => {
   }
 }
 
-export const isLuckyLucky = (playerCards, dealerCards) => {
+export const isLuckyLucky = (playerCards: Array<Card>, dealerCards: Array<Card>): boolean => {
   // Player hand and dealer's up card sum to 19, 20, or 21 ("Lucky Lucky")
   const v1 = calculate(playerCards).hi + calculate(dealerCards).hi
   const v2 = calculate(playerCards).lo + calculate(dealerCards).lo
@@ -375,7 +376,7 @@ export const isLuckyLucky = (playerCards, dealerCards) => {
   return (v1 >= 19 && v1 <= 21) || (v2 >= 19 && v2 <= 21) || (v3 >= 19 && v3 <= 21) || (v4 >= 19 && v4 <= 21)
 }
 
-export const getLuckyLuckyMultiplier = (playerCards, dealerCards) => {
+export const getLuckyLuckyMultiplier = (playerCards: Array<Card>, dealerCards: Array<Card>) => {
   const cards = [].concat(playerCards, dealerCards)
   const isSameSuite = isSuited(cards)
   const flatCards = cards.map(x => x.value).join('')
@@ -383,9 +384,9 @@ export const getLuckyLuckyMultiplier = (playerCards, dealerCards) => {
   return luckyLucky(flatCards, isSameSuite, value)
 }
 
-export const isPerfectPairs = (playerCards) => playerCards[0].value === playerCards[1].value
+export const isPerfectPairs = (playerCards: Array<Card>): boolean => playerCards[0].value === playerCards[1].value
 
-export const getSideBetsInfo = (availableBets, sideBets, playerCards, dealerCards) => {
+export const getSideBetsInfo = (availableBets: SideBets, sideBets: SideBets, playerCards: Array<Card>, dealerCards: Array<Card>): any => {
   const sideBetsInfo = {
     luckyLucky: 0,
     perfectPairs: 0
@@ -402,7 +403,7 @@ export const getSideBetsInfo = (availableBets, sideBets, playerCards, dealerCard
   return sideBetsInfo
 }
 
-export const isActionAllowed = (actionName, stage) => {
+export const isActionAllowed = (actionName: string, stage: string): boolean => {
   if (actionName === TYPES.RESTORE) {
     return true
   }
@@ -428,7 +429,7 @@ export const isActionAllowed = (actionName, stage) => {
   }
 }
 
-export const getPrize = (playerHand, dealerCards) => {
+export const getPrize = (playerHand: Hand, dealerCards: Array<Card>): number => {
   const {
     close = false,
     playerHasSurrendered = true,

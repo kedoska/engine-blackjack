@@ -1,3 +1,4 @@
+// @flow
 /*!
  engine-blackjack
  Copyright (C) 2016 Marco Casula
@@ -16,10 +17,11 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-import * as TYPES from './constants'
-import * as engine from './engine'
+import * as TYPES from "./constants"
+import * as engine from "./engine"
+import type { Action, State, Hand, HandValue } from '../flow-typed'
+import {defaultState, getDefaultSideBets, getRules} from "./presets"
 const actions = require('./actions')
-import { getRules, defaultState, getDefaultSideBets } from './presets'
 
 const appendEpoch = (obj) => {
   const { payload = { bet: 0 } } = obj
@@ -34,7 +36,8 @@ const appendEpoch = (obj) => {
 }
 
 export default class Game {
-  constructor (initialState, rules = getRules({})) {
+  state: State = {}
+  constructor (initialState: any, rules: any = getRules({})) {
     this.state = initialState || defaultState(rules)
     this.dispatch = this.dispatch.bind(this)
     this.getState = this.getState.bind(this)
@@ -43,7 +46,7 @@ export default class Game {
     this._dispatch = this._dispatch.bind(this)
   }
 
-  canDouble (double, playerValue) {
+  canDouble (double: string, playerValue: HandValue) {
     if (double === 'none') {
       return false
     } else if (double === '9or10') {
@@ -57,7 +60,7 @@ export default class Game {
     }
   }
 
-  enforceRules (handInfo) {
+  enforceRules (handInfo: Hand): Hand {
     const { availableActions } = handInfo
     const { playerValue } = handInfo
     const { rules, history } = this.state
@@ -81,20 +84,20 @@ export default class Game {
     return handInfo
   }
 
-  getState () {
+  getState () : State {
     return {
       ...this.state
     }
   }
 
-  setState (state) {
+  setState (state: State): void {
     this.state = {
       ...this.state,
       ...state
     }
   }
 
-  dispatch (action) {
+  dispatch (action: Action): State {
     const { stage, handInfo, history } = this.state
     const { type, payload = {} } = action
     const { position = TYPES.RIGHT } = payload
@@ -145,7 +148,7 @@ export default class Game {
     return this._dispatch(action)
   }
 
-  _dispatch (action) {
+  _dispatch (action: Action): State {
     switch (action.type) {
       case TYPES.DEAL: {
         const { bet, sideBets } = action.payload
@@ -295,7 +298,7 @@ export default class Game {
         const { initialBet, deck, handInfo, dealerCards, cardCount, history, hits } = this.state
         const position = action.payload.position
         const card = deck.splice(deck.length - 1, 1)
-        let playerCards = null
+        let playerCards = []
         const hasSplit = history.some(x => x.type === TYPES.SPLIT)
         if (position === TYPES.LEFT) {
           playerCards = handInfo.left.cards.concat(card)
@@ -345,7 +348,7 @@ export default class Game {
         const { initialBet, deck, handInfo, dealerCards, cardCount, history, hits } = this.state
         const position = action.payload.position
         const card = deck.splice(deck.length - 1, 1)
-        let playerCards = null
+        let playerCards: Array<any> = []
         // TODO: remove position and replace it with stage info #hit
         if (position === TYPES.LEFT) {
           playerCards = handInfo.left.cards.concat(card)

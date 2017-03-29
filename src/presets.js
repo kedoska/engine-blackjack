@@ -1,3 +1,4 @@
+// @flow
 /*!
  engine-blackjack
  Copyright (C) 2016 Marco Casula
@@ -17,8 +18,9 @@
  */
 const TYPES = require('./constants')
 const engine = require('./engine')
+import type {SideBets, Rule, State} from '../flow-typed'
 
-export const getDefaultSideBets = (active = false) => {
+export const getDefaultSideBets = (active: boolean = false) : SideBets => {
   return {
     luckyLucky: active,
     perfectPairs: active,
@@ -38,7 +40,7 @@ export const getRules = ({
   surrender = true,
   insurance = true,
   showdownAfterAceSplit = true
-}) => {
+}: Rule) => {
   return {
     decks: decks || 1,
     standOnSoft17: standOnSoft17,
@@ -51,7 +53,7 @@ export const getRules = ({
   }
 }
 
-export const defaultState = (rules) => {
+export const defaultState = (rules: Rule) : State => {
   return {
     hits: 0,
     initialBet: 0,
@@ -67,7 +69,7 @@ export const defaultState = (rules) => {
     },
     history: [],
     availableBets: getDefaultSideBets(true),
-    sideBetsInfo: null,
+    sideBetsInfo: {},
     rules: rules,
     dealerHoleCard: null,
     dealerHasBlackjack: false,
