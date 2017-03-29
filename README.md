@@ -42,7 +42,7 @@ Here a list of direct (and maybe exotic) requests:
 
 If you are using [npm](https://www.npmjs.com/), to get the last version:
 
- * `yest add engine-blackjack`
+ * `yarn add engine-blackjack`
  * `npm install engine-blackjack`
 
 I'm currently publishing the master branch into NPM until I get the first _tag_.

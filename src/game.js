@@ -19,7 +19,7 @@
 
 import * as TYPES from "./constants"
 import * as engine from "./engine"
-import type { Action, State, Hand, HandValue } from '../flow-typed'
+import type { Action, State, Hand, HandValue, Rule } from '../flow-typed'
 import {defaultState, getDefaultSideBets, getRules} from "./presets"
 const actions = require('./actions')
 
@@ -37,7 +37,7 @@ const appendEpoch = (obj) => {
 
 export default class Game {
   state: State = {}
-  constructor (initialState: any, rules: any = getRules({})) {
+  constructor (initialState: State, rules: Rule = getRules({})) {
     this.state = initialState || defaultState(rules)
     this.dispatch = this.dispatch.bind(this)
     this.getState = this.getState.bind(this)
@@ -46,7 +46,7 @@ export default class Game {
     this._dispatch = this._dispatch.bind(this)
   }
 
-  canDouble (double: string, playerValue: HandValue) {
+  canDouble (double: string, playerValue: HandValue): boolean {
     if (double === 'none') {
       return false
     } else if (double === '9or10') {
