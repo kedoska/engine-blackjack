@@ -17,10 +17,10 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-import * as TYPES from "./constants"
-import * as engine from "./engine"
+import * as TYPES from './constants'
+import * as engine from './engine'
 import type { Action, State, Hand, HandValue, Rule } from '../flow-typed'
-import {defaultState, getDefaultSideBets, getRules} from "./presets"
+import { defaultState, getDefaultSideBets, getRules } from './presets'
 const actions = require('./actions')
 
 const appendEpoch = (obj) => {

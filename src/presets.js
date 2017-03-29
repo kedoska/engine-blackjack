@@ -16,9 +16,9 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-import * as TYPES from "./constants"
-import * as engine from "./engine"
-import type {SideBets, Rule, State} from '../flow-typed'
+import * as TYPES from './constants'
+import * as engine from './engine'
+import type { SideBets, Rule, State } from '../flow-typed'
 
 export const getDefaultSideBets = (active: boolean = false) : SideBets => {
   return {
