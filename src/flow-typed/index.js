@@ -1,8 +1,6 @@
-// @flow
-
 export type Action = {
   type: string,
-  payload: any
+  payload: ?any
 }
 
 export type AvailableActions = {
@@ -75,10 +73,8 @@ export type State = {
   availableBets: SideBets,
   sideBetsInfo: any,
   rules: Rule,
-  dealerCards: Array<Card>
+  dealerCards: Array<Card>,
   dealerHoleCard: ?Card,
   dealerHasBlackjack: boolean,
   dealerHasBusted: boolean
 }
-
-// todo SideBetsInfo
