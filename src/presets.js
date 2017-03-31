@@ -17,7 +17,7 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 import * as TYPES from './constants'
-import * as engine from './engine'
+import { shuffle, newDecks } from '52-deck'
 import type { SideBets, Rule, State } from './types'
 
 export const getDefaultSideBets = (active: boolean = false) : SideBets => {
@@ -62,7 +62,7 @@ export const defaultState = (rules: Rule) : State => {
     wonOnRight: 0,
     wonOnLeft: 0,
     stage: TYPES.STAGE_READY,
-    deck: engine.shuffle(engine.newDecks(rules.decks)),
+    deck: shuffle(newDecks(rules.decks)),
     handInfo: {
       left: {},
       right: {}

@@ -17,6 +17,7 @@
  */
 
 const assert = require('assert')
+import { serializeCards } from '52-deck'
 import * as engine from '../src/engine'
 import { getRules } from '../src/presets'
 import * as actions from '../src/actions'
@@ -25,7 +26,7 @@ import Game from '../src/game'
 const executeFlow = (rules = {} , cards, activity) => {
   const game = new Game(null, getRules(rules))
   let status = game.getState()
-  status.deck = status.deck.concat(engine.serializeCards(cards))
+  status.deck = status.deck.concat(serializeCards(cards))
   activity.forEach(fn => {
     // this is simulating the re-initialization done by an hypothetical server
     const instance = new Game(status)
@@ -338,38 +339,38 @@ describe('Must Stand on 17', function () {
 describe('Side bets', function () {
   describe('Lucky Lucky', function () {
     it('777 suited should pays 200', function () {
-      const dealerCards = engine.serializeCards('7s')
-      const playerCards = engine.serializeCards('7s 7s')
+      const dealerCards = serializeCards('7s')
+      const playerCards = serializeCards('7s 7s')
       const x = engine.getLuckyLuckyMultiplier(playerCards, dealerCards)
       assert.equal(x, 200, 'LL multiplier')
     })
     it('777 NO-suited should pays 50', function () {
-      const dealerCards = engine.serializeCards('7h')
-      const playerCards = engine.serializeCards('7s 7s')
+      const dealerCards = serializeCards('7h')
+      const playerCards = serializeCards('7s 7s')
       const x = engine.getLuckyLuckyMultiplier(playerCards, dealerCards)
       assert.equal(x, 50, 'LL multiplier')
     })
     it('678 suited should pays 100', function () {
-      const dealerCards = engine.serializeCards('8s')
-      const playerCards = engine.serializeCards('6s 7s')
+      const dealerCards = serializeCards('8s')
+      const playerCards = serializeCards('6s 7s')
       const x = engine.getLuckyLuckyMultiplier(playerCards, dealerCards)
       assert.equal(x, 100, 'LL multiplier')
     })
     it('678 NO-suited should pays 30', function () {
-      const dealerCards = engine.serializeCards('8s')
-      const playerCards = engine.serializeCards('6s 7c')
+      const dealerCards = serializeCards('8s')
+      const playerCards = serializeCards('6s 7c')
       const x = engine.getLuckyLuckyMultiplier(playerCards, dealerCards)
       assert.equal(x, 30, 'LL multiplier')
     })
     it('21 suited should pays 10', function () {
-      const dealerCards = engine.serializeCards('10h')
-      const playerCards = engine.serializeCards('9h 2h')
+      const dealerCards = serializeCards('10h')
+      const playerCards = serializeCards('9h 2h')
       const x = engine.getLuckyLuckyMultiplier(playerCards, dealerCards)
       assert.equal(x, 10, 'LL multiplier')
     })
     it('21 NO-suited should pays 3', function () {
-      const dealerCards = engine.serializeCards('10c')
-      const playerCards = engine.serializeCards('9h 2h')
+      const dealerCards = serializeCards('10c')
+      const playerCards = serializeCards('9h 2h')
       const x = engine.getLuckyLuckyMultiplier(playerCards, dealerCards)
       assert.equal(x, 3, 'LL multiplier')
     })
