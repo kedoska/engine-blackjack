@@ -19,7 +19,7 @@
 
 import luckyLucky from './paytables/luchyLuchy'
 import * as TYPES from './constants'
-import type { SideBets, Card, Hand, HandInfo, HandValue } from './flow-typed'
+import type { SideBets, Card, Hand, HandInfo, HandValue } from './types'
 
 export const isNull = (obj: ?any): boolean => obj === null
 

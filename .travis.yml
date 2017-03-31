@@ -3,3 +3,4 @@ node_js:
   - "node"
 before_script:
   - npm install
+  - npm run build

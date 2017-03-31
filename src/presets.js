@@ -18,7 +18,7 @@
  */
 import * as TYPES from './constants'
 import * as engine from './engine'
-import type { SideBets, Rule, State } from './flow-typed'
+import type { SideBets, Rule, State } from './types'
 
 export const getDefaultSideBets = (active: boolean = false) : SideBets => {
   return {

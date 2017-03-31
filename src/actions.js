@@ -18,7 +18,7 @@
  */
 
 import * as TYPES from './constants'
-import type { Action, Card } from './flow-typed'
+import type { Action, Card } from './types'
 
 export const invalid = (action: Action, info: any): Action => {
   return {
