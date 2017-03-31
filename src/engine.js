@@ -19,7 +19,7 @@
 
 import luckyLucky from './paytables/luchyLuchy'
 import * as TYPES from './constants'
-import type { SideBets, Card, Hand, HandValue } from '../flow-typed'
+import type { SideBets, Card, Hand, HandInfo, HandValue } from './flow-typed'
 
 export const isNull = (obj: ?any): boolean => obj === null
 
@@ -50,7 +50,7 @@ export const cardName = (number: number): ?string => {
   }
 }
 
-export const suiteName = (suite: string): string => {
+export const suiteName = (suite: string): ?string => {
   switch (suite.toLowerCase()) {
     case '♥':
     case 'h':
@@ -82,7 +82,7 @@ export const suiteName = (suite: string): string => {
   }
 }
 
-export const suiteColor = (suite: string): string => {
+export const suiteColor = (suite: ?string): ?string => {
   switch (suite) {
     case 'hearts':
       return 'R'
@@ -101,6 +101,9 @@ export const cardValue = (number: number): number => number < 10 ? number : 10
 
 export const makeCard = (number: number, suite: string): Card => {
   const _suite = suiteName(suite)
+  if (isNullOrUndef(_suite)) {
+    throw Error('Unknown suite')
+  }
   return {
     text: cardName(number),
     suite: _suite,
@@ -199,25 +202,30 @@ export const isSuited = (array: Array<Card> = []): boolean => {
 }
 
 export const serializeCard = (value: string): Card => {
-  const digits = value.match(/\d/g)
-  let number = null
-  let figure = null
-  let suite = null
+  const digits: ?Array<any> = value.match(/\d/g)
+  const EMPTY: string = ''
+  let number: number = 0
+  let figure: string
+  let suite: string = EMPTY
   if (digits && digits.length > 0) {
     number = Number(digits.join(''))
-    suite = value.replace(number, '')
+    suite = value.replace(number.toString(), '')
   } else {
-    ['j', 'q', 'k'].forEach((x, i) => {
-      if (value.indexOf(x) || value.indexOf(x.toUpperCase())) {
-        number = 11 + i
-        figure = x
-        suite = value
-          .replace(figure, '')
-          .replace(figure.toUpperCase(), '')
-      }
-    })
+    ['j', 'q', 'k']
+      .forEach((x, i) => {
+        if (value.indexOf(x) >= 0 || value.indexOf(x.toUpperCase()) >= 0) {
+          number = 11 + i
+          figure = x
+          suite = value
+            .replace(figure, EMPTY)
+            .replace(figure.toUpperCase(), EMPTY)
+        }
+      })
   }
-  suite = suite.replace('-', '')
+  if (number === 0) {
+    throw Error('')
+  }
+  suite = suite.replace('-', EMPTY)
   return makeCard(number, suite)
 }
 
@@ -225,7 +233,7 @@ export const serializeCards = (value:string): Array<Card> => {
   if (value === '') {
     throw Error('value should contains a valid raw card/s definition')
   }
-  return value.split(' ').map(serializeCard)
+  return value.trim().split(' ').map(serializeCard)
 }
 
 export const countCards = (array: Array<Card>) => {
@@ -312,8 +320,8 @@ export const getHandInfoAfterHit = (playerCards: Array<Card>, dealerCards: Array
   return hand
 }
 
-export const getHandInfoAfterDouble = (playerCards: Array<Card>, dealerCards: Array<Card>, initialBet: number): Hand => {
-  const hand = getHandInfoAfterHit(playerCards, dealerCards)
+export const getHandInfoAfterDouble = (playerCards: Array<Card>, dealerCards: Array<Card>, initialBet: number, hasSplit: boolean): Hand => {
+  const hand = getHandInfoAfterHit(playerCards, dealerCards, initialBet, hasSplit)
   const availableActions = hand.availableActions
   hand.availableActions = {
     ...availableActions,
@@ -464,7 +472,7 @@ export const getPrize = (playerHand: Hand, dealerCards: Array<Card>): number => 
   return 0
 }
 
-export const getPrizes = ({ history, handInfo: { left, right }, dealerCards }) => {
+export const getPrizes = ({ history, handInfo: { left, right }, dealerCards }: { history: Array<any>, handInfo: HandInfo, dealerCards: Array<Card>}) => {
   const finalBet = history.reduce((memo, x) => {
     memo += x.value
     return memo

@@ -18,8 +18,9 @@
  */
 
 import * as TYPES from './constants'
+import type { Action, Card } from './flow-typed'
 
-export const invalid = (action, info) => {
+export const invalid = (action: Action, info: any): Action => {
   return {
     type: TYPES.INVALID,
     payload: {
@@ -30,13 +31,13 @@ export const invalid = (action, info) => {
   }
 }
 
-export const restore = () => {
+export const restore = (): Action => {
   return {
     type: TYPES.RESTORE
   }
 }
 
-export const deal = ({ bet = 10, sideBets = { luckyLucky: 0 } } = {}) => {
+export const deal = ({ bet = 10, sideBets = { luckyLucky: 0 } }: { bet: number, sideBets: any } = {}): Action => {
   return {
     type: TYPES.DEAL,
     payload: {
@@ -46,7 +47,7 @@ export const deal = ({ bet = 10, sideBets = { luckyLucky: 0 } } = {}) => {
   }
 }
 
-export const insurance = ({ bet = 1 }) => {
+export const insurance = ({ bet = 1 }: { bet: number }): Action => {
   return {
     type: TYPES.INSURANCE,
     payload: {
@@ -55,13 +56,13 @@ export const insurance = ({ bet = 1 }) => {
   }
 }
 
-export const split = () => {
+export const split = (): Action => {
   return {
     type: TYPES.SPLIT
   }
 }
 
-export const hit = ({ position = 'right' }) => {
+export const hit = ({ position = 'right' }: { position: string }): Action => {
   return {
     type: TYPES.HIT,
     payload: {
@@ -70,7 +71,7 @@ export const hit = ({ position = 'right' }) => {
   }
 }
 
-export const double = ({ position = 'right' }) => {
+export const double = ({ position = 'right' }: { position: string }): Action => {
   return {
     type: TYPES.DOUBLE,
     payload: {
@@ -79,7 +80,7 @@ export const double = ({ position = 'right' }) => {
   }
 }
 
-export const stand = ({ position = 'right' }) => {
+export const stand = ({ position = 'right' }: { position: string }): Action => {
   return {
     type: TYPES.STAND,
     payload: {
@@ -88,13 +89,13 @@ export const stand = ({ position = 'right' }) => {
   }
 }
 
-export const surrender = () => {
+export const surrender = (): Action => {
   return {
     type: TYPES.SURRENDER
   }
 }
 
-export const showdown = ({ dealerHoleCardOnly = false } = { }) => {
+export const showdown = ({ dealerHoleCardOnly = false }: { dealerHoleCardOnly: boolean } = { }): Action => {
   return {
     type: TYPES.SHOWDOWN,
     payload: {
@@ -103,7 +104,7 @@ export const showdown = ({ dealerHoleCardOnly = false } = { }) => {
   }
 }
 
-export const dealerHit = ({ dealerHoleCard } = { }) => {
+export const dealerHit = ({ dealerHoleCard }: { dealerHoleCard: Card } = { }): Action => {
   return {
     type: TYPES.DEALER_HIT,
     payload: {

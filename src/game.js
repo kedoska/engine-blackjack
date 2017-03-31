@@ -19,7 +19,7 @@
 
 import * as TYPES from './constants'
 import * as engine from './engine'
-import type { Action, State, Hand, HandValue, Rule } from '../flow-typed'
+import type { Action, State, Hand, HandValue, Rule } from './flow-typed'
 import { defaultState, getDefaultSideBets, getRules } from './presets'
 const actions = require('./actions')
 
@@ -37,6 +37,11 @@ const appendEpoch = (obj) => {
 
 export default class Game {
   state: State = {}
+  dispatch: Function
+  _dispatch: Function
+  getState: Function
+  setState: Function
+  enforceRules: Function
   constructor (initialState: State, rules: Rule = getRules({})) {
     this.state = initialState || defaultState(rules)
     this.dispatch = this.dispatch.bind(this)
@@ -349,10 +354,11 @@ export default class Game {
         const position = action.payload.position
         const card = deck.splice(deck.length - 1, 1)
         let playerCards: Array<any> = []
+        const hasSplit = history.some(x => x.type === TYPES.SPLIT)
         // TODO: remove position and replace it with stage info #hit
         if (position === TYPES.LEFT) {
           playerCards = handInfo.left.cards.concat(card)
-          handInfo.left = engine.getHandInfoAfterDouble(playerCards, dealerCards, initialBet)
+          handInfo.left = engine.getHandInfoAfterDouble(playerCards, dealerCards, initialBet, hasSplit)
           if (handInfo.left.close) {
             stage = TYPES.STAGE_SHOWDOWN
           } else {
@@ -360,7 +366,7 @@ export default class Game {
           }
         } else {
           playerCards = handInfo.right.cards.concat(card)
-          handInfo.right = engine.getHandInfoAfterDouble(playerCards, dealerCards, initialBet)
+          handInfo.right = engine.getHandInfoAfterDouble(playerCards, dealerCards, initialBet, hasSplit)
           if (handInfo.right.close) {
             if (history.some(x => x.type === TYPES.SPLIT)) {
               stage = TYPES.STAGE_PLAYER_TURN_LEFT
