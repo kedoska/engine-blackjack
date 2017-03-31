@@ -37,13 +37,11 @@ const appendEpoch = (obj) => {
 
 export default class Game {
   state: State = {}
-
   dispatch: Function
   _dispatch: Function
   getState: Function
   setState: Function
   enforceRules: Function
-
   constructor (initialState: State, rules: Rule = getRules({})) {
     this.state = initialState || defaultState(rules)
     this.dispatch = this.dispatch.bind(this)
