@@ -213,16 +213,16 @@ export const serializeCard = (value: string): Card => {
   } else {
     ['j', 'q', 'k']
       .forEach((x, i) => {
-      if (value.indexOf(x) >= 0 || value.indexOf(x.toUpperCase()) >= 0) {
-        number = 11 + i
-        figure = x
-        suite = value
-          .replace(figure, EMPTY)
-          .replace(figure.toUpperCase(), EMPTY)
-      }
-    })
+        if (value.indexOf(x) >= 0 || value.indexOf(x.toUpperCase()) >= 0) {
+          number = 11 + i
+          figure = x
+          suite = value
+            .replace(figure, EMPTY)
+            .replace(figure.toUpperCase(), EMPTY)
+        }
+      })
   }
-  if (number === 0){
+  if (number === 0) {
     throw Error('')
   }
   suite = suite.replace('-', EMPTY)
