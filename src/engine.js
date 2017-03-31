@@ -203,24 +203,29 @@ export const isSuited = (array: Array<Card> = []): boolean => {
 
 export const serializeCard = (value: string): Card => {
   const digits: ?Array<any> = value.match(/\d/g)
+  const EMPTY: string = ''
   let number: number = 0
   let figure: string
-  let suite: string = ''
+  let suite: string = EMPTY
   if (digits && digits.length > 0) {
     number = Number(digits.join(''))
     suite = value.replace(number.toString(), '')
   } else {
-    ['j', 'q', 'k'].forEach((x, i) => {
-      if (value.indexOf(x) || value.indexOf(x.toUpperCase())) {
+    ['j', 'q', 'k']
+      .forEach((x, i) => {
+      if (value.indexOf(x) >= 0 || value.indexOf(x.toUpperCase()) >= 0) {
         number = 11 + i
         figure = x
         suite = value
-          .replace(figure, '')
-          .replace(figure.toUpperCase(), '')
+          .replace(figure, EMPTY)
+          .replace(figure.toUpperCase(), EMPTY)
       }
     })
   }
-  suite = suite.replace('-', '')
+  if (number === 0){
+    throw Error('')
+  }
+  suite = suite.replace('-', EMPTY)
   return makeCard(number, suite)
 }
 
@@ -228,7 +233,7 @@ export const serializeCards = (value:string): Array<Card> => {
   if (value === '') {
     throw Error('value should contains a valid raw card/s definition')
   }
-  return value.split(' ').map(serializeCard)
+  return value.trim().split(' ').map(serializeCard)
 }
 
 export const countCards = (array: Array<Card>) => {

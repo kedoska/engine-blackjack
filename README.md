@@ -157,7 +157,7 @@ And, those are _actions_ that are internally called in determinate _stages_ by t
  
 ### Stages
 
-see the `/src/game.js`
+See the `/src/game.js`
 
 The stage represent a moment in the game. The stage is directly related with the action allowed in that particular moment.
 
