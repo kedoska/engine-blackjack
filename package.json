@@ -35,5 +35,8 @@
     "neutrino-preset-jest": "^4.3.0",
     "neutrino-preset-node": "^4.2.2",
     "neutrino-preset-standard": "^4.3.3"
+  },
+  "dependencies": {
+    "52-deck": "^1.0.0"
   }
 }
