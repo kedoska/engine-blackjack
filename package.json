@@ -1,7 +1,7 @@
 {
   "name": "engine-blackjack",
-  "version": "0.5.5",
-  "description": "A simple nodeJs engine to play blackjack",
+  "version": "0.6.0",
+  "description": "NodeJs, single player, blackjack engine",
   "main": "build/index.js",
   "scripts": {
     "test": "neutrino test --presets neutrino-preset-node neutrino-preset-jest",
@@ -16,6 +16,7 @@
   },
   "keywords": [
     "nodejs",
+    "cards",
     "games",
     "blackjack"
   ],
