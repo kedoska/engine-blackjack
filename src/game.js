@@ -19,7 +19,7 @@
 
 import * as TYPES from './constants'
 import * as engine from './engine'
-import type { Action, State, Hand, HandValue, Rule } from './flow-typed'
+import type { Action, State, Hand, HandValue, Rule } from './types'
 import { defaultState, getDefaultSideBets, getRules } from './presets'
 const actions = require('./actions')
 
