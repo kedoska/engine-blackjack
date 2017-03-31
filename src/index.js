@@ -8,7 +8,7 @@
 'use strict'
 import * as constants from './constants'
 import * as engine from './engine'
-import presets from './presets'
+import * as presets from './presets'
 import * as actions from './actions'
 import Game from './game'
 
