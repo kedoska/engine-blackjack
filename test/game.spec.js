@@ -153,7 +153,7 @@ describe('Game flow', function () {
       const state = executeFlow(rules, '♦10 ♥1 ♦3 ♦3', actions.map(x => functions[x]))
       const { sideBetsInfo: { insurance : { risk, win }} } = state
       assert.equal(risk, 5, 'insurance risk value is half of 10')
-      assert.equal(win, 20, 'insurance win value is 10 + bet = 15')
+      assert.equal(win, risk * 3, 'insurance win value is 10 + bet = 15')
     })
     it('should not pay insurance and summary should appears in props "sideBetsInfo"', () => {
       const actions = ['restore', 'deal', 'insurance5']
@@ -171,7 +171,7 @@ describe('Game flow', function () {
       assert.equal(state.stage, 'done', 'blackjack but insurance is ON and first card is ♥1')
       assert.equal(finalBet, 15, 'bet 10 and insurance 1')
       assert.equal(right.close, true, 'right hand should be close')
-      assert.equal(win, 20, 'insurance pays 2 to 1 when dealer has bj + initial bet')
+      assert.equal(win, 5 * 3, 'insurance pays 2 to 1 when dealer has bj + insurance value')
       assert.equal(wonOnRight, 0, 'right has no prize')
     })
     it(`INSURANCE ON: should deal ${test.cards}, insure YES, and finish`, function () {
@@ -182,8 +182,8 @@ describe('Game flow', function () {
       assert.equal(state.stage, 'done', 'blackjack but insurance is ON and first card is ♥1')
       assert.equal(finalBet, 20 + 10, 'bet 20 and insurance 10')
       assert.equal(right.close, true, 'right hand should be close')
-      assert.equal(risk, 10, 'insurance pays 2 to 1 when dealer has bj + initial bet')
-      assert.equal(win, 40, 'insurance pays 2 to 1 when dealer has bj + initial bet')
+      assert.equal(risk, 10, 'insurance pays 2 to 1 when dealer has bj + insurance value')
+      assert.equal(win, 30, 'insurance pays 2 to 1 when dealer has bj + insurance value')
       assert.equal(wonOnRight, 0, 'right has no prize')
     })
     it(`INSURANCE OFF: should deal ${test.cards} and finish`, function () {
