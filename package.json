@@ -5,7 +5,8 @@
   "main": "build/index.js",
   "scripts": {
     "test": "neutrino test --presets neutrino-preset-node neutrino-preset-jest",
-    "build": "neutrino build --presets neutrino-preset-standard neutrino-preset-node neutrino-middleware-minify"
+    "build": "neutrino build --presets neutrino-preset-standard neutrino-preset-node neutrino-middleware-minify",
+    "build-readable": "neutrino build --presets neutrino-preset-standard neutrino-preset-node"
   },
   "repository": {
     "type": "git",

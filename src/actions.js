@@ -47,7 +47,7 @@ export const deal = ({ bet = 10, sideBets = { luckyLucky: 0 } }: { bet: number, 
   }
 }
 
-export const insurance = ({ bet = 1 }: { bet: number }): Action => {
+export const insurance = ({ bet = 0 }: { bet: number }): Action => {
   return {
     type: TYPES.INSURANCE,
     payload: {

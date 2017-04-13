@@ -222,7 +222,7 @@ export default class Game {
         const { bet = 0 } = action.payload
         const { sideBetsInfo, handInfo, dealerCards, dealerHoleCard, initialBet, history, hits } = this.state
         const dealerHasBlackjack = engine.isBlackjack(dealerCards.concat([dealerHoleCard]))
-        const insuranceValue = initialBet / 2
+        const insuranceValue = bet > 0 ? initialBet / 2 : 0
         const isFirstCardAce = dealerCards[0].value === 1
         const insurancePrize = (isFirstCardAce && dealerHasBlackjack && insuranceValue > 0 && bet > 0) ? insuranceValue * 3 : 0
         handInfo.right = this.enforceRules(engine.getHandInfoAfterInsurance(handInfo.right.cards, dealerCards))
