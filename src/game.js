@@ -43,7 +43,7 @@ export default class Game {
   setState: Function
   enforceRules: Function
   constructor (initialState: State, rules: Rule = getRules({})) {
-    this.state = initialState || defaultState(rules)
+    this.state = initialState ? Object.assign({}, initialState) : defaultState(rules)
     this.dispatch = this.dispatch.bind(this)
     this.getState = this.getState.bind(this)
     this.setState = this.setState.bind(this)
@@ -176,11 +176,11 @@ export default class Game {
           }
         }
         const sideBetsInfo = engine.getSideBetsInfo(availableBets, sideBets, playerCards, dealerCards)
-        history.push(appendEpoch({
+        const historyItem = appendEpoch({
           ...action,
           right: playerCards,
           dealerCards
-        }))
+        })
         this.setState({
           initialBet: bet,
           stage: TYPES.STAGE_PLAYER_TURN_RIGHT,
@@ -198,7 +198,7 @@ export default class Game {
           },
           sideBetsInfo: sideBetsInfo,
           availableBets: getDefaultSideBets(false),
-          history: history,
+          history: history.concat(historyItem),
           hits: hits + 1
         })
 
@@ -228,13 +228,13 @@ export default class Game {
         handInfo.right = this.enforceRules(engine.getHandInfoAfterInsurance(handInfo.right.cards, dealerCards))
         handInfo.right.bet = initialBet
         handInfo.right.close = dealerHasBlackjack
-        history.push(appendEpoch({
+        const historyItem = appendEpoch({
           ...action,
           payload: { bet: insuranceValue || 0 }
-        }))
+        })
         this.setState({
           handInfo: handInfo,
-          history: history,
+          history: history.concat(historyItem),
           hits: hits + 1,
           sideBetsInfo: {
             ...sideBetsInfo,
@@ -260,12 +260,12 @@ export default class Game {
         deck = deck.filter(x => [ cardLeft, cardRight ].indexOf(x) === -1)
         playerCardsLeftPosition.push(cardLeft[ 0 ])
         playerCardsRightPosition.push(cardRight[ 0 ])
-        history.push(appendEpoch({
+        const historyItem = appendEpoch({
           ...action,
           payload: { bet: initialBet },
           left: playerCardsLeftPosition,
           right: playerCardsRightPosition
-        }))
+        })
         let handInfoLeft = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet))
         let handInfoRight = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet))
         let stage = ''
@@ -290,7 +290,7 @@ export default class Game {
             right: handInfoRight
           },
           deck: deck,
-          history: history,
+          history: history.concat(historyItem),
           hits: hits + 1
         })
         if (stage === TYPES.STAGE_SHOWDOWN) {
@@ -331,16 +331,16 @@ export default class Game {
         }
         const objCards = {}
         objCards[position] = playerCards
-        history.push(appendEpoch({
+        const historyItem = appendEpoch({
           ...action,
           ...objCards
-        }))
+        })
         this.setState({
           stage: stage,
           handInfo: handInfo,
           deck: deck.filter(x => playerCards.indexOf(x) === -1),
           cardCount: cardCount + engine.countCards(card),
-          history: history,
+          history: history.concat(historyItem),
           hits: hits + 1
         })
         if (stage === TYPES.STAGE_SHOWDOWN) {
@@ -379,17 +379,17 @@ export default class Game {
         }
         const objCards = {}
         objCards[position] = playerCards
-        history.push(appendEpoch({
+        const historyItem = appendEpoch({
           ...action,
           payload: { bet: initialBet },
           ...objCards
-        }))
+        })
         this.setState({
           stage: stage,
           handInfo: handInfo,
           deck: deck.filter(x => playerCards.indexOf(x) === -1),
           cardCount: cardCount + engine.countCards(card),
-          history: history,
+          history: history.concat(historyItem),
           hits: hits + 1
         })
         this._dispatch(actions.stand(position))
@@ -418,11 +418,11 @@ export default class Game {
             stage = TYPES.STAGE_PLAYER_TURN_LEFT
           }
         }
-        history.push(appendEpoch(action))
+        const historyItem = appendEpoch(action)
         this.setState({
           stage: stage,
           handInfo: handInfo,
-          history: history,
+          history: history.concat(historyItem),
           hits: hits + 1
         })
         if (stage === TYPES.STAGE_SHOWDOWN) {
@@ -433,10 +433,10 @@ export default class Game {
       case TYPES.SHOWDOWN: {
         const { dealerHoleCard, handInfo, history, hits } = this.state
         const { dealerHoleCardOnly } = action.payload
-        history.push(appendEpoch(action))
+        const historyItem = appendEpoch(action)
         this.setState({
           stage: TYPES.STAGE_DEALER_TURN,
-          history: history,
+          history: history.concat(historyItem),
           hits: hits + 1
         })
         // we want to include in the calculation the dealerHoleCard obtained in initial deal()
@@ -483,11 +483,11 @@ export default class Game {
       case TYPES.SURRENDER: {
         const { handInfo, history, hits } = this.state
         handInfo.right = engine.getHandInfoAfterSurrender(handInfo.right)
-        history.push(appendEpoch(action))
+        const historyItem = appendEpoch(action)
         this.setState({
           stage: TYPES.STAGE_SHOWDOWN,
           handInfo: handInfo,
-          history: history,
+          history: history.concat(historyItem),
           hits: hits + 1
         })
         this._dispatch(actions.showdown({ dealerHoleCardOnly: true }))
@@ -513,10 +513,10 @@ export default class Game {
             stage = TYPES.STAGE_DONE
           }
         }
-        history.push(appendEpoch({
+        const historyItem = appendEpoch({
           ...action,
           dealerCards
-        }))
+        })
         this.setState({
           stage: stage,
           dealerCards: dealerCards,
@@ -525,17 +525,17 @@ export default class Game {
           dealerHasBusted: dealerHasBusted,
           deck: deck.filter(x => dealerCards.indexOf(x) === -1),
           cardCount: cardCount + engine.countCards([card]),
-          history: history,
+          history: history.concat(historyItem),
           hits: hits + 1
         })
         break
       }
       default: {
         const { history, hits } = this.state
-        history.push(appendEpoch(action))
+        const historyItem = appendEpoch(action)
         this.setState({
           hits: hits + 1,
-          history: history
+          history: history.concat(historyItem)
         })
         break
       }
