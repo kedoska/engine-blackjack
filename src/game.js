@@ -266,28 +266,28 @@ export default class Game {
           left: playerCardsLeftPosition,
           right: playerCardsRightPosition
         })
-        let handInfoLeft = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet))
-        let handInfoRight = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet))
+        let left = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsLeftPosition, dealerCards, initialBet))
+        let right = this.enforceRules(engine.getHandInfoAfterSplit(playerCardsRightPosition, dealerCards, initialBet))
         let stage = ''
         if (forceShowdown) {
           stage = TYPES.STAGE_SHOWDOWN
-          handInfoLeft.close = true
-          handInfoRight.close = true
+          left.close = true
+          right.close = true
         } else {
-          if (handInfoRight.close) {
+          if (right.close) {
             stage = TYPES.STAGE_PLAYER_TURN_LEFT
           } else {
             stage = TYPES.STAGE_PLAYER_TURN_RIGHT
           }
         }
-        if (handInfoRight.close && handInfoLeft.close) {
+        if (right.close && left.close) {
           stage = TYPES.STAGE_SHOWDOWN
         }
         this.setState({
           stage: stage,
           handInfo: {
-            left: handInfoLeft,
-            right: handInfoRight
+            left,
+            right
           },
           deck: deck,
           history: history.concat(historyItem),
@@ -310,6 +310,7 @@ export default class Game {
         if (position === TYPES.LEFT) {
           playerCards = handInfo.left.cards.concat(card)
           left = engine.getHandInfoAfterHit(playerCards, dealerCards, initialBet, hasSplit)
+          right = Object.assign({}, handInfo.right)
           if (left.close) {
             stage = TYPES.STAGE_SHOWDOWN
           } else {
@@ -318,6 +319,7 @@ export default class Game {
         } else {
           playerCards = handInfo.right.cards.concat(card)
           right = engine.getHandInfoAfterHit(playerCards, dealerCards, initialBet, hasSplit)
+          left = Object.assign({}, handInfo.left)
           if (right.close) {
             if (history.some(x => x.type === TYPES.SPLIT)) {
               stage = TYPES.STAGE_PLAYER_TURN_LEFT
@@ -355,12 +357,13 @@ export default class Game {
         const { initialBet, deck, handInfo, dealerCards, cardCount, history, hits } = this.state
         const position = action.payload.position
         const card = deck.splice(deck.length - 1, 1)
-        let playerCards: Array<any> = []
+        let playerCards: Array<card> = []
         let left = {}
         let right = {}
         const hasSplit = history.some(x => x.type === TYPES.SPLIT)
         // TODO: remove position and replace it with stage info #hit
         if (position === TYPES.LEFT) {
+          right = Object.assign({}, handInfo.right)
           playerCards = handInfo.left.cards.concat(card)
           left = engine.getHandInfoAfterDouble(playerCards, dealerCards, initialBet, hasSplit)
           if (left.close) {
@@ -370,6 +373,7 @@ export default class Game {
           }
         } else {
           playerCards = handInfo.right.cards.concat(card)
+          left = Object.assign({}, handInfo.left)
           right = engine.getHandInfoAfterDouble(playerCards, dealerCards, initialBet, hasSplit)
           if (right.close) {
             if (history.some(x => x.type === TYPES.SPLIT)) {
@@ -400,33 +404,33 @@ export default class Game {
         break
       }
       case TYPES.STAND: {
-        let stage = this.state.stage
+        let stage = ''
         const { handInfo, history, hits } = this.state
         const position = action.payload.position
         let left = {}
         let right = {}
-        // TODO: remove position and replace it with stage info #hit
+        const hasSplit = history.some(x => x.type === TYPES.SPLIT)
         if (position === TYPES.LEFT) {
+          right = Object.assign({}, handInfo.right)
           left = engine.getHandInfoAfterStand(handInfo.left)
           stage = TYPES.STAGE_SHOWDOWN
-        } else {
+        }
+        if (position === TYPES.RIGHT) {
+          left = Object.assign({}, handInfo.left)
           right = engine.getHandInfoAfterStand(handInfo.right)
-          const hasSplit = history.some(x => x.type === TYPES.SPLIT)
-          if (hasSplit) {
-            stage = stage !== TYPES.STAGE_SHOWDOWN ? TYPES.STAGE_PLAYER_TURN_LEFT : TYPES.STAGE_SHOWDOWN
-          } else {
-            stage = TYPES.STAGE_SHOWDOWN
-          }
           if (right.close) {
             stage = TYPES.STAGE_SHOWDOWN
           }
-          if (hasSplit && !left.close) {
-            stage = TYPES.STAGE_PLAYER_TURN_LEFT
-          }
+        }
+        if (hasSplit) {
+          stage = stage !== TYPES.STAGE_SHOWDOWN ? TYPES.STAGE_PLAYER_TURN_LEFT : TYPES.STAGE_SHOWDOWN
+        }
+        if (hasSplit && !left.close) {
+          stage = TYPES.STAGE_PLAYER_TURN_LEFT
         }
         const historyItem = appendEpoch(action)
         this.setState({
-          stage: stage,
+          stage,
           handInfo: { left, right },
           history: history.concat(historyItem),
           hits: hits + 1

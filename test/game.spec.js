@@ -79,6 +79,12 @@ describe('Game flow', function () {
         finalWin: 0
       },
       {
+        cards: '♣6 ♣6 ♣6 ♥3 ♣3 ♠2 ♦2',
+        actions: ['restore', 'deal', 'split', 'standR', 'doubleL'],
+        stage: 'done',
+        finalWin: 0
+      },
+      {
         // force showdown after splitting ace rule ON.
         // in this case we want to terminate the game even if right side has 20
         cards: '♥9 ♦K ♥3 ♣3 ♠1 ♦1',
@@ -104,7 +110,7 @@ describe('Game flow', function () {
       it(`should deal ${test.cards} execute ${test.actions.join('-')} and finish`, function () {
         const state = executeFlow(test.rules, test.cards, test.actions.map(x => functions[x]))
         if (test.stage) {
-          assert.equal(state.stage, test.stage, test.cards)
+          assert.equal(state.stage, test.stage, `${test.cards} exit stage is ${state.stage} instead of ${test.stage}`)
         }
         if (test.finalWin) {
           assert.equal(state.finalWin, test.finalWin)
@@ -191,7 +197,7 @@ describe('Game flow', function () {
       const rules = {insurance: false}
       const state = executeFlow(rules, test.cards, actions.map(x => functions[x]))
       assert.equal(state.dealerHasBlackjack, true, 'blackjack is not a secret here')
-      assert.equal(state.stage, 'done', test.cards)
+      assert.equal(state.stage, 'done', `${test.cards} stage is ${state.stage} instead of done`)
     })
   })
   describe('# insurance dealer no BJ', function() {
@@ -243,7 +249,7 @@ describe('Game flow', function () {
     }
     const state = executeFlow(rules, cards, actions.map(x => functions[x]))
     const { stage, handInfo: { left, right} } = state
-    assert.equal(stage, 'done', cards)
+    assert.equal(stage, 'done', `split on 10 ${cards} exit stage is ${stage} instead of done`)
     assert.equal(left.close, true, 'L is close')
     assert.equal(left.playerHasBlackjack, false, 'L has 21')
     assert.equal(right.playerHasBusted, true, 'R has busted')
@@ -263,7 +269,7 @@ describe('Game flow', function () {
     }
     const state = executeFlow(rules, cards, actions.map(x => functions[x]))
     const { stage, handInfo: { left, right}, dealerCards, finalWin = -1 } = state
-    assert.equal(stage, 'done', cards)
+    assert.equal(stage, 'done', cards, `state is ${stage}`)
     assert.equal(left.close, true, 'L is close')
     assert.equal(left.close, true, 'L is close')
     assert.equal(right.playerHasBusted, true, 'R has busted')
@@ -315,7 +321,7 @@ describe('Must Stand on 17', function () {
     const { stage, finalBet, wonOnRight, wonOnLeft, dealerValue,
       handInfo: { left, right }
     } = state
-    assert.equal(stage, 'done', cards)
+    assert.equal(stage, 'done', `${cards}`)
     assert.equal(finalBet, 30, 'Deal 10, Split 10, DoubleR 10')
     assert.equal(wonOnLeft, 0, 'Won 0 Left (busted)')
     assert.equal(dealerValue.hi, 20, 'Dealer must stop at 20')
