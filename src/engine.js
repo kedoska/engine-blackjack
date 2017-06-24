@@ -62,6 +62,8 @@ export const calculate = (array: Array<Card>): HandValue => {
   })
 }
 
+export const getHigherValidValue = (handValue: HandValue):number => handValue.hi <= 21 ? handValue.hi : handValue.lo
+
 export const checkForBusted = (handValue: HandValue): boolean => (handValue.hi > 21) && (handValue.lo === handValue.hi)
 
 export const isBlackjack = (array: Array<Card>): boolean => array.length === 2 && calculate(array).hi === 21
