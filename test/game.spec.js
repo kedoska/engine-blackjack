@@ -447,7 +447,7 @@ describe('No matter how many aces ... soft hands do not busts', () => {
     assert.equal(playerHasBusted, false, 'Player should be 12 not 22')
     assert.equal(close, false, 'Right should be open at 12')
   })
-  it.only('should pay on handValue.lo', () => {
+  it('should pay on handValue.lo', () => {
     const cards = '♥8 ♥5 ♣1 ♥4 ♣9 ♠1 ♦5'
     const actions = [ 'restore', 'deal', 'hitR', 'hitR', 'standR' ]
     const rules = {
