@@ -1,12 +1,12 @@
 {
   "name": "engine-blackjack",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "NodeJs, single player, blackjack engine",
   "main": "build/index.js",
   "scripts": {
-    "test": "neutrino test --presets neutrino-preset-node neutrino-preset-jest",
-    "build": "neutrino build --presets neutrino-preset-standard neutrino-preset-node neutrino-middleware-minify",
-    "build-readable": "neutrino build --presets neutrino-preset-standard neutrino-preset-node"
+    "test": "neutrino test --use neutrino-preset-node neutrino-preset-jest",
+    "build": "neutrino build --use neutrino-preset-standard neutrino-preset-node neutrino-middleware-minify",
+    "build-readable": "neutrino build --use neutrino-preset-standard neutrino-preset-node"
   },
   "repository": {
     "type": "git",
@@ -32,11 +32,11 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-es2015": "^6.22.0",
     "flow-bin": "^0.42.0",
-    "neutrino": "^4.3.1",
-    "neutrino-middleware-minify": "^5.0.0-beta.1",
-    "neutrino-preset-jest": "^4.3.0",
-    "neutrino-preset-node": "^4.2.2",
-    "neutrino-preset-standard": "^4.3.3"
+    "neutrino": "^5.0.0-beta.1",
+    "neutrino-middleware-minify": "^5.9.0",
+    "neutrino-preset-jest": "^5.0.0-beta.1",
+    "neutrino-preset-node": "^5.0.0-beta.1",
+    "neutrino-preset-standard": "^5.8.0"
   },
   "dependencies": {
     "52-deck": "^1.0.0"
