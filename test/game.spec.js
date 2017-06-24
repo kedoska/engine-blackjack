@@ -428,7 +428,7 @@ describe('History detail for each action', () => {
 })
 
 describe('No matter how many aces ... soft hands do not busts', () => {
-  it.only('should not bust when "lo" is still under 22', () => {
+  it('should not bust when "lo" is still under 22', () => {
     const cards = '♥5 ♣1 ♥4 ♣9 ♠1 ♦5'
     const actions = [ 'restore', 'deal', 'hitR', 'hitR' ]
     const rules = {
@@ -445,7 +445,6 @@ describe('No matter how many aces ... soft hands do not busts', () => {
     assert.equal(lo, 12)
     assert.equal(hi, 22)
     assert.equal(playerHasBusted, false, 'Player should be 12 not 22')
-    assert.equal(close, 'Right should be open at 12')
-    console.dir(right)
+    assert.equal(close, false, 'Right should be open at 12')
   })
 })

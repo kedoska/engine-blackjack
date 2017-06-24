@@ -62,6 +62,8 @@ export const calculate = (array: Array<Card>): HandValue => {
   })
 }
 
+export const checkForBusted = (handValue: HandValue): boolean => (handValue.hi > 21) && (handValue.lo === handValue.hi)
+
 export const isBlackjack = (array: Array<Card>): boolean => array.length === 2 && calculate(array).hi === 21
 
 export const isSoftHand = (array: Array<Card>): boolean => {
@@ -97,7 +99,7 @@ export const getHandInfo = (playerCards: Array<Card>, dealerCards: Array<Card>, 
     return null
   }
   const hasBlackjack = isBlackjack(playerCards) && hasSplit === false
-  const hasBusted = handValue.hi > 21
+  const hasBusted = checkForBusted(handValue)
   const isClosed = hasBusted || hasBlackjack || handValue.hi === 21
   const canDoubleDown = !isClosed && true
   const canSplit = playerCards.length > 1 && playerCards[ 0 ].value === playerCards[ 1 ].value && !isClosed
