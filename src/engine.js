@@ -62,6 +62,8 @@ export const calculate = (array: Array<Card>): HandValue => {
   })
 }
 
+export const getHigherValidValue = (handValue: HandValue):number => handValue.hi <= 21 ? handValue.hi : handValue.lo
+
 export const checkForBusted = (handValue: HandValue): boolean => (handValue.hi > 21) && (handValue.lo === handValue.hi)
 
 export const isBlackjack = (array: Array<Card>): boolean => array.length === 2 && calculate(array).hi === 21
@@ -293,7 +295,7 @@ export const getPrize = (playerHand: Hand, dealerCards: Array<Card>): number => 
     playerValue = {},
     bet = 0
   } = playerHand
-  const dealerValue = calculate(dealerCards).hi
+  const higherValidDealerValue = getHigherValidValue(calculate(dealerCards))
   const dealerHasBlackjack = isBlackjack(dealerCards)
   if (!close) {
     return 0
@@ -307,13 +309,14 @@ export const getPrize = (playerHand: Hand, dealerCards: Array<Card>): number => 
   if (playerHasBlackjack && !dealerHasBlackjack) {
     return bet + (bet * 1.5)
   }
-  const dealerHasBusted = dealerValue > 21
+  const dealerHasBusted = higherValidDealerValue > 21
   if (dealerHasBusted) {
     return (bet + bet)
   }
-  if (playerValue.hi > dealerValue) {
+  const higherValidPlayerValue = getHigherValidValue(playerValue)
+  if (higherValidPlayerValue > higherValidDealerValue) {
     return (bet + bet)
-  } else if (playerValue.hi === dealerValue) {
+  } else if (higherValidPlayerValue === higherValidDealerValue) {
     return bet
   }
   return 0

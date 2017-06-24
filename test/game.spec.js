@@ -447,4 +447,25 @@ describe('No matter how many aces ... soft hands do not busts', () => {
     assert.equal(playerHasBusted, false, 'Player should be 12 not 22')
     assert.equal(close, false, 'Right should be open at 12')
   })
+  it('should pay on handValue.lo', () => {
+    const cards = '♥8 ♥5 ♣1 ♥4 ♣9 ♠1 ♦5'
+    const actions = [ 'restore', 'deal', 'hitR', 'hitR', 'standR' ]
+    const rules = {
+      decks: 1,
+      standOnSoft17: true,
+      double: 'any',
+      split: true,
+      doubleAfterSplit: true,
+      showdownAfterAceSplit: true
+    }
+    const state = executeFlow(rules, cards, actions.map(x => functions[ x ]))
+    const { handInfo: { right }, dealerValue, wonOnRight } = state
+    const { playerValue: { hi, lo }, playerHasBusted } = right
+    assert.equal(lo, 12)
+    assert.equal(hi, 22)
+    assert.equal(dealerValue.lo, 21, 'dealer has 21 on lo')
+    assert.equal(dealerValue.hi, 21, 'dealer has 21 on hi')
+    assert.equal(playerHasBusted, false, 'Player should be 12 not 22')
+    assert.equal(wonOnRight, 0, 'player lose. dealer has 21, player 12 or 22')
+  })
 })
