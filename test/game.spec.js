@@ -426,3 +426,26 @@ describe('History detail for each action', () => {
     assert.ok(double.right.length === 3, '3 cards on right after double')
   })
 })
+
+describe('No matter how many aces ... soft hands do not busts', () => {
+  it.only('should not bust when "lo" is still under 22', () => {
+    const cards = '♥5 ♣1 ♥4 ♣9 ♠1 ♦5'
+    const actions = [ 'restore', 'deal', 'hitR', 'hitR' ]
+    const rules = {
+      decks: 1,
+      standOnSoft17: true,
+      double: 'any',
+      split: true,
+      doubleAfterSplit: true,
+      showdownAfterAceSplit: true
+    }
+    const state = executeFlow(rules, cards, actions.map(x => functions[ x ]))
+    const { handInfo: { right }} = state
+    const { playerValue: { hi, lo }, playerHasBusted, close } = right
+    assert.equal(lo, 12)
+    assert.equal(hi, 22)
+    assert.equal(playerHasBusted, false, 'Player should be 12 not 22')
+    assert.equal(close, 'Right should be open at 12')
+    console.dir(right)
+  })
+})
