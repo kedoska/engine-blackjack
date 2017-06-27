@@ -55,7 +55,7 @@ export const calculate = (array: Array<Card>): HandValue => {
       memo.hi += 1
       memo.lo += 1
     }
-    if(memo.hi > 21 && memo.lo <= 21) {
+    if (memo.hi > 21 && memo.lo <= 21) {
       memo.hi = memo.lo
     }
     return memo
