@@ -443,7 +443,7 @@ describe('No matter how many aces ... soft hands do not busts', () => {
     const { handInfo: { right }} = state
     const { playerValue: { hi, lo }, playerHasBusted, close } = right
     assert.equal(lo, 12)
-    assert.equal(hi, 22)
+    assert.equal(hi, 12)
     assert.equal(playerHasBusted, false, 'Player should be 12 not 22')
     assert.equal(close, false, 'Right should be open at 12')
   })
@@ -462,7 +462,7 @@ describe('No matter how many aces ... soft hands do not busts', () => {
     const { handInfo: { right }, dealerValue, wonOnRight } = state
     const { playerValue: { hi, lo }, playerHasBusted } = right
     assert.equal(lo, 12)
-    assert.equal(hi, 22)
+    assert.equal(hi, 12)
     assert.equal(dealerValue.lo, 21, 'dealer has 21 on lo')
     assert.equal(dealerValue.hi, 21, 'dealer has 21 on hi')
     assert.equal(playerHasBusted, false, 'Player should be 12 not 22')
