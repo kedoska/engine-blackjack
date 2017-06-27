@@ -35,6 +35,13 @@ describe('calculate()', function () {
     assert.equal(values.lo, 7, 'lo')
   })
 
+  it('should return hi === lo when hi busted', function () {
+    const cards = serializeCards('♥5 ♣1 ♠1 ♦5')
+    const values = lib.calculate(cards)
+    assert.equal(values.hi, 12, 'hi')
+    assert.equal(values.lo, 12, 'lo')
+  })
+
   describe('blackjack', function () {
     [
       '♥1 ♣10 ♥K',
