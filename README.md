@@ -201,6 +201,37 @@ You can also write specific test cases using this syntax. For more details have 
 
 If you specify the `finalWin` the test will compare the final winning.
 
+## Stats
+
+Probabilities are not my favourite things... but apparently they are important for someone.
+Got some information here:
+
+ * [In blackjack, what is the probability of a blackjack?](https://wizardofodds.com/ask-the-wizard/blackjack/probability/)
+ * [Dealer's Bust-Out Rate](http://www.blackjackage.com/bust-out-rate.php)
+
+## Random
+
+Please consider that for stress test this is the used random fn. It overrides the getRandom provided by [52-deck](https://github.com/kedoska/52-deck)
+
+```javascript
+const deck = require('52-deck')
+deck.getRandom = (min, max) => {
+  let number
+  const range = max - min + 1
+  do
+  {
+    const buffer = crypto.randomBytes(4)
+    number = buffer.readUInt8(0)
+  }
+  while (number >= Number.MAX_VALUE - (Number.MAX_VALUE % range))
+  number %= range
+  return number + min
+}
+```
+
+The original function (provided by 52-deck) is `const getRandom = (v: number) => Math.floor(Math.random() * v)`.
+I just wanted to be fancy importing and implementing something approved by a well known game laboratory _(No more details here)_.
+
 ## Side Bets
 
 Side bets are part of the "multi-game strategy". They are returned to the client as "available bets" and they can be sets in the `deal()` _payload_.
