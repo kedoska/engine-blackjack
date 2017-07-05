@@ -15,7 +15,7 @@ deck.getRandom = (min, max) => {
 }
 
 const simulate = (decks = 1) => {
-  const cards = deck.shuffle(deck.newDeck())
+  const cards = deck.shuffle(deck.newDecks(decks))
   const playerCards = cards.splice(cards.length - 2, 2)
   const dealerFirstCards = cards.splice(cards.length - 1, 1)
   const dealerHoleCard = cards.splice(cards.length - 1, 1)[ 0 ]
@@ -30,22 +30,24 @@ const simulate = (decks = 1) => {
 
 describe.only('Probabilities', () => {
   describe('Served blackjack', () => {
-    it('should be around 4%', () => {
-      const MAX = 10000
-      let p = 0
-      let d = 0
-      for(let i = 0; i < MAX; i ++) {
-        const { playerHasBlackjack, dealerHasBlackjack } = simulate(1)
-        p = playerHasBlackjack ? p + 1 : p
-        d = dealerHasBlackjack ? d + 1 : d
-      }
-      p = (p / MAX) * 100
-      d = (d/ MAX) * 100
-      expect(p).toBeGreaterThanOrEqual(4)
-      expect(p).toBeLessThanOrEqual(6)
+    [1,2,4,6,8].forEach(deck => {
+      it(`should be around 4% with ${deck} deck/s`, () => {
+        const MAX = 10000
+        let p = 0
+        let d = 0
+        for(let i = 0; i < MAX; i ++) {
+          const { playerHasBlackjack, dealerHasBlackjack } = simulate(deck)
+          p = playerHasBlackjack ? p + 1 : p
+          d = dealerHasBlackjack ? d + 1 : d
+        }
+        p = (p / MAX) * 100
+        d = (d/ MAX) * 100
+        expect(p).toBeGreaterThanOrEqual(4)
+        expect(p).toBeLessThanOrEqual(6)
 
-      expect(d).toBeGreaterThanOrEqual(4)
-      expect(d).toBeLessThanOrEqual(6)
+        expect(d).toBeGreaterThanOrEqual(4)
+        expect(d).toBeLessThanOrEqual(6)
+      })
     })
   })
 })
