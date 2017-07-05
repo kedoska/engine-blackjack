@@ -201,6 +201,15 @@ You can also write specific test cases using this syntax. For more details have 
 
 If you specify the `finalWin` the test will compare the final winning.
 
+## Stats
+
+Probabilities are not my favourite things... but apparently they are important for someone.
+Got some information here:
+
+ * [In blackjack, what is the probability of a blackjack?](https://wizardofodds.com/ask-the-wizard/blackjack/probability/)
+ * [Dealer's Bust-Out Rate](http://www.blackjackage.com/bust-out-rate.php)
+
+
 ## Side Bets
 
 Side bets are part of the "multi-game strategy". They are returned to the client as "available bets" and they can be sets in the `deal()` _payload_.
