@@ -78,11 +78,10 @@ describe('Probabilities', () => {
             numberOfPushGames++
           }
         }
-
         numberOfBustedGames = (numberOfBustedGames / MAX) * 100
-
         expect(numberOfBustedGames).toBeGreaterThanOrEqual(22)
         expect(numberOfBustedGames).toBeLessThanOrEqual(32)
+        expect(numberOfPlayerWinningGames).toBeLessThan(numberOfDealerWinningGames)
       })
     })
   })
