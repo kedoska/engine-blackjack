@@ -3,6 +3,7 @@
   "version": "0.9.2",
   "description": "NodeJs, single player, blackjack engine",
   "main": "build/index.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "test": "neutrino test --use neutrino-preset-node neutrino-preset-jest",
     "build": "neutrino build --use neutrino-preset-node neutrino-middleware-minify",
