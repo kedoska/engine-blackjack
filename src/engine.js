@@ -108,7 +108,7 @@ export const getHandInfo = (playerCards: Array<Card>, dealerCards: Array<Card>, 
   const isClosed = hasBusted || hasBlackjack || handValue.hi === 21
   const canDoubleDown = !isClosed && true
   const canSplit = playerCards.length > 1 && playerCards[ 0 ].value === playerCards[ 1 ].value && !isClosed
-  const canInsure = dealerCards[ 0 ].value === 1 && !isClosed
+  const canInsure = dealerCards[0].value === 1 && playerCards.length === 2
   return {
     cards: playerCards,
     playerValue: handValue,
@@ -140,7 +140,7 @@ export const getHandInfoAfterDeal = (playerCards: Array<Card>, dealerCards: Arra
   }
   return {
     ...hand,
-    close: hand.playerHasBlackjack
+    close: hand.playerHasBlackjack && !availableActions.insurance
   }
 }
 
@@ -289,7 +289,7 @@ export const isActionAllowed = (actionName: string, stage: string): boolean => {
   }
 }
 
-export const getPrize = (playerHand: Hand, dealerCards: Array<Card>): number => {
+export const getPrize = (playerHand: Hand, dealerCards: Array<Card>, tookInsurance: boolean): number => {
   const {
     close = false,
     playerHasSurrendered = true,
@@ -309,7 +309,7 @@ export const getPrize = (playerHand: Hand, dealerCards: Array<Card>): number => 
   if (playerHasSurrendered) {
     return bet / 2
   }
-  if (playerHasBlackjack && !dealerHasBlackjack) {
+  if (playerHasBlackjack && (!dealerHasBlackjack || (!dealerHasBlackjack && tookInsurance))) {
     return bet + (bet * 1.5)
   }
   const dealerHasBusted = higherValidDealerValue > 21
@@ -330,7 +330,9 @@ export const getPrizes = ({ history, handInfo: { left, right }, dealerCards }: {
     memo += x.value
     return memo
   }, 0)
-  const wonOnRight = getPrize(right, dealerCards)
+  const insuranceAction = history.find(x => x.type === TYPES.INSURANCE)
+  const tookInsurance = insuranceAction && insuranceAction.payload.bet > 0
+  const wonOnRight = getPrize(right, dealerCards, tookInsurance)
   const wonOnLeft = getPrize(left, dealerCards)
   return {
     finalBet: finalBet,

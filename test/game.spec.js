@@ -303,6 +303,128 @@ describe('Game flow', function () {
     assert.equal(wonOnLeft, 20, 'won 20 on left')
     assert.equal(wonOnRight, 20, 'won 20 on right')
   })
+  describe('# even money dealer BJ', () => {
+    const test = {
+      cards: '♦10 ♥1 ♠10 ♠1'
+    }
+    it(`INSURANCE ON: should deal ${
+      test.cards
+    }, insure YES, and finish`, () => {
+      const testActions = ['restore', 'deal', 'insuranceYes']
+      const rules = { insurance: true }
+      const state = executeFlow(
+        rules,
+        test.cards,
+        testActions.map(x => functions[x])
+      )
+      const {
+        finalBet,
+        wonOnRight,
+        handInfo: { right },
+        sideBetsInfo: {
+          insurance: { win }
+        }
+      } = state
+      assert.equal(
+        state.stage,
+        'done',
+        'blackjack but insurance is ON and first card is ♥1'
+      )
+      assert.equal(finalBet, 15, 'bet 10 and insurance 1')
+      assert.equal(right.close, true, 'right hand should be close')
+      assert.equal(
+        win,
+        5 * 3,
+        'insurance pays 2 to 1 when dealer has bj + insurance value'
+      )
+      assert.equal(
+        wonOnRight,
+        10,
+        "right has prize because it's a push (even money)"
+      )
+    })
+    it(`INSURANCE ON: should deal ${
+      test.cards
+    }, insure YES, and finish`, () => {
+      const testActions = ['restore', 'deal20', 'insuranceYes']
+      const rules = { insurance: true }
+      const state = executeFlow(
+        rules,
+        test.cards,
+        testActions.map(x => functions[x])
+      )
+      const {
+        finalBet,
+        wonOnRight,
+        handInfo: { right },
+        sideBetsInfo: {
+          insurance: { risk, win }
+        }
+      } = state
+      assert.equal(
+        state.stage,
+        'done',
+        'blackjack but insurance is ON and first card is ♥1'
+      )
+      assert.equal(finalBet, 20 + 10, 'bet 20 and insurance 10')
+      assert.equal(right.close, true, 'right hand should be close')
+      assert.equal(
+        risk,
+        10,
+        'insurance pays 2 to 1 when dealer has bj + insurance value'
+      )
+      assert.equal(
+        win,
+        30,
+        'insurance pays 2 to 1 when dealer has bj + insurance value'
+      )
+      assert.equal(
+        wonOnRight,
+        20,
+        "right has prize because it's a push (even money)"
+      )
+    })
+  })
+  describe('# even money dealer no BJ', () => {
+    it(`INSURANCE ON: prevent amount injection`, () => {
+      const testActions = ['restore', 'deal', 'insuranceInjectAmount', 'standR']
+      const rules = { insurance: true }
+      const state = executeFlow(
+        rules,
+        '♦5 ♥1 ♠10 ♠1',
+        testActions.map(x => functions[x])
+      )
+      const bet = 10
+      const maxInsuranceAmount = bet / 2
+      const {
+        finalBet,
+        wonOnRight,
+        handInfo: { right },
+        sideBetsInfo: {
+          insurance: { risk, win }
+        }
+      } = state
+      assert.equal(
+        state.stage,
+        'done',
+        'blackjack but insurance is ON and first card is ♥1'
+      )
+      assert.equal(right.playerValue.hi, 21, 'player value must be 4')
+      assert.equal(
+        finalBet,
+        bet + maxInsuranceAmount,
+        `bet ${bet} and max insurance ${maxInsuranceAmount}`
+      )
+      assert.equal(right.close, true, 'right hand should be close')
+      assert.equal(risk, 5, 'insurance risk value is 5')
+      assert.equal(win, 0, 'insurance win value is 0')
+      assert.equal(
+        wonOnRight,
+        bet + bet * 1.5,
+        "right has prize because it's a player blackjack (even money)"
+      )
+    })
+  })
 })
 
 describe('Must Stand on 17', function () {

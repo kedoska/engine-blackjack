@@ -202,8 +202,12 @@ export default class Game {
           hits: hits + 1
         })
 
-        if (right.playerHasBlackjack) {
-          // purpose of the game archived !!!
+        if (
+          right.playerHasBlackjack &&
+          (!right.availableActions.insurance ||
+            (right.availableActions.insurance && dealerValue.lo !== 1))
+        ) {
+          // purpose of the game achieved !!!
           this._dispatch(actions.showdown())
           break
         }
@@ -214,7 +218,7 @@ export default class Game {
           }
         // else
         // in this case, the game must continue in "player-turn-right"
-        // waiting for the insurance action
+        // waiting for the insurance (including even money) action
         }
         break
       }
@@ -227,7 +231,8 @@ export default class Game {
         const insurancePrize = (isFirstCardAce && dealerHasBlackjack && insuranceValue > 0 && bet > 0) ? insuranceValue * 3 : 0
         const right = this.enforceRules(engine.getHandInfoAfterInsurance(handInfo.right.cards, dealerCards))
         right.bet = initialBet
-        right.close = dealerHasBlackjack
+        const tookEvenMoney = insuranceValue > 0 && handInfo.right.playerHasBlackjack
+        right.close = dealerHasBlackjack || tookEvenMoney
         const historyItem = appendEpoch({
           ...action,
           payload: { bet: insuranceValue || 0 }
@@ -244,7 +249,7 @@ export default class Game {
             }
           }
         })
-        if (dealerHasBlackjack) {
+        if (dealerHasBlackjack || tookEvenMoney) {
           this._dispatch(actions.showdown())
         }
         break
