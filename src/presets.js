@@ -39,6 +39,7 @@ export const getRules = ({
   doubleAfterSplit = true,
   surrender = true,
   insurance = true,
+  evenMoneyInsurance = false,
   showdownAfterAceSplit = true
 }: Rule) => {
   return {
@@ -49,6 +50,7 @@ export const getRules = ({
     doubleAfterSplit: doubleAfterSplit,
     surrender: surrender,
     insurance: insurance,
+    evenMoneyInsurance: evenMoneyInsurance,
     showdownAfterAceSplit: showdownAfterAceSplit
   }
 }

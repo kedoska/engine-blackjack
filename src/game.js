@@ -157,7 +157,7 @@ export default class Game {
     switch (action.type) {
       case TYPES.DEAL: {
         const { bet, sideBets } = action.payload
-        const { rules: { insurance }, availableBets, history, hits } = this.state
+        const { rules: { insurance, evenMoneyInsurance }, availableBets, history, hits } = this.state
         const playerCards = this.state.deck.splice(this.state.deck.length - 2, 2)
         const dealerCards = this.state.deck.splice(this.state.deck.length - 1, 1)
         const dealerHoleCard = this.state.deck.splice(this.state.deck.length - 1, 1)[ 0 ]
@@ -205,7 +205,8 @@ export default class Game {
         if (
           right.playerHasBlackjack &&
           (!right.availableActions.insurance ||
-            (right.availableActions.insurance && dealerValue.lo !== 1))
+            (right.availableActions.insurance &&
+              (!evenMoneyInsurance || dealerValue.lo !== 1)))
         ) {
           // purpose of the game achieved !!!
           this._dispatch(actions.showdown())
@@ -218,7 +219,7 @@ export default class Game {
           }
         // else
         // in this case, the game must continue in "player-turn-right"
-        // waiting for the insurance (including even money) action
+        // waiting for the insurance action, including even money if enabled
         }
         break
       }

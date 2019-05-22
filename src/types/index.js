@@ -56,6 +56,7 @@ export type Rule = {
   split: boolean,
   surrender: boolean,
   insurance: boolean,
+  evenMoneyInsurance: boolean,
   showdownAfterAceSplit: boolean
 }
 

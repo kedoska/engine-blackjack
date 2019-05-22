@@ -91,6 +91,7 @@ declare module 'engine-blackjack' {
         split: boolean;
         surrender: boolean;
         insurance: boolean;
+        evenMoneyInsurance: boolean;
         showdownAfterAceSplit: boolean;
     }
 
